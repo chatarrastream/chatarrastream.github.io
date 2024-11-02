@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Botones y Menús Desplegables</title>
+  <style>
+    /* Estilos del menú */
+    .menu-wrapper {
+      max-width: 100%;
+      margin: 0 auto 20px; /* Espaciado inferior entre menús */
+    }
+    .menu {
+      text-align: center;
+      background-color: #333;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      display: none; /* Ocultamos el menú inicialmente */
+    }
+    .menu a {
+      text-decoration: none !important;
+      color: white !important;
+      background-color: #555 !important;
+      padding: 15px !important;
+      display: block !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+      margin: 5px 0 !important;
+      border-radius: 0 !important;
+      text-align: center !important;
+      text-transform: uppercase !important;
+    }
+    .menu a:hover {
+      background-color: #777 !important;
+    }
+    .menu-hover-zoom {
+      transition: transform 0.4s ease;
+    }
+    .menu-hover-zoom:hover {
+      transform: scale(1.1);
+    }
+    /* Estilos del botón */
+    .toggle-button {
+      display: block;
+      width: 100%;
+      background-color: #444;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 18px;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    .toggle-button:hover {
+      background-color: #555;
+      transform: scale(1.1);
+    }
+    /* Clase para cambiar el color a rojo cuando el menú esté desplegado */
+    .toggle-button.open {
+      background-color: red;
+    }
+  </style>
+</head>
+<body>
+
+<div class="menu-wrapper">
+  <!-- Primer botón y menú -->
+  <button class="toggle-button" onclick="toggleMenu(this)">⚽ LA LIGA EA SPORTS ⚽</button>
+  <div class="menu">
+    <a class="menu-hover-zoom" href="acestream://aa82e7d4f03061f2144a2f4be22f2e2210d42280">Movistar LaLiga 1080</a>
+    <a class="menu-hover-zoom" href="acestream://f031f5728b32f6089dda28edebe990cf198108d8">Movistar LaLiga 720</a>
+    <a class="menu-hover-zoom" href="acestream://5a236fbbe6e5bbfec03db548c244a7c858d675c0">Movistar+ Plus 1080</a>
+    <a class="menu-hover-zoom" href="acestream://aa82e7d4f03061f2144a2f4be22f2e2210d42280">LaLiga TV Bar 1080</a>
+    <a class="menu-hover-zoom" href="acestream://1960a9be8ae9e8c755330218eac4c5805466290a">Dazn LaLiga 1080</a>
+    <!-- Agrega los enlaces restantes aquí de forma similar -->
+  </div>
+</div>
+
+<!-- Agrega el resto de las secciones de menú de forma similar -->
+
+<script>
+  // Función para mostrar/ocultar el menú correspondiente y actualizar el color del botón
+  function toggleMenu(button) {
+    var menu = button.nextElementSibling; // Selecciona el menú asociado al botón
+
+    // Verificamos el estado actual del menú y actualizamos su visibilidad y el color del botón
+    if (menu.style.display === "none" || menu.style.display === "") {
+      menu.style.display = "block";
+      button.classList.add("open"); // Cambia a color rojo cuando el menú está desplegado
+    } else {
+      menu.style.display = "none";
+      button.classList.remove("open"); // Regresa a color original cuando el menú está oculto
+    }
+  }
+
+  // Aseguramos que todos los menús estén ocultos al cargar la página
+  document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.menu').forEach(function(menu) {
+      menu.style.display = 'none';
+    });
+  });
+</script>
+
+</body>
+</html>
