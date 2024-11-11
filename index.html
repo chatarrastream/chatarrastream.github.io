@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  <link rel="manifest" href="/manifest.json">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chatarrastream v.3.2</title>
@@ -230,6 +231,19 @@ dom 17 - 21:00h ⚽ REAL ZARAGOZA vs MÁLAGA CF ⚽
     });
   });
 </script>
+
+  <!-- service-worker.js -->
+  <script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/service-worker.js")
+      .then((registration) => {
+        console.log("Service Worker registrado con éxito:", registration);
+      })
+      .catch((error) => {
+        console.log("Error al registrar el Service Worker:", error);
+      });
+  }
+  </script>
 
 </body>
 </html>
