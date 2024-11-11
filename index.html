@@ -4,40 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chatarrastream v.3.2</title>
-
-<!-- script para bloquear la publicidad -->
-  <style>
-    /* Esto es opcional, pero ayuda a evitar saltos visuales */
-    .ad-blocked {
-      display: none !important;
-    }
-  </style>
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      // Lista de palabras comunes en clases o IDs de elementos de publicidad
-      const adKeywords = ["ad", "ads", "banner", "sponsor", "promo"];
-
-      // Función para ocultar elementos que coinciden con palabras clave de publicidad
-      function hideAds() {
-        adKeywords.forEach(keyword => {
-          // Seleccionar elementos que tienen la palabra clave en el ID o clase
-          let adElements = document.querySelectorAll(`[id*="${keyword}"], [class*="${keyword}"]`);
-          
-          // Aplicar la clase para ocultarlos
-          adElements.forEach(element => {
-            element.classList.add("ad-blocked");
-          });
-        });
-      }
-
-      // Ejecutar la función de ocultar anuncios
-      hideAds();
-
-      // Si los anuncios se cargan dinámicamente, verifica cada segundo para ocultarlos
-      setInterval(hideAds, 1000);
-    });
-  </script>
-  
   <style>
     h2 { color: #004080; border-bottom: 2px solid #004080; padding-bottom: 5px; text-align: center; }
     /* Estilos del menú */
@@ -132,7 +98,7 @@ mié. 6 - 21:00 ⚽ PSG vs ATL MADRID ⚽
 21:00 ⚽ ESTRELLA ROJA vs FC BARCELONA ⚽
   </button> -->
 <button class="independent-button" onclick="window.location.href='acestream://121f719ebb94193c6086ef92865cf9b197750980'">
-⚽ REAL ZARAGOZA ⚽
+dom 17 - 21:00⚽ REAL ZARAGOZA vs MÁLAGA CF⚽
 </button>
 <button class="independent-button" onclick="window.location.href='acestream://55d4602cb22b0d8a33c10c2c2f42dae64a9e8895'">
 🏀 CASADEMONT ZGZ 🏀
