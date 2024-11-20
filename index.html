@@ -95,6 +95,10 @@
   <button class="independent-button" onclick="recargarPagina()">↩️ ACTUALIZAR ↪️</button>
 
     <script>
+       // Refresca automáticamente cada 5 minutos (300000 ms)
+        setTimeout(() => {
+            location.reload();
+        }, 300000); 
         function recargarPagina() {
             location.reload(); // Recarga la página actual
         }
