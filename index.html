@@ -91,10 +91,15 @@
 <button class="independent-button" onclick="window.location.href='https://chatarrastream.github.io/agenda.html'">
   📒 AGENDA DEL DÍA 📒
 </button>
-   
-  <button class="independent-button" onclick="window.location.href='https://chatarrastream.github.io/'">
-♻️♻️ ACTUALIZAR ♻️♻️
-  </button> 
+   <!-- Botón para recargar la página -->
+  <button class="independent-button" onclick="recargarPagina()">♻️ ACTUALIZAR ♻️</button>
+
+    <script>
+        function recargarPagina() {
+            location.reload(); // Recarga la página actual
+        }
+    </script>
+
   <!-- Botón Partido de la jornada -->
  <button class="independent-button" onclick="window.location.href='acestream://639c561dd57fa3fc91fde715caeb696c5efb7ce7'">
  🎾 COPA DAVIS 🎾
