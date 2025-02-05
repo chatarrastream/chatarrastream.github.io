@@ -83,12 +83,26 @@
   background-color: #0055a4;
   transform: scale(1.1);
 }
+    /* Aviso intermitente*/
+    .aviso {
+  background-color: red;
+  color: white;
+  padding: 10px;
+  border: 1px solid black;
+  animation: intermitir 1s infinite alternate;
+}
+
+@keyframes intermitir {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
   </style>
 </head>
 <body>
   <h2>CHATARRASTREAM 4.20.24 ©️</h2>
 
-
+<div class="aviso">Aviso importante</div>
+  
   <!--Botón independiente para abrir un enlace-->
 <button class="independent-button" onclick="window.location.href='https://chatarrastream.github.io/agenda.html'">
   📒 AGENDA DEL DÍA 📒
