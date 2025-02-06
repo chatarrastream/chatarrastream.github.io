@@ -1,0 +1,49 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    margin: 0;
+    padding: 20px;
+}
+h1 {
+    text-align: center;
+    color: #333;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+th, td {
+    border: 3px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    background-color: #f2f2f2; /* Fondo gris para todas las celdas */
+}
+th {
+    background-color: #4CAF50;  /* Fondo verde para todos los encabezados */
+    color: white;
+}
+/* Estilo para las celdas al pasar el ratón */
+tr:hover {
+    background-color: #ddd;
+}
+.hora {
+    width: 10%;
+}
+.partido {
+    width: 50%;
+}
+.idioma {
+    width: 15%;
+}
+.deportes {
+    width: 15%;
+    text-align: center;
+}
+.deportes th {  /* Solo el título de la columna Deportes tiene el fondo verde */
+    background-color: #4CAF50;
+    color: white;
+}
+.enlace {
+    width: 10%;
+}
