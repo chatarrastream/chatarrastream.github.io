@@ -47,3 +47,105 @@ tr:hover {
 .enlace {
     width: 10%;
 }
+
+/* style de los botones */
+    h2 { color: #004080; border-bottom: 2px solid #004080; padding-bottom: 5px; text-align: center; }
+    /* Estilos del menú */
+    .menu-wrapper {
+      max-width: 100%;
+      margin: 0 auto 20px; /* Espaciado inferior entre menús */
+    }
+    .menu {
+      text-align: center;
+      background-color: #333;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      display: none; /* Ocultamos el menú inicialmente */
+    }
+    .menu a {
+      text-decoration: none !important;
+      color: white !important;
+      background-color: #555 !important;
+      padding: 15px !important;
+      display: block !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+      margin: 5px 0 !important;
+      border-radius: 0 !important;
+      text-align: center !important;
+      text-transform: uppercase !important;
+    }
+    .menu a:hover {
+      background-color: #777 !important;
+    }
+    .menu-hover-zoom {
+      transition: transform 0.4s ease;
+    }
+    .menu-hover-zoom:hover {
+      transform: scale(1.1);
+    }
+    /* Estilos del botón */
+    .toggle-button {
+      display: block;
+      width: 100%;
+      background-color: #444;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 18px;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    .toggle-button:hover {
+      background-color: #555;
+      transform: scale(1.1);
+    }
+    /* Clase para cambiar el color a rojo cuando el menú esté desplegado */
+    .toggle-button.open {
+      background-color: red;
+    }
+    /* Estilos del botón independiente */
+.independent-button {
+  display: block;
+  width: 100%;
+  background-color: #0066cc;
+  color: white;
+  padding: 15px;
+  text-align: center;
+  font-size: 18px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  margin: 20px 0; /* Separación del resto del contenido */
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+.independent-button:hover {
+  background-color: #0055a4;
+  transform: scale(1.1);
+}
+    /* Aviso intermitente*/
+    .aviso {
+  background-color: red;
+  color: white;
+      text-align: center;
+  padding: 10px;
+  border: 1px solid black;
+  animation: intermitir 1s infinite alternate;
+}
+
+@keyframes intermitir {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+    .aviso2 {
+  background-color: red;
+  color: white;
+      text-align: center;
+  padding: 10px;
+  border: 1px solid black;
+
+    }
+  
