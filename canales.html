@@ -4,16 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ACEStream new_Time</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            background-color: #f3f4f6;
-            color: #1f2937;
-        }
-    </style>
+    style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background-color: #f3f4f6;
+      color: #1f2937;
+    }
+
+    /* Estilos para convertir la lista en una tabla */
+    .links-container ul {
+      display: table;
+      width: 100%;
+      border-collapse: collapse; /* Elimina espacios entre celdas */
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    /* Cada li se comporta como una fila */
+    .links-container ul li {
+      display: table-row;
+    }
+
+    /* Cada div interno se comporta como una celda */
+    .link-name,
+    .link-url {
+      display: table-cell;
+      padding: 10px;
+      border: 1px solid #ccc;
+      vertical-align: middle;
+    }
+
+    /* Filas alternadas para mayor legibilidad */
+    .links-container ul li:nth-child(odd) {
+      background-color: #f9f9f9;
+    }
+
+    /* Estilos para los enlaces */
+    .link-url a {
+      color: #3498db;
+      text-decoration: none;
+    }
+
+    .link-url a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
     <header>
