@@ -156,6 +156,19 @@
                 <div class="link-url"><a href="${link.url}" target="_blank">${link.url}</a></div>
             `;
             linksList.appendChild(li);
+
+            // Ordenar la lista alfabéticamente por el nombre del canal
+        linksData.links.sort((a, b) => a.name.localeCompare(b.name));
+
+        const linksList = document.getElementById('linksList');
+
+        linksData.links.forEach(link => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <div class="link-name">${link.name}</div>
+                <div class="link-url"><a href="${link.url}" target="_blank">${link.url}</a></div>
+            `;
+            linksList.appendChild(li);
         });
     </script>
 </body>
