@@ -148,16 +148,9 @@
             { "name": "#VAMOS FHD by Adrián", "url": "acestream://0b7057503d40a24417441484479cfe2d0eceb2fd" },
             ]
         };
-        const linksList = document.getElementById('linksList');
-        linksData.links.forEach(link => {
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <div class="link-name">${link.name}</div>
-                <div class="link-url"><a href="${link.url}" target="_blank">${link.url}</a></div>
-            `;
-            linksList.appendChild(li);
+        
 
-            // Ordenar la lista alfabéticamente por el nombre del canal
+            /* Ordenar la lista alfabéticamente por el nombre del canal*/
         linksData.links.sort((a, b) => a.name.localeCompare(b.name));
 
         const linksList = document.getElementById('linksList');
