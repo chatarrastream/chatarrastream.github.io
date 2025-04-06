@@ -4,9 +4,14 @@
   <meta charset="UTF-8">
   <title>Registro de Jornada</title>
   <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
+      margin-top: 1rem;
     }
     td, th {
       border: 1px solid #999;
@@ -16,15 +21,26 @@
     td[contenteditable="true"] {
       background-color: #f9f9f9;
     }
+    button {
+      margin-top: 10px;
+      margin-right: 10px;
+      padding: 8px 12px;
+      font-size: 14px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <h2>Registro de Jornada de Tiempo Completo</h2>
-  <table>
+
+  <button onclick="agregarFila()">Agregar fila</button>
+  <button onclick="reiniciarTabla()">Reiniciar tabla</button>
+
+  <table id="registroTabla">
     <thead>
       <tr>
         <th>Día</th>
-        <th>Nombre del Currito</th>
+        <th>Nombre del Trabajador</th>
         <th>Hora de Entrada</th>
         <th>Hora de Salida</th>
         <th>Firma</th>
@@ -32,64 +48,57 @@
       </tr>
     </thead>
     <tbody>
-      <!-- Puedes duplicar estas filas según los días del mes -->
-      <tr>
-        <td contenteditable="true">Lunes</td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-      </tr>
-      <tr>
-        <td contenteditable="true">Martes</td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-      </tr>
-      <tr>
-        <td contenteditable="true">Miércoles</td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-      </tr>
-      <tr>
-        <td contenteditable="true">Jueves</td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-      </tr>
-      <tr>
-        <td contenteditable="true">Viernes</td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-      </tr>
-      <tr>
-        <td contenteditable="true">Sábado</td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-      </tr>
-      <tr>
-        <td contenteditable="true">Domingo</td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-        <td contenteditable="true"></td>
-      </tr>
+      <tr><td contenteditable="true">Lunes</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+      <tr><td contenteditable="true">Martes</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+      <tr><td contenteditable="true">Miércoles</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+      <tr><td contenteditable="true">Jueves</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+      <tr><td contenteditable="true">Viernes</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+      <tr><td contenteditable="true">Sábado</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+      <tr><td contenteditable="true">Domingo</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
     </tbody>
   </table>
+
+  <script>
+    const tabla = document.getElementById("registroTabla");
+
+    // Cargar datos guardados
+    window.onload = function () {
+      const datosGuardados = localStorage.getItem("tablaDatos");
+      if (datosGuardados) {
+        tabla.innerHTML = datosGuardados;
+      }
+      agregarEventosEdicion();
+    };
+
+    // Guardar cambios automáticamente
+    function agregarEventosEdicion() {
+      const celdas = tabla.querySelectorAll("td[contenteditable='true']");
+      celdas.forEach(celda => {
+        celda.addEventListener("input", guardarTabla);
+      });
+    }
+
+    function guardarTabla() {
+      localStorage.setItem("tablaDatos", tabla.innerHTML);
+    }
+
+    function agregarFila() {
+      const nuevaFila = tabla.insertRow(-1);
+      for (let i = 0; i < 6; i++) {
+        const celda = nuevaFila.insertCell(i);
+        celda.contentEditable = true;
+        celda.innerText = "";
+        celda.addEventListener("input", guardarTabla);
+      }
+      guardarTabla();
+    }
+
+    function reiniciarTabla() {
+      if (confirm("¿Estás seguro de que quieres borrar todos los datos?")) {
+        localStorage.removeItem("tablaDatos");
+        location.reload();
+      }
+    }
+  </script>
 </body>
 </html>
