@@ -36,7 +36,8 @@
   <h2>Registro de Jornada de Tiempo Completo</h2>
 
   <button onclick="agregarFila()">Agregar fila</button>
-  <button onclick="reiniciarTabla()">Reiniciar tabla</button>
+  <button onclick="descargarDatos()">Descargar datos</button>
+  <button onclick="reiniciarTabla()">Borrar tabla</button>
 
   <table id="registroTabla">
     <thead>
@@ -45,18 +46,18 @@
         <th>Mes</th>
         <th>Hora de Entrada</th>
         <th>Hora de Salida</th>
-        <th>Firma</th>
+        <th>Nota</th>
         <th>Horas Trabajadas</th>
       </tr>
     </thead>
     <tbody>
-      <tr><td contenteditable="true">Lunes 31</td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
-      <tr><td contenteditable="true">Martes 1</td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
-      <tr><td contenteditable="true">Miércoles 2</td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
-      <tr><td contenteditable="true">Jueves 3</td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
-      <tr><td contenteditable="true">Viernes 4</td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
-      <tr><td contenteditable="true">Sábado 5</td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
-      <tr><td contenteditable="true">Domingo 6</td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
+      <tr><td contenteditable="true">Lunes</td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
+      <tr><td contenteditable="true">Martes</td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
+      <tr><td contenteditable="true">Miércoles</td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
+      <tr><td contenteditable="true">Jueves</td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
+      <tr><td contenteditable="true">Viernes</td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
+      <tr><td contenteditable="true">Sábado</td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
+      <tr><td contenteditable="true">Domingo</td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
     </tbody>
   </table>
 
@@ -140,6 +141,30 @@
           celdaHoras.textContent = "";
         }
       });
+    }
+    function descargarDatos() {
+  let csv = [];
+  const filas = tabla.querySelectorAll("tr");
+  filas.forEach(fila => {
+    const celdas = fila.querySelectorAll("th, td");
+    const filaCsv = [];
+    celdas.forEach(celda => {
+      let texto = celda.innerText.replace(/\n/g, " ").replace(/"/g, '""');
+      filaCsv.push(`"${texto}"`);
+    });
+    csv.push(filaCsv.join(","));
+  });
+
+  const csvContent = csv.join("\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", "registro_jornada.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
     }
   </script>
 </body>
