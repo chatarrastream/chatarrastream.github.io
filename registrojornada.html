@@ -21,7 +21,7 @@
     }
     td[contenteditable="true"] {
       background-color: #f9f9f9;
-      font-size: 10px;
+      font-size: 14px;
     }
     button {
       margin-top: 10px;
@@ -46,37 +46,39 @@
         <th>Hora de Entrada</th>
         <th>Hora de Salida</th>
         <th>Firma</th>
-        <th>Observaciones</th>
+        <th>Horas Trabajadas</th>
       </tr>
     </thead>
     <tbody>
-      <tr><td contenteditable="true">Lunes 31</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-      <tr><td contenteditable="true">Martes 1</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-      <tr><td contenteditable="true">Miércoles 2</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-      <tr><td contenteditable="true">Jueves 3</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-      <tr><td contenteditable="true">Viernes 4</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-      <tr><td contenteditable="true">Sábado 5</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
-      <tr><td contenteditable="true">Domingo 6</td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td><td contenteditable="true"></td></tr>
+      <tr><td contenteditable="true">Lunes 31</td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
+      <tr><td contenteditable="true">Martes 1</td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
+      <tr><td contenteditable="true">Miércoles 2</td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
+      <tr><td contenteditable="true">Jueves 3</td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
+      <tr><td contenteditable="true">Viernes 4</td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
+      <tr><td contenteditable="true">Sábado 5</td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
+      <tr><td contenteditable="true">Domingo 6</td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
     </tbody>
   </table>
 
   <script>
     const tabla = document.getElementById("registroTabla");
 
-    // Cargar datos guardados
     window.onload = function () {
       const datosGuardados = localStorage.getItem("tablaDatos");
       if (datosGuardados) {
         tabla.innerHTML = datosGuardados;
       }
       agregarEventosEdicion();
+      calcularTodasLasHoras();
     };
 
-    // Guardar cambios automáticamente
     function agregarEventosEdicion() {
       const celdas = tabla.querySelectorAll("td[contenteditable='true']");
       celdas.forEach(celda => {
-        celda.addEventListener("input", guardarTabla);
+        celda.addEventListener("input", () => {
+          guardarTabla();
+          calcularTodasLasHoras();
+        });
       });
     }
 
@@ -86,12 +88,23 @@
 
     function agregarFila() {
       const nuevaFila = tabla.insertRow(-1);
-      for (let i = 0; i < 6; i++) {
+      const contenido = ["", "", "", "", "", ""];
+      contenido.forEach((_, i) => {
         const celda = nuevaFila.insertCell(i);
-        celda.contentEditable = true;
-        celda.innerText = "";
-        celda.addEventListener("input", guardarTabla);
-      }
+        if (i === 5) {
+          celda.classList.add("horas");
+          celda.textContent = "";
+        } else {
+          celda.contentEditable = true;
+          if (i === 2) celda.classList.add("entrada");
+          if (i === 3) celda.classList.add("salida");
+          celda.textContent = "";
+          celda.addEventListener("input", () => {
+            guardarTabla();
+            calcularTodasLasHoras();
+          });
+        }
+      });
       guardarTabla();
     }
 
@@ -100,6 +113,33 @@
         localStorage.removeItem("tablaDatos");
         location.reload();
       }
+    }
+
+    function calcularTodasLasHoras() {
+      const filas = tabla.querySelectorAll("tbody tr");
+      filas.forEach(fila => {
+        const entrada = fila.querySelector(".entrada")?.innerText.trim();
+        const salida = fila.querySelector(".salida")?.innerText.trim();
+        const celdaHoras = fila.querySelector(".horas");
+
+        if (entrada && salida) {
+          const [h1, m1] = entrada.split(":").map(Number);
+          const [h2, m2] = salida.split(":").map(Number);
+
+          if (!isNaN(h1) && !isNaN(m1) && !isNaN(h2) && !isNaN(m2)) {
+            let totalMin = (h2 * 60 + m2) - (h1 * 60 + m1);
+            if (totalMin < 0) totalMin += 1440;
+
+            const horas = Math.floor(totalMin / 60);
+            const minutos = totalMin % 60;
+            celdaHoras.textContent = `${horas}h ${minutos}m`;
+          } else {
+            celdaHoras.textContent = "Formato inválido";
+          }
+        } else {
+          celdaHoras.textContent = "";
+        }
+      });
     }
   </script>
 </body>
