@@ -31,12 +31,14 @@
       cursor: pointer;
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
   <h2>Registro de Jornada de Tiempo Completo</h2>
 
   <button onclick="agregarFila()">Agregar fila</button>
   <button onclick="descargarDatos()">Descargar datos</button>
+  <button onclick="descargarPDF()">Descargar PDF</button>
   <button onclick="reiniciarTabla()">Borrar tabla</button>
 
   <table id="registroTabla">
@@ -166,6 +168,35 @@
   link.click();
   document.body.removeChild(link);
     }
+  async function descargarPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(12);
+    doc.text("Registro de Jornada de Tiempo Completo", 14, 15);
+
+    let y = 25;
+    const filas = document.querySelectorAll("#registroTabla tr");
+
+    filas.forEach((fila, index) => {
+      const celdas = fila.querySelectorAll("th, td");
+      let texto = "";
+      celdas.forEach(celda => {
+        texto += celda.innerText.trim() + " | ";
+      });
+
+      doc.setFontSize(10);
+      doc.text(texto, 14, y);
+      y += 7;
+
+      if (y > 280) {  // Agrega nueva página si se pasa
+        doc.addPage();
+        y = 15;
+      }
+    });
+
+    doc.save("registro_jornada.pdf");
+  }
   </script>
 </body>
 </html>
