@@ -179,19 +179,19 @@
 
   // Extraer encabezados y datos
   const headers = [];
-  const body = [];
+const body = [];
 
-  const table = document.getElementById("registroTabla");
-  const headerCells = table.querySelectorAll("thead th");
-  headerCells.forEach(cell => headers.push(cell.innerText.trim()));
+const table = document.getElementById("registroTabla");
+const headerCells = table.querySelectorAll("thead th");
+headerCells.forEach(cell => headers.push(cell.innerText.trim().toLowerCase()));  // minúscula
 
-  const rows = table.querySelectorAll("tbody tr");
-  rows.forEach(row => {
-    const rowData = [];
-    const cells = row.querySelectorAll("td");
-    cells.forEach(cell => rowData.push(cell.innerText.trim()));
-    body.push(rowData);
-  });
+const rows = table.querySelectorAll("tbody tr");
+rows.forEach(row => {
+  const rowData = [];
+  const cells = row.querySelectorAll("td");
+  cells.forEach(cell => rowData.push(cell.innerText.trim().toLowerCase()));  // minúscula
+  body.push(rowData);
+});
 
   // Generar la tabla en el PDF
   doc.autoTable({
