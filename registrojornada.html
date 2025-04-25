@@ -88,11 +88,13 @@
     }
 
     function guardarTabla() {
-  const celdas = tabla.querySelectorAll("td[contenteditable='true']");
+  // Clonamos la tabla para no alterar el DOM visible
+  const tablaClon = tabla.cloneNode(true);
+  const celdas = tablaClon.querySelectorAll("td[contenteditable='true']");
   celdas.forEach(celda => {
     celda.innerText = celda.innerText.toLowerCase();
   });
-  localStorage.setItem("tablaDatos", tabla.innerHTML);
+  localStorage.setItem("tablaDatos", tablaClon.innerHTML);
 }
 
     function agregarFila() {
