@@ -22,6 +22,7 @@
     td[contenteditable="true"] {
       background-color: #f9f9f9;
       font-size: 14px;
+      text-transform: lowercase;
     }
     button {
       margin-top: 10px;
@@ -87,8 +88,12 @@
     }
 
     function guardarTabla() {
-      localStorage.setItem("tablaDatos", tabla.innerHTML);
-    }
+  const celdas = tabla.querySelectorAll("td[contenteditable='true']");
+  celdas.forEach(celda => {
+    celda.innerText = celda.innerText.toLowerCase();
+  });
+  localStorage.setItem("tablaDatos", tabla.innerHTML);
+}
 
     function agregarFila() {
       const nuevaFila = tabla.insertRow(-1);
