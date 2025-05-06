@@ -9,25 +9,98 @@
 <h2><a href="https://chatarrastream.github.io/">Volver al inicio de CHATARRASTREAM </a></h2>
 
 <!DOCTYPE html>
-<html lang="es">
+<html lang='es'>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eventos Deportivos Acestream</title>
-<link rel="stylesheet" type="text/css" href="estilos.css">
+<meta charset='UTF-8'>
+<title>Agenda de Eventos</title>
+<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css' rel='stylesheet'>
+<style>
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f4f9; }
+h1 { background-color: #003366; color: white; padding: 20px; margin: 0; text-align: center; border-bottom: 3px solid #0066cc; }
+table { width: 90%; margin: 20px auto; border-collapse: collapse; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 10px; overflow: hidden; }
+th, td { padding: 15px; border: 1px solid #ddd; text-align: center; background-color: #fff; }
+th { background-color: #FF0000; color: white; text-transform: uppercase; }
+tr:nth-child(even) { background-color: #f9f9f9; }
+tr:hover { background-color: #f1f1f1; }
+.ronda { text-decoration: underline; }
+a { color: #1E90FF; text-decoration: none; }
+a:hover { text-decoration: underline; }
+.deporte { font-weight: bold; }
+.fecha { background-color: #4CAF50; color: white; padding: 10px; text-align: center; font-size: 1.2em; }
+.details { display: none; background-color: #f0f0f0; padding: 10px; border-top: 1px solid #ddd; }
+.show-details { cursor: pointer; color: #007BFF; text-decoration: underline; }
+@media (max-width: 768px) {
+    table { width: 100%; font-size: 12px; }
+    body { font-size: 14px; }
+    th, td { padding: 10px; }
+}
+</style>
 </head>
 <body>
-<div class='container'>
-<h1>Eventos Deportivos Acestream</h1>
+<h1>Agenda de Eventos</h1>
+<h2 class='fecha'>06/05/2025 (Martes)</h2>
 <table>
-<thead><tr><th>Día</th><th>Hora</th><th>Deporte</th><th>Competición</th><th>Partido</th><th>Canales Acestream</th></tr></thead>
-<tbody>
-<tr><td>Lunes</td><td>20:30</td><td>Fútbol</td><td>LaLiga Hypermotion</td><td>Castellon VS Sporting Gijon</td><td class='canales'><a href="acestream://83e8a605ffebe2062f15dad76b6ffe9486a28eb3" target="_blank">LaLiga TV Hypermotion (Op01)</a><br><a href="acestream://b2706a7ffbea236a3b398139a3a606ada664c0eb" target="_blank">LaLiga TV Hypermotion (Op02)</a><br><a href="acestream://83e8a605ffebe2062f15dad76b6ffe9486a28eb3" target="_blank">LaLiga TV Hypermotion (Op01)</a><br><a href="acestream://b2706a7ffbea236a3b398139a3a606ada664c0eb" target="_blank">LaLiga TV Hypermotion (Op02)</a></td></tr>
-<tr><td>Lunes</td><td>21:00</td><td>Fútbol</td><td>Premier League</td><td>Crystal Palace VS Nottingham Forest</td><td class='canales'><a href="acestream://6538b79ce0da657d8455d1da6a5f342398899a0e" target="_blank">DAZN 1 (Op01)</a><br><a href="acestream://50a8a13c474848d1efbd5586efdb5b6cdd173fa9" target="_blank">DAZN 1 (Op02)</a><br><a href="acestream://4141892f5df7d6474bf0279895ce02b7336c9928" target="_blank">DAZN 1 (Op03)</a><br><a href="acestream://6a1703a6bbe6110a1d27f35a41c88661e1740bfa" target="_blank">DAZN 1 (Op04)</a><br><a href="acestream://35c7f0c966ecde3390f4510bb4caded40018c07a" target="_blank">DAZN 1 (Op05)</a><br><a href="acestream://d5b2c6b940cf3df5e8f9dc6f000f0ea23a10b151" target="_blank">DAZN 1 (Op06)</a><br><a href="acestream://6538b79ce0da657d8455d1da6a5f342398899a0e" target="_blank">DAZN 1 (Op01)</a><br><a href="acestream://50a8a13c474848d1efbd5586efdb5b6cdd173fa9" target="_blank">DAZN 1 (Op02)</a><br><a href="acestream://4141892f5df7d6474bf0279895ce02b7336c9928" target="_blank">DAZN 1 (Op03)</a><br><a href="acestream://6a1703a6bbe6110a1d27f35a41c88661e1740bfa" target="_blank">DAZN 1 (Op04)</a><br><a href="acestream://35c7f0c966ecde3390f4510bb4caded40018c07a" target="_blank">DAZN 1 (Op05)</a><br><a href="acestream://d5b2c6b940cf3df5e8f9dc6f000f0ea23a10b151" target="_blank">DAZN 1 (Op06)</a></td></tr>
-<tr><td>Lunes</td><td>21:00</td><td>Fútbol</td><td>LaLiga EA Sports</td><td>Girona VS Mallorca</td><td class='canales'><a href="acestream://94d34491106e00394835c8cb68aa94481339b53f" target="_blank">LaLiga TV (Op01)</a><br><a href="acestream://d3de78aebe544611a2347f54d5796bd87f16c92d" target="_blank">LaLiga TV (Op02)</a><br><a href="acestream://6d05b31e5e8fdae312fbd57897363a7b10ddb163" target="_blank">LaLiga TV (Op03)</a><br><a href="acestream://1bc437bce57b4b0450f6d1f8d818b7e97000745e" target="_blank">LaLiga TV (Op04)</a><br><a href="acestream://cc9b7f5fe416069a2110da0909b0f915043c468b" target="_blank">LaLiga TV (Op05)</a><br><a href="acestream://94d34491106e00394835c8cb68aa94481339b53f" target="_blank">LaLiga TV (Op01)</a><br><a href="acestream://d3de78aebe544611a2347f54d5796bd87f16c92d" target="_blank">LaLiga TV (Op02)</a><br><a href="acestream://6d05b31e5e8fdae312fbd57897363a7b10ddb163" target="_blank">LaLiga TV (Op03)</a><br><a href="acestream://1bc437bce57b4b0450f6d1f8d818b7e97000745e" target="_blank">LaLiga TV (Op04)</a><br><a href="acestream://cc9b7f5fe416069a2110da0909b0f915043c468b" target="_blank">LaLiga TV (Op05)</a><br><a href="acestream://94d34491106e00394835c8cb68aa94481339b53f" target="_blank">LaLiga TV (Op01)</a><br><a href="acestream://d3de78aebe544611a2347f54d5796bd87f16c92d" target="_blank">LaLiga TV (Op02)</a><br><a href="acestream://6d05b31e5e8fdae312fbd57897363a7b10ddb163" target="_blank">LaLiga TV (Op03)</a><br><a href="acestream://1bc437bce57b4b0450f6d1f8d818b7e97000745e" target="_blank">LaLiga TV (Op04)</a><br><a href="acestream://cc9b7f5fe416069a2110da0909b0f915043c468b" target="_blank">LaLiga TV (Op05)</a><br><a href="acestream://94d34491106e00394835c8cb68aa94481339b53f" target="_blank">LaLiga TV (Op01)</a><br><a href="acestream://d3de78aebe544611a2347f54d5796bd87f16c92d" target="_blank">LaLiga TV (Op02)</a><br><a href="acestream://6d05b31e5e8fdae312fbd57897363a7b10ddb163" target="_blank">LaLiga TV (Op03)</a><br><a href="acestream://1bc437bce57b4b0450f6d1f8d818b7e97000745e" target="_blank">LaLiga TV (Op04)</a><br><a href="acestream://cc9b7f5fe416069a2110da0909b0f915043c468b" target="_blank">LaLiga TV (Op05)</a></td></tr>
-</tbody>
+<tr>
+<th>Hora</th>
+<th>Deporte</th>
+<th>Competición</th>
+<th>Evento</th>
+<th>Canales</th>
+</tr>
+<tr>
+<td>15:35</td>
+<td>🚴‍♂ <span class='deporte'>Ciclismo</span></td>
+<td>La Vuelta Femenina</td>
+<td>Etapa 3 Barbastro › Huesca (132,4 km)</td>
+<td><a href="acestream://61b9b271c16f970aab43cb753c5f8be181dceece">Teledeporte Elcano Antiguas</a><br><a href="acestream://138b30c93e8a780ac490a4f6d2181c41f3670230">Teledeporte New Era I</a><br><a href="acestream://16ffa1713f42aa27317ee039a2bd0cdbc89a1580">Eurosport 1 Elcano Antiguas</a><br><a href="acestream://bae98f69fbf867550b4f73b4eb176dae84d7f909">Eurosport 1 New Era I</a><br><a href="acestream://714e14e6d6e27660fd25a75b57b0ac5580fe705d">Eurosport 1 New Era I</a></td>
+</tr>
+<tr>
+<td>19:00</td>
+<td>🏀 <span class='deporte'>Baloncesto</span></td>
+<td><span class='flag-icon flag-icon-eu'></span> Euroliga:<span class='ronda'>Playoffs</span></td>
+<td>AS Monaco Basket Vs. Barça Basket</td>
+<td><a href="acestream://d03c13b6723f66155d7a0df3692a3b073fe630f2">M+ Vamos Elcano Antiguas</a><br><a href="acestream://12ba546d229bc39f01c3c18988a034b215fe6adb">M+ Vamos Elcano Antiguas</a><br><a href="acestream://3b2a8b41e7097c16b0468b42d7de0320886fa933">M+ Vamos New Era I</a><br><a href="acestream://2940120bf034db79a7f5849846ccea0255172eae">M+ Vamos New Era I</a><br><a href="acestream://57313e1ef438538df4feb5a6028dc78ee4f66b6a">M+ Vamos New Era I</a><br><a href="acestream://1205151f6fa5d95c0eeb543cbce43ccfa6a1b216">M+ Vamos New Era II</a><br><a href="acestream://55d4602cb22b0d8a33c10c2c2f42dae64a9e8895">M+ Deportes Elcano Antiguas</a><br><a href="acestream://3a74d9869b13e763476800740c6625e715a39879">M+ Deportes Elcano Antiguas</a><br><a href="acestream://acb510858f34c3c6fd5f79395b031abd6885c2b3">M+ Deportes Estable</a><br><a href="acestream://ef9dcc4eaac36a0f608b52a31f8ab237859e071a">M+ Deportes New Era I</a><br><a href="acestream://b5842718859345a596107ab8e6b24d7bfa2d617e">M+ Deportes New Era I</a><br><a href="acestream://be02b9918b8fe7224cfa9af1e37856760f95b1b8">M+ Deportes New Era I</a><br><a href="acestream://67a33c3f74956eed14b9b400523462fe362e0e66">M+ Deportes New Era II</a></td>
+</tr>
+<tr>
+<td>20:45</td>
+<td>🏀 <span class='deporte'>Baloncesto</span></td>
+<td><span class='flag-icon flag-icon-eu'></span> Euroliga:<span class='ronda'>Playoffs</span></td>
+<td>Panathinaikos BC Vs. Anadolu Efes Istanbul</td>
+<td><a href="acestream://639c561dd57fa3fc91fde715caeb696c5efb7ce7">M+ Deportes 2 Elcano Antiguas</a><br><a href="acestream://edd06f11e1cef292a1d795e15207ef2f580e298c">M+ Deportes 2 New Era I</a></td>
+</tr>
+<tr>
+<td>21:00</td>
+<td>⚽️ <span class='deporte'>Fútbol</span></td>
+<td><span class='flag-icon flag-icon-eu'></span> Champions:<span class='ronda'>Semifinales</span></td>
+<td>Inter Milan Vs. FC Barcelona</td>
+<td><a href="acestream://56ac8e227d526e722624675ccdd91b0cc850582f">Movistar Plus+ Elcano Antiguas</a><br><a href="acestream://b2a4d1eba9b46df5f52a87105df779f9d39abeb4">Movistar Plus+ New Era I</a><br><a href="acestream://0a26e20f39845e928411e09a124374fccb6e1478">M+ Liga de Campeones Elcano Antiguas</a><br><a href="acestream://775abd8697715c48a357906d40734ccd2a10513c">M+ Liga de Campeones Elcano Antiguas</a><br><a href="acestream://e572a5178ff72eed7d1d751a18b4b3419699f370">M+ Liga de Campeones Estable</a><br><a href="acestream://c16b4fab1f724c94cad92081cbb7fc7c6fe8a2cc">M+ Liga de Campeones New Era I</a><br><a href="acestream://778f08cbae9596ed9e8b2ae0af33ee7a6fe24c6a">M+ Liga de Campeones New Era I</a><br><a href="acestream://afbf2a479c5a5072698139f0f556ef3e77a99bd0">M+ Liga de Campeones New Era I</a><br><a href="acestream://6d88c66c89f3dbe1e6dacb5a8f7c9a98b12e6c63">M+ Liga de Campeones New Era I</a><br><a href="acestream://a9025d4e168764248d33129c30940502cea0e1c2">M+ Liga de Campeones New Era I</a><br><a href="acestream://47223e64a576c21bd61e818a42397a753d34fba5">M+ Liga de Campeones New Era I</a><br><a href="acestream://608b0faf7d3d25f6fe5dba13d5e4b4142949990e">LaLiga TV Bar 1080</a><br><a href="acestream://94d34491106e00394835c8cb68aa94481339b53f">LaLiga TV Bar 1080</a></td>
+</tr>
 </table>
-</div>
-<p class='footer'>Última actualización: 05/05/2025 08:59:38</p>
+<h2 class='fecha'>07/05/2025 (Miércoles)</h2>
+<table>
+<tr>
+<th>Hora</th>
+<th>Deporte</th>
+<th>Competición</th>
+<th>Evento</th>
+<th>Canales</th>
+</tr>
+<tr>
+<td>01:00</td>
+<td>🏀 <span class='deporte'>Baloncesto</span></td>
+<td><span class='flag-icon flag-icon-us'></span> NBA:<span class='ronda'>Playoffs Semifinal Conferencia</span></td>
+<td>Cleveland Cavaliers Vs. Indiana Pacers</td>
+<td><a href="acestream://55d4602cb22b0d8a33c10c2c2f42dae64a9e8895">M+ Deportes Elcano Antiguas</a><br><a href="acestream://3a74d9869b13e763476800740c6625e715a39879">M+ Deportes Elcano Antiguas</a><br><a href="acestream://acb510858f34c3c6fd5f79395b031abd6885c2b3">M+ Deportes Estable</a><br><a href="acestream://ef9dcc4eaac36a0f608b52a31f8ab237859e071a">M+ Deportes New Era I</a><br><a href="acestream://b5842718859345a596107ab8e6b24d7bfa2d617e">M+ Deportes New Era I</a><br><a href="acestream://be02b9918b8fe7224cfa9af1e37856760f95b1b8">M+ Deportes New Era I</a><br><a href="acestream://67a33c3f74956eed14b9b400523462fe362e0e66">M+ Deportes New Era II</a></td>
+</tr>
+<tr>
+<td>03:30</td>
+<td>🏀 <span class='deporte'>Baloncesto</span></td>
+<td><span class='flag-icon flag-icon-us'></span> NBA:<span class='ronda'>Playoffs Semifinal Conferencia</span></td>
+<td>Minnesota Timberwolves Vs. Golden State Warriors</td>
+<td><a href="acestream://55d4602cb22b0d8a33c10c2c2f42dae64a9e8895">M+ Deportes Elcano Antiguas</a><br><a href="acestream://3a74d9869b13e763476800740c6625e715a39879">M+ Deportes Elcano Antiguas</a><br><a href="acestream://acb510858f34c3c6fd5f79395b031abd6885c2b3">M+ Deportes Estable</a><br><a href="acestream://ef9dcc4eaac36a0f608b52a31f8ab237859e071a">M+ Deportes New Era I</a><br><a href="acestream://b5842718859345a596107ab8e6b24d7bfa2d617e">M+ Deportes New Era I</a><br><a href="acestream://be02b9918b8fe7224cfa9af1e37856760f95b1b8">M+ Deportes New Era I</a><br><a href="acestream://67a33c3f74956eed14b9b400523462fe362e0e66">M+ Deportes New Era II</a></td>
+</tr>
+</table>
 </body>
 </html>
