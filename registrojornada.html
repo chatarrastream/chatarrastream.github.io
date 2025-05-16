@@ -32,37 +32,35 @@
       cursor: pointer;
     }
     .invalid-mes {
-  background-color: #fdd;
-  position: relative;
-}
-
-.invalid-mes::after {
-  content: "Mes inválido";
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: #f44336;
-  color: white;
-  padding: 4px 6px;
-  font-size: 12px;
-  white-space: nowrap;
-  border-radius: 4px;
-  margin-top: 2px;
-  z-index: 10;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s;
-}
-
-.invalid-mes:hover::after {
-  opacity: 1;
-}
+      background-color: #fdd;
+      position: relative;
+    }
+    .invalid-mes::after {
+      content: "Mes inválido";
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: #f44336;
+      color: white;
+      padding: 4px 6px;
+      font-size: 12px;
+      white-space: nowrap;
+      border-radius: 4px;
+      margin-top: 2px;
+      z-index: 10;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .invalid-mes:hover::after {
+      opacity: 1;
+    }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
-  <h2>Registro de Jornada de Tiempo Completo</h2>
+  <h2>Registro de Jornada</h2>
 
   <button onclick="agregarFila()">AGREGAR FILA</button>
   <button onclick="descargarDatos()">Descargar datos</button>
@@ -92,14 +90,12 @@
   </table>
 
   <h3>Totales por mes:</h3>
-<ul id="totalesPorMes"></ul>
+  <ul id="totalesPorMes"></ul>
+  <p><strong>Total global:</strong> <span id="totalHoras"></span></p>
 
   <script>
     const tabla = document.getElementById("registroTabla");
-    const mesesValidos = [
-  "enero", "febrero", "marzo", "abril", "mayo", "junio",
-  "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
-  ];
+    const mesesValidos = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
 
     window.onload = function () {
       const datosGuardados = localStorage.getItem("tablaDatos");
@@ -121,14 +117,13 @@
     }
 
     function guardarTabla() {
-  // Clonamos la tabla para no alterar el DOM visible
-  const tablaClon = tabla.cloneNode(true);
-  const celdas = tablaClon.querySelectorAll("td[contenteditable='true']");
-  celdas.forEach(celda => {
-    celda.innerText = celda.innerText.toLowerCase();
-  });
-  localStorage.setItem("tablaDatos", tablaClon.innerHTML);
-}
+      const tablaClon = tabla.cloneNode(true);
+      const celdas = tablaClon.querySelectorAll("td[contenteditable='true']");
+      celdas.forEach(celda => {
+        celda.innerText = celda.innerText.toLowerCase();
+      });
+      localStorage.setItem("tablaDatos", tablaClon.innerHTML);
+    }
 
     function agregarFila() {
       const nuevaFila = tabla.insertRow(-1);
@@ -137,12 +132,10 @@
         const celda = nuevaFila.insertCell(i);
         if (i === 5) {
           celda.classList.add("horas");
-          celda.textContent = "";
         } else {
           celda.contentEditable = true;
           if (i === 2) celda.classList.add("entrada");
           if (i === 3) celda.classList.add("salida");
-          celda.textContent = "";
           celda.addEventListener("input", () => {
             guardarTabla();
             calcularTodasLasHoras();
@@ -160,144 +153,148 @@
     }
 
     function calcularTodasLasHoras() {
-  const filas = tabla.querySelectorAll("tbody tr");
-  const totalesPorMes = {};
-  let totalGlobalMin = 0;
+      const filas = tabla.querySelectorAll("tbody tr");
+      const totalesPorMes = {};
+      let totalGlobalMin = 0;
 
-  filas.forEach(fila => {
-    const entrada = fila.querySelector(".entrada")?.innerText.trim();
-    const salida = fila.querySelector(".salida")?.innerText.trim();
-    const celdaHoras = fila.querySelector(".horas");
-    let mesCelda = fila.cells[1];
-let mes = mesCelda?.innerText.trim().toLowerCase();
+      filas.forEach(fila => {
+        const entrada = fila.querySelector(".entrada")?.innerText.trim();
+        const salida = fila.querySelector(".salida")?.innerText.trim();
+        const celdaHoras = fila.querySelector(".horas");
+        const mesCelda = fila.cells[1];
+        let mes = mesCelda?.innerText.trim().toLowerCase();
 
-if (!mesesValidos.includes(mes)) {
-  mesCelda.classList.add("invalid-mes");
-  mes = null; // No se suma al total
-} else {
-  mesCelda.classList.remove("invalid-mes");
-}
-    let minutosTrabajados = 0;
+        if (!mesesValidos.includes(mes)) {
+          mesCelda.classList.add("invalid-mes");
+          mes = null;
+        } else {
+          mesCelda.classList.remove("invalid-mes");
+        }
 
-    if (entrada && salida) {
-      const [h1, m1] = entrada.split(":").map(Number);
-      const [h2, m2] = salida.split(":").map(Number);
+        let minutosTrabajados = 0;
 
-      if (!isNaN(h1) && !isNaN(m1) && !isNaN(h2) && !isNaN(m2)) {
-        let totalMin = (h2 * 60 + m2) - (h1 * 60 + m1);
-        if (totalMin < 0) totalMin += 1440;
+        if (entrada && salida) {
+          const [h1, m1] = entrada.split(":").map(Number);
+          const [h2, m2] = salida.split(":").map(Number);
 
-        minutosTrabajados = totalMin;
-        const horas = Math.floor(totalMin / 60);
-        const minutos = totalMin % 60;
-        celdaHoras.textContent = `${horas}h ${minutos}m`;
-      } else {
-        celdaHoras.textContent = "formato inválido";
+          if (!isNaN(h1) && !isNaN(m1) && !isNaN(h2) && !isNaN(m2)) {
+            let totalMin = (h2 * 60 + m2) - (h1 * 60 + m1);
+            if (totalMin < 0) totalMin += 1440;
+
+            minutosTrabajados = totalMin;
+            const horas = Math.floor(totalMin / 60);
+            const minutos = totalMin % 60;
+            celdaHoras.textContent = `${horas}h ${minutos}m`;
+          } else {
+            celdaHoras.textContent = "formato inválido";
+          }
+        } else {
+          celdaHoras.textContent = "";
+        }
+
+        if (mes) {
+          if (!totalesPorMes[mes]) totalesPorMes[mes] = 0;
+          totalesPorMes[mes] += minutosTrabajados;
+        }
+
+        totalGlobalMin += minutosTrabajados;
+      });
+
+      const lista = document.getElementById("totalesPorMes");
+      lista.innerHTML = "";
+      for (const mes in totalesPorMes) {
+        const total = totalesPorMes[mes];
+        const horas = Math.floor(total / 60);
+        const minutos = total % 60;
+        const li = document.createElement("li");
+        li.textContent = `${mes.charAt(0).toUpperCase() + mes.slice(1)}: ${horas}h ${minutos}m`;
+        lista.appendChild(li);
       }
-    } else {
-      celdaHoras.textContent = "";
+
+      const totalHoras = Math.floor(totalGlobalMin / 60);
+      const totalMin = totalGlobalMin % 60;
+      document.getElementById("totalHoras").textContent = `${totalHoras}h ${totalMin}m`;
     }
 
-    if (mes) {
-      if (!totalesPorMes[mes]) totalesPorMes[mes] = 0;
-      totalesPorMes[mes] += minutosTrabajados;
-    }
-
-    totalGlobalMin += minutosTrabajados;
-  });
-
-  // Mostrar totales por mes
-  const lista = document.getElementById("totalesPorMes");
-  lista.innerHTML = "";
-  for (const mes in totalesPorMes) {
-    const total = totalesPorMes[mes];
-    const horas = Math.floor(total / 60);
-    const minutos = total % 60;
-    const li = document.createElement("li");
-    li.textContent = `${mes.charAt(0).toUpperCase() + mes.slice(1)}: ${horas}h ${minutos}m`;
-    lista.appendChild(li);
-  }
-
-  // Total global (por si lo quieres conservar)
-  const totalHoras = Math.floor(totalGlobalMin / 60);
-  const totalMin = totalGlobalMin % 60;
-  document.getElementById("totalHoras").textContent = `${totalHoras}h ${totalMin}m`;
-}
-    
     function descargarDatos() {
-  let csv = [];
-  const filas = tabla.querySelectorAll("tr");
-  filas.forEach(fila => {
-    const celdas = fila.querySelectorAll("th, td");
-    const filaCsv = [];
-    celdas.forEach(celda => {
-      let texto = celda.innerText.replace(/\n/g, " ").replace(/"/g, '""');
-      filaCsv.push(`"${texto}"`);
-    });
-    csv.push(filaCsv.join(","));
-  });
+      let csv = [];
+      const filas = tabla.querySelectorAll("tr");
+      filas.forEach(fila => {
+        const celdas = fila.querySelectorAll("th, td");
+        const filaCsv = [];
+        celdas.forEach(celda => {
+          let texto = celda.innerText.replace(/\n/g, " ").replace(/"/g, '""');
+          filaCsv.push(`"${texto}"`);
+        });
+        csv.push(filaCsv.join(","));
+      });
 
-  const csvContent = csv.join("\n");
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
+      const csvContent = csv.join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
 
-  const link = document.createElement("a");
-  link.setAttribute("href", url);
-  link.setAttribute("download", "registro_jornada.csv");
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", "registro_jornada.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
-  async function descargarPDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
 
-  // Título
-  doc.setFontSize(14);
-  doc.text("Registro de Jornada", 14, 15);
+    async function descargarPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
 
-  // Extraer encabezados y datos
-  const headers = [];
-const body = [];
+      doc.setFontSize(14);
+      doc.text("Registro de Jornada", 14, 15);
 
-const table = document.getElementById("registroTabla");
-const headerCells = table.querySelectorAll("thead th");
-headerCells.forEach(cell => headers.push(cell.innerText.trim()));  // minúscula
+      const headers = [];
+      const body = [];
 
-const rows = table.querySelectorAll("tbody tr");
-rows.forEach(row => {
-  const rowData = [];
-  const cells = row.querySelectorAll("td");
-  cells.forEach(cell => rowData.push(cell.innerText.trim().toLowerCase()));  // minúscula
-  body.push(rowData);
-});
+      const table = document.getElementById("registroTabla");
+      const headerCells = table.querySelectorAll("thead th");
+      headerCells.forEach(cell => headers.push(cell.innerText.trim()));
 
-  // Generar la tabla en el PDF
-  doc.autoTable({
-    head: [headers],
-    body: body,
-    startY: 25,
-    styles: {
-      fontSize: 9,
-      cellPadding: 3,
-      halign: 'center'
-    },
-    headStyles: {
-      fillColor: [41, 128, 185],
-      textColor: 255,
-      halign: 'center'
-    },
-    theme: 'grid',
-  });
+      const rows = table.querySelectorAll("tbody tr");
+      rows.forEach(row => {
+        const rowData = [];
+        const cells = row.querySelectorAll("td");
+        cells.forEach(cell => rowData.push(cell.innerText.trim().toLowerCase()));
+        body.push(rowData);
+      });
 
-    const resumenTotales = document.getElementById("totalesPorMes").cloneNode(true);
-const tituloTotales = document.createElement("h3");
-tituloTotales.innerText = "Totales por mes:";
-elementoClonado.appendChild(tituloTotales);
-elementoClonado.appendChild(resumenTotales);
+      doc.autoTable({
+        head: [headers],
+        body: body,
+        startY: 25,
+        styles: {
+          fontSize: 9,
+          cellPadding: 3,
+          halign: 'center'
+        },
+        headStyles: {
+          fillColor: [41, 128, 185],
+          textColor: 255,
+          halign: 'center'
+        },
+        theme: 'grid',
+      });
 
-  doc.save("registro_jornada.pdf");
-}
+      const resumenTotales = document.getElementById("totalesPorMes");
+      const totalesText = Array.from(resumenTotales.children).map(li => li.innerText);
+
+      doc.setFontSize(12);
+      let yStart = doc.lastAutoTable.finalY + 10;
+      doc.text("Totales por mes:", 14, yStart);
+      totalesText.forEach((linea, i) => {
+        doc.text(linea, 14, yStart + 8 + i * 6);
+      });
+
+      const totalGlobal = document.getElementById("totalHoras").innerText;
+      doc.text(`Total global: ${totalGlobal}`, 14, yStart + 8 + totalesText.length * 6 + 6);
+
+      doc.save("registro_jornada.pdf");
+    }
   </script>
 </body>
 </html>
