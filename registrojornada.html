@@ -414,7 +414,9 @@ if (!archivo.name.toLowerCase().endsWith(".csv")) {
   lector.onload = function(e) {
     const contenido = e.target.result;
     const filas = contenido.trim().split('\n').map(fila => {
-      return fila.split(',').map(celda => celda.replace(/^"|"$/g, '').replace(/""/g, '"').trim());
+      return fila.split(',').map(celda =>
+        celda.replace(/^"|"$/g, '').replace(/""/g, '"').trim()
+      );
     });
 
     if (filas.length < 2) {
@@ -429,35 +431,36 @@ if (!archivo.name.toLowerCase().endsWith(".csv")) {
       tbody.innerHTML = '';
     }
 
-    // Saltar la primera fila (encabezados)
+    // Procesamos cada fila (excepto encabezados)
     for (let i = 1; i < filas.length; i++) {
       const filaDatos = filas[i];
-      if (filaDatos.length < 6) continue; // evitar filas incompletas
+      if (filaDatos.length < 6) continue;
 
       const nuevaFila = document.createElement('tr');
-      for (let j = 0; j < 6; j++) {
+      filaDatos.forEach((dato, j) => {
         const celda = document.createElement('td');
         if (j === 5) {
           celda.classList.add('horas');
           celda.textContent = '';
         } else {
           celda.contentEditable = true;
+          celda.textContent = dato;
           if (j === 2) celda.classList.add('entrada');
           if (j === 3) celda.classList.add('salida');
-          celda.textContent = filaDatos[j] || '';
-          celda.addEventListener("input", () => {
+          celda.addEventListener('input', () => {
             guardarTabla();
             calcularTodasLasHoras();
           });
         }
         nuevaFila.appendChild(celda);
-      }
+      });
       tbody.appendChild(nuevaFila);
     }
 
     guardarTabla();
     calcularTodasLasHoras();
   };
+
   lector.readAsText(archivo);
 }
   </script>
