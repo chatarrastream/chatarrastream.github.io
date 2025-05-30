@@ -300,7 +300,12 @@
 
 document.getElementById("cargarCSV").addEventListener("change", function (e) {
   const archivo = e.target.files[0];
-  if (!archivo) return;
+if (!archivo) return;
+
+if (!archivo.name.toLowerCase().endsWith(".csv")) {
+  alert("Solo se permiten archivos con extensión .csv");
+  return;
+}
 
   const lector = new FileReader();
   lector.onload = function (event) {
