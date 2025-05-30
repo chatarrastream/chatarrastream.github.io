@@ -411,30 +411,35 @@ if (!archivo.name.toLowerCase().endsWith(".csv")) {
 
 function prepararLecturaCSV(event) {
   const archivo = event.target.files[0];
+
   if (!archivo || !archivo.name.endsWith('.csv')) {
     alert("Por favor selecciona un archivo .csv válido.");
     return;
   }
-  const confirmar = confirm("¿Quieres agregar los datos del archivo CSV a la tabla existente o reemplazar la tabla?");
+
+  archivoCSVTemp = archivo;
+
+  const confirmar = confirm("¿Quieres borrar la tabla actual antes de cargar el CSV?");
   if (confirmar) {
-    // Agregar datos a la tabla existente
-    leerCSVDesdeArchivo(archivo, false);
-  } else {
-    // Reemplazar la tabla
     reiniciarSoloTabla();
-    leerCSVDesdeArchivo(archivo, true);
+  } else {
+    alert("Los datos del archivo se añadirán al final de la tabla existente.");
   }
+
+  agregarEventosEdicion();
+      calcularTodasLasHoras();
+
+  leerCSVDesdeArchivo(archivoCSVTemp);
+  archivoCSVTemp = null;
 }
 
-function leerCSVDesdeArchivo(archivo, reemplazar) {
+function leerCSVDesdeArchivo(archivo) {
   const lector = new FileReader();
   lector.onload = function (e) {
     const contenido = e.target.result;
     const lineas = contenido.split("\n").map(linea => linea.trim()).filter(linea => linea !== "");
     const tbody = tabla.querySelector("tbody");
-    if (reemplazar) {
-      tbody.innerHTML = "";
-    }
+
     lineas.slice(1).forEach(linea => {
       const celdas = linea.split(",");
       const nuevaFila = tabla.insertRow(-1);
@@ -451,20 +456,12 @@ function leerCSVDesdeArchivo(archivo, reemplazar) {
         }
       }
     });
+
     guardarTabla();
     calcularTodasLasHoras();
-    agregarEventosEdicion();
   };
   lector.readAsText(archivo);
 }
-
-function reiniciarSoloTabla() {
-  const filas = tabla.querySelectorAll("tbody tr");
-  filas.forEach(fila => fila.remove());
-  // No eliminar localStorage aquí
-  // localStorage.removeItem("tablaDatos");
-}
-
 
 function reiniciarSoloTabla() {
   const filas = tabla.querySelectorAll("tbody tr");
