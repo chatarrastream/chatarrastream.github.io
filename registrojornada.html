@@ -405,43 +405,59 @@ if (!archivo.name.toLowerCase().endsWith(".csv")) {
 
     function leerCSV(event) {
   const archivo = event.target.files[0];
-  if (!archivo || !archivo.name.endsWith(".csv")) {
-    alert("Por favor selecciona un archivo .csv válido.");
+  if (!archivo || !archivo.name.endsWith('.csv')) {
+    alert('Por favor, selecciona un archivo .csv válido.');
     return;
   }
 
   const lector = new FileReader();
-  lector.onload = function (e) {
+  lector.onload = function(e) {
     const contenido = e.target.result;
-    const filas = contenido.trim().split("\n").map(linea =>
-      linea.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(campo =>
-        campo.replace(/^"|"$/g, "").trim().toLowerCase()
-      )
-    );
+    const filas = contenido.trim().split('\n').map(fila => {
+      return fila.split(',').map(celda => celda.replace(/^"|"$/g, '').replace(/""/g, '"').trim());
+    });
 
-    const cuerpoTabla = tabla.querySelector("tbody");
-    cuerpoTabla.innerHTML = ""; // Limpia tabla actual
+    if (filas.length < 2) {
+      alert('El archivo CSV no contiene suficientes datos.');
+      return;
+    }
 
-    filas.slice(1).forEach(fila => {
-      const nuevaFila = cuerpoTabla.insertRow();
-      fila.forEach((valor, i) => {
-        const celda = nuevaFila.insertCell(i);
-        if (i === 5) {
-          celda.classList.add("horas");
-          celda.textContent = "";
+    const confirmar = confirm('¿Deseas limpiar la tabla actual antes de cargar los datos del archivo CSV?');
+    const tbody = document.querySelector('#registroTabla tbody');
+
+    if (confirmar) {
+      tbody.innerHTML = '';
+    }
+
+    // Saltar la primera fila (encabezados)
+    for (let i = 1; i < filas.length; i++) {
+      const filaDatos = filas[i];
+      if (filaDatos.length < 6) continue; // evitar filas incompletas
+
+      const nuevaFila = document.createElement('tr');
+      for (let j = 0; j < 6; j++) {
+        const celda = document.createElement('td');
+        if (j === 5) {
+          celda.classList.add('horas');
+          celda.textContent = '';
         } else {
           celda.contentEditable = true;
-          if (i === 2) celda.classList.add("entrada");
-          if (i === 3) celda.classList.add("salida");
-          celda.textContent = valor;
+          if (j === 2) celda.classList.add('entrada');
+          if (j === 3) celda.classList.add('salida');
+          celda.textContent = filaDatos[j] || '';
+          celda.addEventListener("input", () => {
+            guardarTabla();
+            calcularTodasLasHoras();
+          });
         }
-      });
-    });
+        nuevaFila.appendChild(celda);
+      }
+      tbody.appendChild(nuevaFila);
+    }
 
     guardarTabla();
     calcularTodasLasHoras();
   };
-
   lector.readAsText(archivo);
 }
   </script>
