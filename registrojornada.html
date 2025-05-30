@@ -66,6 +66,7 @@
   <button onclick="descargarDatos()">Descargar datos</button>
   <button onclick="descargarPDF()">DESCARGAR PDF</button>
   <button onclick="reiniciarTabla()">Borrar tabla</button>
+  <input type="file" id="cargarCSV" accept=".csv" />
 
   <table id="registroTabla">
     <thead>
@@ -296,6 +297,49 @@
 
       doc.save("registro_jornada.pdf");
     }
+
+document.getElementById("cargarCSV").addEventListener("change", function (e) {
+  const archivo = e.target.files[0];
+  if (!archivo) return;
+
+  const lector = new FileReader();
+  lector.onload = function (event) {
+    const texto = event.target.result;
+    const filas = texto.split("\n").filter(f => f.trim() !== "");
+    const tabla = document.getElementById("registroTabla");
+    const tbody = tabla.querySelector("tbody");
+
+    // Limpiar tabla
+    tbody.innerHTML = "";
+
+    filas.slice(1).forEach(filaCSV => {
+      const columnas = filaCSV.split(",").map(col =>
+        col.replace(/^"|"$/g, "").replace(/""/g, '"').trim()
+      );
+      const nuevaFila = tbody.insertRow();
+      columnas.forEach((col, i) => {
+        const celda = nuevaFila.insertCell(i);
+        if (i === 5) {
+          celda.classList.add("horas");
+          celda.textContent = col;
+        } else {
+          celda.contentEditable = true;
+          if (i === 2) celda.classList.add("entrada");
+          if (i === 3) celda.classList.add("salida");
+          celda.textContent = col;
+          celda.addEventListener("input", () => {
+            guardarTabla();
+            calcularTodasLasHoras();
+          });
+        }
+      });
+    });
+
+    guardarTabla();
+    calcularTodasLasHoras();
+  };
+  lector.readAsText(archivo);
+});
   </script>
 </body>
 </html>
