@@ -55,6 +55,53 @@
     .invalid-mes:hover::after {
       opacity: 1;
     }
+    .dropdown {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.dropbtn {
+  background-color: #3498db;
+  color: white;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 180px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  z-index: 1;
+  border-radius: 4px;
+}
+
+.dropdown-content a,
+.dropdown-content label {
+  color: black;
+  padding: 10px 12px;
+  text-decoration: none;
+  display: block;
+  font-size: 14px;
+}
+
+.dropdown-content a:hover,
+.dropdown-content label:hover {
+  background-color: #f1f1f1;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown:hover .dropbtn {
+  background-color: #2980b9;
+}
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
@@ -62,12 +109,19 @@
 <body>
   <h2>Registro de Jornada</h2>
 
-  <button onclick="agregarFila()">AGREGAR FILA</button>
-  <button onclick="descargarDatos()">Descargar datos</button>
-  <button onclick="descargarPDF()">DESCARGAR PDF</button>
-  <button onclick="reiniciarTabla()">Borrar tabla</button>
-  <input type="file" id="cargarCSV" accept=".csv" />
-
+  <div class="dropdown">
+  <button class="dropbtn">Opciones</button>
+  <div class="dropdown-content">
+    <a href="#" onclick="agregarFila()">Agregar fila</a>
+    <a href="#" onclick="descargarDatos()">Descargar CSV</a>
+    <a href="#" onclick="descargarPDF()">Descargar PDF</a>
+    <a href="#" onclick="reiniciarTabla()">Borrar tabla</a>
+    <label style="cursor: pointer; padding: 10px 12px; display: block;">
+      Cargar CSV
+      <input type="file" id="cargarCSV" accept=".csv" style="display: none;" onchange="leerCSV(event)">
+    </label>
+  </div>
+</div>
   <table id="registroTabla">
     <thead>
       <tr>
