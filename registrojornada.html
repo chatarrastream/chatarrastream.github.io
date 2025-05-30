@@ -399,6 +399,48 @@ if (!archivo.name.toLowerCase().endsWith(".csv")) {
   };
   lector.readAsText(archivo);
 });
+
+    function leerCSV(event) {
+  const archivo = event.target.files[0];
+  if (!archivo || !archivo.name.endsWith(".csv")) {
+    alert("Por favor selecciona un archivo .csv válido.");
+    return;
+  }
+
+  const lector = new FileReader();
+  lector.onload = function (e) {
+    const contenido = e.target.result;
+    const filas = contenido.trim().split("\n").map(linea =>
+      linea.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(campo =>
+        campo.replace(/^"|"$/g, "").trim().toLowerCase()
+      )
+    );
+
+    const cuerpoTabla = tabla.querySelector("tbody");
+    cuerpoTabla.innerHTML = ""; // Limpia tabla actual
+
+    filas.slice(1).forEach(fila => {
+      const nuevaFila = cuerpoTabla.insertRow();
+      fila.forEach((valor, i) => {
+        const celda = nuevaFila.insertCell(i);
+        if (i === 5) {
+          celda.classList.add("horas");
+          celda.textContent = "";
+        } else {
+          celda.contentEditable = true;
+          if (i === 2) celda.classList.add("entrada");
+          if (i === 3) celda.classList.add("salida");
+          celda.textContent = valor;
+        }
+      });
+    });
+
+    guardarTabla();
+    calcularTodasLasHoras();
+  };
+
+  lector.readAsText(archivo);
+}
   </script>
 </body>
 </html>
