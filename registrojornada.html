@@ -429,7 +429,7 @@ function prepararLecturaCSV(event) {
   agregarEventosEdicion();
       calcularTodasLasHoras();
 
-  leerCSVDesdeArchivo(archivo);
+  leerCSVDesdeArchivo(archivoCSVTemp);
   archivoCSVTemp = null;
 }
 
@@ -459,6 +459,7 @@ function leerCSVDesdeArchivo(archivo) {
 
     guardarTabla();
     calcularTodasLasHoras();
+    agregarEventosEdicion();
   };
   lector.readAsText(archivo);
 }
