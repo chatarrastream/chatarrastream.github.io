@@ -178,13 +178,24 @@
     }
 
     function guardarTabla() {
-      const tablaClon = tabla.cloneNode(true);
-      const celdas = tablaClon.querySelectorAll("td[contenteditable='true']");
+  const tablaClon = tabla.cloneNode(true);
+  const filas = tablaClon.querySelectorAll("tbody tr");
+
+  filas.forEach(fila => {
+    const celdas = fila.querySelectorAll("td[contenteditable='true']");
+    const estaVacia = Array.from(celdas).every(celda => celda.innerText.trim() === "");
+
+    if (estaVacia) {
+      fila.remove(); // Elimina la fila vacía
+    } else {
       celdas.forEach(celda => {
         celda.innerText = celda.innerText.toLowerCase();
       });
-      localStorage.setItem("tablaDatos", tablaClon.innerHTML);
     }
+  });
+
+  localStorage.setItem("tablaDatos", tablaClon.innerHTML);
+}
 
     function agregarFila() {
       const nuevaFila = tabla.insertRow(-1);
