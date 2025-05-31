@@ -235,7 +235,7 @@
         const celdaHoras = fila.querySelector(".horas");
         const horaRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
 if (!horaRegex.test(entrada) || !horaRegex.test(salida)) {
-    celdaHoras.textContent = "formato inválido";
+    celdaHoras.textContent = "-";
     return;
 }
         const mesCelda = fila.cells[1];
