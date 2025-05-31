@@ -374,50 +374,47 @@ if (!horaRegex.test(entrada) || !horaRegex.test(salida)) {
     }
 
 document.getElementById("cargarCSV").addEventListener("change", function (e) {
+document.getElementById("cargarCSV").addEventListener("change", function (e) {
   const archivo = e.target.files[0];
-if (!archivo) return;
+  if (!archivo) return;
 
-if (!archivo.name.toLowerCase().endsWith(".csv")) {
-  alert("Solo se permiten archivos con extensión .csv");
-  return;
-}
+  const reader = new FileReader();
+  reader.onload = function (event) {
+    const contenido = event.target.result;
 
-  const lector = new FileReader();
-  lector.onload = function (event) {
-    const texto = event.target.result;
-    const filas = texto.split("\n").filter(f => f.trim() !== "");
-    const tabla = document.getElementById("registroTabla");
-    const tbody = tabla.querySelector("tbody");
+    // Verificar si hay datos en la tabla (más de la fila de encabezado)
+    const tabla = document.getElementById("tabla");
+    const tieneDatos = tabla.rows.length > 1;
 
-    // Limpiar tabla tbody.innerHTML = ""
+    let reemplazar = true;
 
-    filas.slice(1).forEach(filaCSV => {
-      const columnas = filaCSV.split(",").map(col =>
-        col.replace(/^"|"$/g, "").replace(/""/g, '"').trim()
-      );
-      const nuevaFila = tbody.insertRow();
-      columnas.forEach((col, i) => {
-        const celda = nuevaFila.insertCell(i);
-        if (i === 5) {
-          celda.classList.add("horas");
-          celda.textContent = col;
-        } else {
-          celda.contentEditable = true;
-          if (i === 2) celda.classList.add("entrada");
-          if (i === 3) celda.classList.add("salida");
-          celda.textContent = col;
-          celda.addEventListener("input", () => {
-            guardarTabla();
-            calcularTodasLasHoras();
-          });
-        }
-      });
-    });
+    if (tieneDatos) {
+      reemplazar = confirm("Ya hay datos en la tabla. ¿Quieres reemplazarlos?\n\nAceptar = Reemplazar\nCancelar = Añadir los nuevos datos");
+    }
 
-    guardarTabla();
-    calcularTodasLasHoras();
+    // Si elige reemplazar, borra todas las filas excepto el encabezado
+    if (reemplazar) {
+      while (tabla.rows.length > 1) {
+        tabla.deleteRow(1);
+      }
+    }
+
+    // Procesar CSV
+    const lineas = contenido.split("\n").map(linea => linea.trim()).filter(linea => linea);
+    for (const linea of lineas) {
+      const fila = tabla.insertRow();
+      const celdas = linea.split(",");
+      for (const celda of celdas) {
+        const celdaNueva = fila.insertCell();
+        celdaNueva.textContent = celda;
+      }
+    }
+
+    // Ocultar tabla si estaba oculta
+    tabla.style.display = "table";
   };
-  lector.readAsText(archivo);
+
+  reader.readAsText(archivo);
 });
 
     let archivoCSVTemp = null;
@@ -430,21 +427,7 @@ function prepararLecturaCSV(event) {
     return;
   }
 
-  archivoCSVTemp = archivo;
-
-  const confirmar = confirm("¿Quieres borrar la tabla actual antes de cargar el CSV?");
-  if (confirmar) {
-    reiniciarSoloTabla();
-  } else {
-    alert("Los datos del archivo se añadirán al final de la tabla existente.");
-  }
-
-  agregarEventosEdicion();
-      calcularTodasLasHoras();
-
-  leerCSVDesdeArchivo(archivoCSVTemp);
-  archivoCSVTemp = null;
-}
+  // el corte
 
 function leerCSVDesdeArchivo(archivo) {
   const lector = new FileReader();
