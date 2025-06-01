@@ -102,6 +102,33 @@
 .dropdown:hover .dropbtn {
   background-color: #2980b9;
 }
+.invalid-hora {
+  background-color: #ffe6e6;
+  border: 1px solid red;
+  position: relative;
+}
+
+.invalid-hora::after {
+  content: "Formato inválido (hh:mm)";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #f44336;
+  color: white;
+  padding: 4px 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  border-radius: 4px;
+  margin-top: 2px;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.invalid-hora:hover::after {
+  opacity: 1;
+}
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
@@ -234,9 +261,15 @@
         const salida = fila.querySelector(".salida")?.innerText.trim();
         const celdaHoras = fila.querySelector(".horas");
         const horaRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-if (!horaRegex.test(entrada) || !horaRegex.test(salida)) {
-    celdaHoras.textContent = "-";
-    return;
+let entradaValida = horaRegex.test(entrada);
+let salidaValida = horaRegex.test(salida);
+
+fila.querySelector(".entrada")?.classList.toggle("invalid-hora", !entradaValida);
+fila.querySelector(".salida")?.classList.toggle("invalid-hora", !salidaValida);
+
+if (!entradaValida || !salidaValida) {
+  celdaHoras.textContent = "-";
+  return;
 }
         const mesCelda = fila.cells[1];
         let mes = mesCelda?.innerText.trim().toLowerCase();
