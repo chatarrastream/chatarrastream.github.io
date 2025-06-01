@@ -389,7 +389,9 @@ document.getElementById("cargarCSV").addEventListener("change", function (e) {
     const tabla = document.getElementById("registroTabla");
     const tbody = tabla.querySelector("tbody");
 
-    tbody.innerHTML = "";
+    if (confirm("¿Quieres limpiar la tabla antes de cargar el CSV?")) {
+  tbody.innerHTML = "";
+}
 
     filas.slice(1).forEach(filaCSV => {
       const columnas = filaCSV.split(",").map(col =>
