@@ -261,6 +261,16 @@
         const salida = fila.querySelector(".salida")?.innerText.trim();
         const celdaHoras = fila.querySelector(".horas");
         const horaRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+
+        const mesCelda = fila.cells[1];
+       let mes = mesCelda?.innerText.trim().toLowerCase();
+        if (!mesesValidos.includes(mes)) {
+          mesCelda.classList.add("invalid-mes");
+          mes = null;
+        } else {
+          mesCelda.classList.remove("invalid-mes");
+        }
+        
 let entradaValida = horaRegex.test(entrada);
 let salidaValida = horaRegex.test(salida);
 
@@ -301,14 +311,6 @@ if (!entradaValida || !salidaValida) {
           celdaHoras.textContent = "";
         }
 
-const mesCelda = fila.cells[1];
-       let mes = mesCelda?.innerText.trim().toLowerCase();
-        if (!mesesValidos.includes(mes)) {
-          mesCelda.classList.add("invalid-mes");
-          mes = null;
-        } else {
-          mesCelda.classList.remove("invalid-mes");
-        }
         
         if (mes) {
           if (!totalesPorMes[mes]) totalesPorMes[mes] = 0;
