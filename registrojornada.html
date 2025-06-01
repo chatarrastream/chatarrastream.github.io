@@ -184,15 +184,6 @@
   <script>
     const tabla = document.getElementById("registroTabla");
     const mesesValidos = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
-
-const mesCelda = fila.cells[1];
-       let mes = mesCelda?.innerText.trim().toLowerCase();
-        if (!mesesValidos.includes(mes)) {
-          mesCelda.classList.add("invalid-mes");
-          mes = null;
-        } else {
-          mesCelda.classList.remove("invalid-mes");
-        }
     
     window.onload = function () {
       const datosGuardados = localStorage.getItem("tablaDatos");
@@ -310,6 +301,15 @@ if (!entradaValida || !salidaValida) {
           celdaHoras.textContent = "";
         }
 
+const mesCelda = fila.cells[1];
+       let mes = mesCelda?.innerText.trim().toLowerCase();
+        if (!mesesValidos.includes(mes)) {
+          mesCelda.classList.add("invalid-mes");
+          mes = null;
+        } else {
+          mesCelda.classList.remove("invalid-mes");
+        }
+        
         if (mes) {
           if (!totalesPorMes[mes]) totalesPorMes[mes] = 0;
           totalesPorMes[mes] += minutosTrabajados;
