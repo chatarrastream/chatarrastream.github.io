@@ -185,6 +185,15 @@
     const tabla = document.getElementById("registroTabla");
     const mesesValidos = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
 
+const mesCelda = fila.cells[1];
+       let mes = mesCelda?.innerText.trim().toLowerCase();
+        if (!mesesValidos.includes(mes)) {
+          mesCelda.classList.add("invalid-mes");
+          mes = null;
+        } else {
+          mesCelda.classList.remove("invalid-mes");
+        }
+    
     window.onload = function () {
       const datosGuardados = localStorage.getItem("tablaDatos");
       if (datosGuardados) {
@@ -271,14 +280,14 @@ if (!entradaValida || !salidaValida) {
   celdaHoras.textContent = "-";
   return;
 }
-        const mesCelda = fila.cells[1];
-       let mes = mesCelda?.innerText.trim().toLowerCase();
-        if (!mesesValidos.includes(mes)) {
-          mesCelda.classList.add("invalid-mes");
-          mes = null;
-        } else {
-          mesCelda.classList.remove("invalid-mes");
-        }
+      //  const mesCelda = fila.cells[1];
+    //   let mes = mesCelda?.innerText.trim().toLowerCase();
+    //    if (!mesesValidos.includes(mes)) {
+    //    mesCelda.classList.add("invalid-mes");
+    //      mes = null;
+     //   } else {
+    //      mesCelda.classList.remove("invalid-mes");
+     //   }
 
         let minutosTrabajados = 0;
 
