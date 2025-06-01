@@ -272,10 +272,7 @@ if (!entradaValida || !salidaValida) {
   return;
 }
         const mesCelda = fila.cells[1];
-       // let mes = mesCelda?.innerText.trim().toLowerCase();
-
-let mes = mesCelda?.querySelector('input')?.value.trim().toLowerCase();
-        
+       let mes = mesCelda?.innerText.trim().toLowerCase();
         if (!mesesValidos.includes(mes)) {
           mesCelda.classList.add("invalid-mes");
           mes = null;
