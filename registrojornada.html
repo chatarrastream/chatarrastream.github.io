@@ -456,41 +456,7 @@ document.getElementById("cargarCSV").addEventListener("change", function (e) {
   lector.readAsText(archivo);
 });
 
-function leerCSVDesdeArchivo(archivo) {
-  const lector = new FileReader();
-  lector.onload = function (e) {
-    const contenido = e.target.result;
-    const lineas = contenido.split("\n").map(linea => linea.trim()).filter(linea => linea !== "");
-    const tbody = tabla.querySelector("tbody");
 
-    lineas.slice(1).forEach(linea => {
-      const celdas = linea.split(",");
-      const nuevaFila = tabla.insertRow(-1);
-      for (let i = 0; i < 6; i++) {
-        const celda = nuevaFila.insertCell(i);
-        if (i === 5) {
-          celda.classList.add("horas");
-          celda.textContent = "";
-        } else {
-          celda.contentEditable = true;
-          if (i === 2) celda.classList.add("entrada");
-          if (i === 3) celda.classList.add("salida");
-          celda.textContent = celdas[i] ? celdas[i].replace(/(^"|"$)/g, "") : "";
-        }
-      }
-    });
-
-    guardarTabla();
-    calcularTodasLasHoras();
-  };
-  lector.readAsText(archivo);
-}
-
-function reiniciarSoloTabla() {
-  const filas = tabla.querySelectorAll("tbody tr");
-  filas.forEach(fila => fila.remove());
-  localStorage.removeItem("tablaDatos");
-}
   </script>
 </body>
 </html>
