@@ -9,37 +9,154 @@
 <h2><a href="https://chatarrastream.github.io/">Volver al inicio de CHATARRASTREAM </a></h2>
 
 <!DOCTYPE html>
-<html lang="es">
+<html lang='es'>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eventos Deportivos Acestream</title>
-<link rel="stylesheet" type="text/css" href="estilos.css">
+<meta charset='UTF-8'>
+<title>Agenda de Eventos</title>
+<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css' rel='stylesheet'>
+<style>
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background-color: #f4f4f9; }
+h1 { background-color: #003366; color: white; padding: 20px; margin: 0; text-align: center; border-bottom: 3px solid #0066cc; }
+table { width: 90%; margin: 20px auto; border-collapse: collapse; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 10px; overflow: hidden; }
+th, td { padding: 15px; border: 1px solid #ddd; text-align: center; background-color: #fff; }
+th { background-color: #FF0000; color: white; text-transform: uppercase; }
+tr:nth-child(even) { background-color: #f9f9f9; }
+tr:hover { background-color: #f1f1f1; }
+.ronda { text-decoration: underline; }
+a { color: #1E90FF; text-decoration: none; }
+a:hover { text-decoration: underline; }
+.deporte { font-weight: bold; }
+.fecha { background-color: #4CAF50; color: white; padding: 10px; text-align: center; font-size: 1.2em; }
+.details { display: none; background-color: #f0f0f0; padding: 10px; border-top: 1px solid #ddd; }
+.show-details { cursor: pointer; color: #007BFF; text-decoration: underline; }
+@media (max-width: 768px) {
+    table { width: 100%; font-size: 12px; }
+    body { font-size: 14px; }
+    th, td { padding: 10px; }
+}
+</style>
 </head>
 <body>
-<div class='container'>
-<h1>Eventos Deportivos Acestream</h1>
+<h1>Agenda de Eventos</h1>
+<h2 class='fecha'>02/06/2025 (Lunes)</h2>
 <table>
-<thead><tr><th>Día</th><th>Hora</th><th>Deporte</th><th>Competición</th><th>Partido</th><th>Canales Acestream</th></tr></thead>
-<tbody>
-<tr><td>Domingo</td><td>10:00</td><td>F1</td><td>Spain Gp</td><td>F2 VS Race 2</td><td class='canales'><a href="acestream://6422e8bc34282871634c81947be093c04ad1bb29" target="_blank">DAZN F1 (Op01)</a><br><a href="acestream://c9c18ae7a9dafba1caae5beb22060f9c92bba553" target="_blank">DAZN F1 (Op02)</a><br><a href="acestream://515efd8115482bda8d92aa6df9a882a5e5797494" target="_blank">DAZN F1 (Op03)</a><br><a href="acestream://d27584ebe5128c8033cb6fdc806a994fbd17b790" target="_blank">DAZN F1 (Op04)</a><br><a href="acestream://d8068894248c1f21eea31e538917276a8c49ec06" target="_blank">DAZN F1 (Op05)</a><br><a href="acestream://d6281d4e6310269b416180442a470d23a4a99dc9" target="_blank">DAZN F1 (Op06)</a><br><a href="acestream://2c6e4c897661e6b0257bfe931b66d20b2ec763b6" target="_blank">DAZN F1 (Op07)</a><br><a href="acestream://71eef80158aa8b37f3dc59f6793c6696df9a2dfa" target="_blank">DAZN F1 (Op08)</a><br><a href="acestream://6422e8bc34282871634c81947be093c04ad1bb29" target="_blank">DAZN F1 (Op01)</a><br><a href="acestream://c9c18ae7a9dafba1caae5beb22060f9c92bba553" target="_blank">DAZN F1 (Op02)</a><br><a href="acestream://515efd8115482bda8d92aa6df9a882a5e5797494" target="_blank">DAZN F1 (Op03)</a><br><a href="acestream://d27584ebe5128c8033cb6fdc806a994fbd17b790" target="_blank">DAZN F1 (Op04)</a><br><a href="acestream://d8068894248c1f21eea31e538917276a8c49ec06" target="_blank">DAZN F1 (Op05)</a><br><a href="acestream://d6281d4e6310269b416180442a470d23a4a99dc9" target="_blank">DAZN F1 (Op06)</a><br><a href="acestream://2c6e4c897661e6b0257bfe931b66d20b2ec763b6" target="_blank">DAZN F1 (Op07)</a><br><a href="acestream://71eef80158aa8b37f3dc59f6793c6696df9a2dfa" target="_blank">DAZN F1 (Op08)</a></td></tr>
-<tr><td>Domingo</td><td>11:00</td><td>Tenis</td><td>Roland Garros</td><td>Final Stage</td><td class='canales'><a href="acestream://bae98f69fbf867550b4f73b4eb176dae84d7f909" target="_blank">Eurosport 1 (Op01)</a><br><a href="acestream://714e14e6d6e27660fd25a75b57b0ac5580fe705d" target="_blank">Eurosport 1 (Op02)</a><br><a href="acestream://16ffa1713f42aa27317ee039a2bd0cdbc89a1580" target="_blank">Eurosport 1 (Op03)</a><br><a href="acestream://1d04e3b27c2ac3ff52dc949e76f36207fbb235c4" target="_blank">Eurosport 1 (Op04)</a></td></tr>
-<tr><td>Domingo</td><td>12:30</td><td>Golf</td><td>Australia Open</td><td>Stage 4</td><td class='canales'><a href="acestream://8546cff89e4ee8bf3ad31cf6457c3bc2c4341031" target="_blank">M. Golf (Op01)</a></td></tr>
-<tr><td>Domingo</td><td>14:40</td><td>Handball</td><td>Ehf Women Champions League</td><td>Third Position</td><td class='canales'><a href="acestream://8b081c8afbd9beafc8c5fbf0115eb36eadb07a35" target="_blank">DAZN 2 (Op01)</a><br><a href="acestream://0f5402f75107112d59d924a5f381cfed33dbe6d2" target="_blank">DAZN 2 (Op02)</a><br><a href="acestream://ca923c9873fd206a41c1e83ff8fc40e3cf323c9a" target="_blank">DAZN 2 (Op03)</a><br><a href="acestream://a929eeec1268d69d1556a2e3ace793b2577d8810" target="_blank">DAZN 2 (Op04)</a><br><a href="acestream://b0eabe0fdd02fdd165896236765a9b753a2ff516" target="_blank">DAZN 2 (Op05)</a><br><a href="acestream://8b081c8afbd9beafc8c5fbf0115eb36eadb07a35" target="_blank">DAZN 2 (Op01)</a><br><a href="acestream://0f5402f75107112d59d924a5f381cfed33dbe6d2" target="_blank">DAZN 2 (Op02)</a><br><a href="acestream://ca923c9873fd206a41c1e83ff8fc40e3cf323c9a" target="_blank">DAZN 2 (Op03)</a><br><a href="acestream://a929eeec1268d69d1556a2e3ace793b2577d8810" target="_blank">DAZN 2 (Op04)</a><br><a href="acestream://b0eabe0fdd02fdd165896236765a9b753a2ff516" target="_blank">DAZN 2 (Op05)</a></td></tr>
-<tr><td>Domingo</td><td>14:45</td><td>Cycling</td><td>Italian Giro</td><td>Stage 21</td><td class='canales'><a href="acestream://bae98f69fbf867550b4f73b4eb176dae84d7f909" target="_blank">Eurosport 1 (Op01)</a><br><a href="acestream://714e14e6d6e27660fd25a75b57b0ac5580fe705d" target="_blank">Eurosport 1 (Op02)</a><br><a href="acestream://16ffa1713f42aa27317ee039a2bd0cdbc89a1580" target="_blank">Eurosport 1 (Op03)</a><br><a href="acestream://1d04e3b27c2ac3ff52dc949e76f36207fbb235c4" target="_blank">Eurosport 1 (Op04)</a></td></tr>
-<tr><td>Domingo</td><td>15:00</td><td>F1</td><td>Spain Gp</td><td>F1 VS Race</td><td class='canales'><a href="acestream://6422e8bc34282871634c81947be093c04ad1bb29" target="_blank">DAZN F1 (Op01)</a><br><a href="acestream://c9c18ae7a9dafba1caae5beb22060f9c92bba553" target="_blank">DAZN F1 (Op02)</a><br><a href="acestream://515efd8115482bda8d92aa6df9a882a5e5797494" target="_blank">DAZN F1 (Op03)</a><br><a href="acestream://d27584ebe5128c8033cb6fdc806a994fbd17b790" target="_blank">DAZN F1 (Op04)</a><br><a href="acestream://d8068894248c1f21eea31e538917276a8c49ec06" target="_blank">DAZN F1 (Op05)</a><br><a href="acestream://d6281d4e6310269b416180442a470d23a4a99dc9" target="_blank">DAZN F1 (Op06)</a><br><a href="acestream://2c6e4c897661e6b0257bfe931b66d20b2ec763b6" target="_blank">DAZN F1 (Op07)</a><br><a href="acestream://71eef80158aa8b37f3dc59f6793c6696df9a2dfa" target="_blank">DAZN F1 (Op08)</a><br><a href="acestream://6422e8bc34282871634c81947be093c04ad1bb29" target="_blank">DAZN F1 (Op01)</a><br><a href="acestream://c9c18ae7a9dafba1caae5beb22060f9c92bba553" target="_blank">DAZN F1 (Op02)</a><br><a href="acestream://515efd8115482bda8d92aa6df9a882a5e5797494" target="_blank">DAZN F1 (Op03)</a><br><a href="acestream://d27584ebe5128c8033cb6fdc806a994fbd17b790" target="_blank">DAZN F1 (Op04)</a><br><a href="acestream://d8068894248c1f21eea31e538917276a8c49ec06" target="_blank">DAZN F1 (Op05)</a><br><a href="acestream://d6281d4e6310269b416180442a470d23a4a99dc9" target="_blank">DAZN F1 (Op06)</a><br><a href="acestream://2c6e4c897661e6b0257bfe931b66d20b2ec763b6" target="_blank">DAZN F1 (Op07)</a><br><a href="acestream://71eef80158aa8b37f3dc59f6793c6696df9a2dfa" target="_blank">DAZN F1 (Op08)</a></td></tr>
-<tr><td>Domingo</td><td>16:15</td><td>Fútbol</td><td>LaLiga Hypermotion</td><td>Huesca VS Eldense</td><td class='canales'><a href="acestream://83e8a605ffebe2062f15dad76b6ffe9486a28eb3" target="_blank">LaLiga TV Hypermotion (Op01)</a><br><a href="acestream://b2706a7ffbea236a3b398139a3a606ada664c0eb" target="_blank">LaLiga TV Hypermotion (Op02)</a><br><a href="acestream://83e8a605ffebe2062f15dad76b6ffe9486a28eb3" target="_blank">LaLiga TV Hypermotion (Op01)</a><br><a href="acestream://b2706a7ffbea236a3b398139a3a606ada664c0eb" target="_blank">LaLiga TV Hypermotion (Op02)</a></td></tr>
-<tr><td>Domingo</td><td>17:45</td><td>Handball</td><td>Ehf Women Champions League</td><td>Final</td><td class='canales'><a href="acestream://8b081c8afbd9beafc8c5fbf0115eb36eadb07a35" target="_blank">DAZN 2 (Op01)</a><br><a href="acestream://0f5402f75107112d59d924a5f381cfed33dbe6d2" target="_blank">DAZN 2 (Op02)</a><br><a href="acestream://ca923c9873fd206a41c1e83ff8fc40e3cf323c9a" target="_blank">DAZN 2 (Op03)</a><br><a href="acestream://a929eeec1268d69d1556a2e3ace793b2577d8810" target="_blank">DAZN 2 (Op04)</a><br><a href="acestream://b0eabe0fdd02fdd165896236765a9b753a2ff516" target="_blank">DAZN 2 (Op05)</a><br><a href="acestream://8b081c8afbd9beafc8c5fbf0115eb36eadb07a35" target="_blank">DAZN 2 (Op01)</a><br><a href="acestream://0f5402f75107112d59d924a5f381cfed33dbe6d2" target="_blank">DAZN 2 (Op02)</a><br><a href="acestream://ca923c9873fd206a41c1e83ff8fc40e3cf323c9a" target="_blank">DAZN 2 (Op03)</a><br><a href="acestream://a929eeec1268d69d1556a2e3ace793b2577d8810" target="_blank">DAZN 2 (Op04)</a><br><a href="acestream://b0eabe0fdd02fdd165896236765a9b753a2ff516" target="_blank">DAZN 2 (Op05)</a></td></tr>
-<tr><td>Domingo</td><td>18:30</td><td>Motor</td><td>Indycar</td><td>Detroit Grand Prix VS Race</td><td class='canales'><a href="acestream://753d4b1f7c4ef43238b5cf23b05572b550a44eee" target="_blank">M Deportes 3 (Op01)</a></td></tr>
-<tr><td>Domingo</td><td>18:30</td><td>Fútbol</td><td>LaLiga Hypermotion</td><td>Deportivo VS Elche</td><td class='canales'></td></tr>
-<tr><td>Domingo</td><td>18:30</td><td>Fútbol</td><td>LaLiga Hypermotion</td><td>Simulcast</td><td class='canales'><a href="acestream://b2a4d1eba9b46df5f52a87105df779f9d39abeb4" target="_blank">Vamos (Op01)</a><br><a href="acestream://56ac8e227d526e722624675ccdd91b0cc850582f" target="_blank">Vamos (Op02)</a><br><a href="acestream://3b2a8b41e7097c16b0468b42d7de0320886fa933" target="_blank">Vamos (Op03)</a><br><a href="acestream://2940120bf034db79a7f5849846ccea0255172eae" target="_blank">Vamos (Op04)</a><br><a href="acestream://57313e1ef438538df4feb5a6028dc78ee4f66b6a" target="_blank">Vamos (Op05)</a><br><a href="acestream://1205151f6fa5d95c0eeb543cbce43ccfa6a1b216" target="_blank">Vamos (Op06)</a><br><a href="acestream://d03c13b6723f66155d7a0df3692a3b073fe630f2" target="_blank">Vamos (Op07)</a><br><a href="acestream://12ba546d229bc39f01c3c18988a034b215fe6adb" target="_blank">Vamos (Op08)</a><br><a href="acestream://b2a4d1eba9b46df5f52a87105df779f9d39abeb4" target="_blank">Vamos (Op01)</a><br><a href="acestream://56ac8e227d526e722624675ccdd91b0cc850582f" target="_blank">Vamos (Op02)</a><br><a href="acestream://3b2a8b41e7097c16b0468b42d7de0320886fa933" target="_blank">Vamos (Op03)</a><br><a href="acestream://2940120bf034db79a7f5849846ccea0255172eae" target="_blank">Vamos (Op04)</a><br><a href="acestream://57313e1ef438538df4feb5a6028dc78ee4f66b6a" target="_blank">Vamos (Op05)</a><br><a href="acestream://1205151f6fa5d95c0eeb543cbce43ccfa6a1b216" target="_blank">Vamos (Op06)</a><br><a href="acestream://d03c13b6723f66155d7a0df3692a3b073fe630f2" target="_blank">Vamos (Op07)</a><br><a href="acestream://12ba546d229bc39f01c3c18988a034b215fe6adb" target="_blank">Vamos (Op08)</a><br><a href="acestream://83e8a605ffebe2062f15dad76b6ffe9486a28eb3" target="_blank">LaLiga TV Hypermotion (Op01)</a><br><a href="acestream://b2706a7ffbea236a3b398139a3a606ada664c0eb" target="_blank">LaLiga TV Hypermotion (Op02)</a><br><a href="acestream://83e8a605ffebe2062f15dad76b6ffe9486a28eb3" target="_blank">LaLiga TV Hypermotion (Op01)</a><br><a href="acestream://b2706a7ffbea236a3b398139a3a606ada664c0eb" target="_blank">LaLiga TV Hypermotion (Op02)</a></td></tr>
-<tr><td>Domingo</td><td>19:00</td><td>Paddle</td><td>Premier Padel</td><td>Buenos Aires Open VS Women Final</td><td class='canales'><a href="acestream://edd06f11e1cef292a1d795e15207ef2f580e298c" target="_blank">M Deportes 2 (Op01)</a><br><a href="acestream://639c561dd57fa3fc91fde715caeb696c5efb7ce7" target="_blank">M Deportes 2 (Op02)</a></td></tr>
-<tr><td>Domingo</td><td>20:00</td><td>Golf</td><td>Us Women Open</td><td>Stage 4</td><td class='canales'><a href="acestream://8546cff89e4ee8bf3ad31cf6457c3bc2c4341031" target="_blank">M. Golf (Op01)</a></td></tr>
-<tr><td>Domingo</td><td>21:00</td><td>Fútbol</td><td>LaLiga Hypermotion</td><td>Cordoba VS Albacete</td><td class='canales'><a href="acestream://83e8a605ffebe2062f15dad76b6ffe9486a28eb3" target="_blank">LaLiga TV Hypermotion (Op01)</a><br><a href="acestream://b2706a7ffbea236a3b398139a3a606ada664c0eb" target="_blank">LaLiga TV Hypermotion (Op02)</a><br><a href="acestream://83e8a605ffebe2062f15dad76b6ffe9486a28eb3" target="_blank">LaLiga TV Hypermotion (Op01)</a><br><a href="acestream://b2706a7ffbea236a3b398139a3a606ada664c0eb" target="_blank">LaLiga TV Hypermotion (Op02)</a></td></tr>
-<tr><td>Domingo</td><td>22:00</td><td>Paddle</td><td>Premier Padel</td><td>Buenos Aires Open VS Men Final</td><td class='canales'><a href="acestream://b2a4d1eba9b46df5f52a87105df779f9d39abeb4" target="_blank">Vamos (Op01)</a><br><a href="acestream://56ac8e227d526e722624675ccdd91b0cc850582f" target="_blank">Vamos (Op02)</a><br><a href="acestream://3b2a8b41e7097c16b0468b42d7de0320886fa933" target="_blank">Vamos (Op03)</a><br><a href="acestream://2940120bf034db79a7f5849846ccea0255172eae" target="_blank">Vamos (Op04)</a><br><a href="acestream://57313e1ef438538df4feb5a6028dc78ee4f66b6a" target="_blank">Vamos (Op05)</a><br><a href="acestream://1205151f6fa5d95c0eeb543cbce43ccfa6a1b216" target="_blank">Vamos (Op06)</a><br><a href="acestream://d03c13b6723f66155d7a0df3692a3b073fe630f2" target="_blank">Vamos (Op07)</a><br><a href="acestream://12ba546d229bc39f01c3c18988a034b215fe6adb" target="_blank">Vamos (Op08)</a><br><a href="acestream://b2a4d1eba9b46df5f52a87105df779f9d39abeb4" target="_blank">Vamos (Op01)</a><br><a href="acestream://56ac8e227d526e722624675ccdd91b0cc850582f" target="_blank">Vamos (Op02)</a><br><a href="acestream://3b2a8b41e7097c16b0468b42d7de0320886fa933" target="_blank">Vamos (Op03)</a><br><a href="acestream://2940120bf034db79a7f5849846ccea0255172eae" target="_blank">Vamos (Op04)</a><br><a href="acestream://57313e1ef438538df4feb5a6028dc78ee4f66b6a" target="_blank">Vamos (Op05)</a><br><a href="acestream://1205151f6fa5d95c0eeb543cbce43ccfa6a1b216" target="_blank">Vamos (Op06)</a><br><a href="acestream://d03c13b6723f66155d7a0df3692a3b073fe630f2" target="_blank">Vamos (Op07)</a><br><a href="acestream://12ba546d229bc39f01c3c18988a034b215fe6adb" target="_blank">Vamos (Op08)</a><br><a href="acestream://edd06f11e1cef292a1d795e15207ef2f580e298c" target="_blank">M Deportes 2 (Op01)</a><br><a href="acestream://639c561dd57fa3fc91fde715caeb696c5efb7ce7" target="_blank">M Deportes 2 (Op02)</a></td></tr>
-</tbody>
+<tr>
+<th>Hora</th>
+<th>Deporte</th>
+<th>Competición</th>
+<th>Evento</th>
+<th>Canales</th>
+</tr>
+<tr>
+<td>11:00</td>
+<td>🎾 <span class='deporte'>Tenis</span></td>
+<td>Roland Garros:<span class='ronda'>1/8 de final (Philippe Chatrier)</span></td>
+<td>E. Alexandrova Vs. C. Gauff</td>
+<td><a href="acestream://16ffa1713f42aa27317ee039a2bd0cdbc89a1580">Eurosport 1 Elcano Antiguas</a><br><a href="acestream://1b0bc4d4dcd609d3c092712e721392b199f50a62">Eurosport 1 Estable</a><br><a href="acestream://bae98f69fbf867550b4f73b4eb176dae84d7f909">Eurosport 1 New Era I</a><br><a href="acestream://714e14e6d6e27660fd25a75b57b0ac5580fe705d">Eurosport 1 New Era I</a></td>
+</tr>
+<tr>
+<td>11:00</td>
+<td>🎾 <span class='deporte'>Tenis</span></td>
+<td>Roland Garros:<span class='ronda'>1/8 de final (Suzanne Lenglen)</span></td>
+<td>M. Andreeva Vs. D. Kasatkina</td>
+<td><a href="acestream://98784fa0714190de289f42eb5b84e405df7e685a">Eurosport 2 Elcano Antiguas</a><br><a href="acestream://dc4ccb9e72550bc72be9360aa7d77e337ad11ecc">Eurosport 2 New Era I</a><br><a href="acestream://4b87a5b67f39dfc151a163ec8c08039520f0a372">Eurosport 2 New Era II</a></td>
+</tr>
+<tr>
+<td>12:30</td>
+<td>🎾 <span class='deporte'>Tenis</span></td>
+<td>Roland Garros:<span class='ronda'>1/8 de final (Suzanne Lenglen)</span></td>
+<td>A. Zverev Vs. T. Griekspoor</td>
+<td><a href="acestream://98784fa0714190de289f42eb5b84e405df7e685a">Eurosport 2 Elcano Antiguas</a><br><a href="acestream://dc4ccb9e72550bc72be9360aa7d77e337ad11ecc">Eurosport 2 New Era I</a><br><a href="acestream://4b87a5b67f39dfc151a163ec8c08039520f0a372">Eurosport 2 New Era II</a></td>
+</tr>
+<tr>
+<td>12:30</td>
+<td>🎾 <span class='deporte'>Tenis</span></td>
+<td>Roland Garros:<span class='ronda'>1/8 de final (Philippe Chatrier)</span></td>
+<td>L. Boisson Vs. J. Pegula</td>
+<td><a href="acestream://16ffa1713f42aa27317ee039a2bd0cdbc89a1580">Eurosport 1 Elcano Antiguas</a><br><a href="acestream://1b0bc4d4dcd609d3c092712e721392b199f50a62">Eurosport 1 Estable</a><br><a href="acestream://bae98f69fbf867550b4f73b4eb176dae84d7f909">Eurosport 1 New Era I</a><br><a href="acestream://714e14e6d6e27660fd25a75b57b0ac5580fe705d">Eurosport 1 New Era I</a></td>
+</tr>
+<tr>
+<td>14:00</td>
+<td>🎾 <span class='deporte'>Tenis</span></td>
+<td>Roland Garros:<span class='ronda'>1/8 de final (Philippe Chatrier)</span></td>
+<td>C. Norrie Vs. N. Djokovic</td>
+<td><a href="acestream://16ffa1713f42aa27317ee039a2bd0cdbc89a1580">Eurosport 1 Elcano Antiguas</a><br><a href="acestream://1b0bc4d4dcd609d3c092712e721392b199f50a62">Eurosport 1 Estable</a><br><a href="acestream://bae98f69fbf867550b4f73b4eb176dae84d7f909">Eurosport 1 New Era I</a><br><a href="acestream://714e14e6d6e27660fd25a75b57b0ac5580fe705d">Eurosport 1 New Era I</a></td>
+</tr>
+<tr>
+<td>14:30</td>
+<td>🎾 <span class='deporte'>Tenis</span></td>
+<td>Roland Garros:<span class='ronda'>1/8 de final (Suzanne Lenglen)</span></td>
+<td>M. Keys Vs. H. Baptiste</td>
+<td><a href="acestream://98784fa0714190de289f42eb5b84e405df7e685a">Eurosport 2 Elcano Antiguas</a><br><a href="acestream://dc4ccb9e72550bc72be9360aa7d77e337ad11ecc">Eurosport 2 New Era I</a><br><a href="acestream://4b87a5b67f39dfc151a163ec8c08039520f0a372">Eurosport 2 New Era II</a></td>
+</tr>
+<tr>
+<td>16:00</td>
+<td>🎾 <span class='deporte'>Tenis</span></td>
+<td>Roland Garros:<span class='ronda'>1/8 de final (Suzanne Lenglen)</span></td>
+<td>A. Bublik Vs. J. Draper</td>
+<td><a href="acestream://98784fa0714190de289f42eb5b84e405df7e685a">Eurosport 2 Elcano Antiguas</a><br><a href="acestream://dc4ccb9e72550bc72be9360aa7d77e337ad11ecc">Eurosport 2 New Era I</a><br><a href="acestream://4b87a5b67f39dfc151a163ec8c08039520f0a372">Eurosport 2 New Era II</a></td>
+</tr>
+<tr>
+<td>16:55</td>
+<td> <span class='deporte'>Natación sincronizada</span></td>
+<td><span class='flag-icon flag-icon-eu'></span> Europeo de Natación Artística</td>
+<td>Final Dúo Técnico Femenino</td>
+<td><a href="acestream://61b9b271c16f970aab43cb753c5f8be181dceece">Teledeporte Elcano Antiguas</a><br><a href="acestream://138b30c93e8a780ac490a4f6d2181c41f3670230">Teledeporte New Era I</a></td>
+</tr>
+<tr>
+<td>18:15</td>
+<td> <span class='deporte'>Natación sincronizada</span></td>
+<td><span class='flag-icon flag-icon-eu'></span> Europeo de Natación Artística</td>
+<td>Final Dúo Técnico Mixto</td>
+<td><a href="acestream://61b9b271c16f970aab43cb753c5f8be181dceece">Teledeporte Elcano Antiguas</a><br><a href="acestream://138b30c93e8a780ac490a4f6d2181c41f3670230">Teledeporte New Era I</a></td>
+</tr>
+<tr>
+<td>19:00</td>
+<td>🏀 <span class='deporte'>Baloncesto</span></td>
+<td><span class='flag-icon flag-icon-es'></span> ACB:<span class='ronda'>Playoffs 1/4 Final</span></td>
+<td>Valencia Basket Vs. Dreamland Gran Canaria</td>
+<td><a href="acestream://56ac8e227d526e722624675ccdd91b0cc850582f">Movistar Plus+ Elcano Antiguas</a><br><a href="acestream://b2a4d1eba9b46df5f52a87105df779f9d39abeb4">Movistar Plus+ New Era I</a><br><a href="acestream://55d4602cb22b0d8a33c10c2c2f42dae64a9e8895">M+ Deportes Elcano Antiguas</a><br><a href="acestream://3a74d9869b13e763476800740c6625e715a39879">M+ Deportes Elcano Antiguas</a><br><a href="acestream://acb510858f34c3c6fd5f79395b031abd6885c2b3">M+ Deportes Estable</a><br><a href="acestream://ef9dcc4eaac36a0f608b52a31f8ab237859e071a">M+ Deportes New Era I</a><br><a href="acestream://b5842718859345a596107ab8e6b24d7bfa2d617e">M+ Deportes New Era I</a><br><a href="acestream://be02b9918b8fe7224cfa9af1e37856760f95b1b8">M+ Deportes New Era I</a><br><a href="acestream://67a33c3f74956eed14b9b400523462fe362e0e66">M+ Deportes New Era II</a></td>
+</tr>
+<tr>
+<td>20:15</td>
+<td>🎾 <span class='deporte'>Tenis</span></td>
+<td>Roland Garros:<span class='ronda'>1/8 de final (Philippe Chatrier)</span></td>
+<td>J. Sinner Vs. A. Rublev</td>
+<td><a href="acestream://16ffa1713f42aa27317ee039a2bd0cdbc89a1580">Eurosport 1 Elcano Antiguas</a><br><a href="acestream://1b0bc4d4dcd609d3c092712e721392b199f50a62">Eurosport 1 Estable</a><br><a href="acestream://bae98f69fbf867550b4f73b4eb176dae84d7f909">Eurosport 1 New Era I</a><br><a href="acestream://714e14e6d6e27660fd25a75b57b0ac5580fe705d">Eurosport 1 New Era I</a></td>
+</tr>
+<tr>
+<td>20:45</td>
+<td>🏀 <span class='deporte'>Baloncesto</span></td>
+<td><span class='flag-icon flag-icon-it'></span> Lega:<span class='ronda'>Semifinales</span></td>
+<td>Virtus Bologna Vs. AX Olimpia Milano</td>
+<td>DAZN App</td>
+</tr>
+<tr>
+<td>21:15</td>
+<td>🏀 <span class='deporte'>Baloncesto</span></td>
+<td><span class='flag-icon flag-icon-es'></span> ACB:<span class='ronda'>Playoffs 1/4 Final</span></td>
+<td>La Laguna Tenerife Vs. Joventut Badalona</td>
+<td><a href="acestream://d03c13b6723f66155d7a0df3692a3b073fe630f2">M+ Vamos Elcano Antiguas</a><br><a href="acestream://12ba546d229bc39f01c3c18988a034b215fe6adb">M+ Vamos Elcano Antiguas</a><br><a href="acestream://3b2a8b41e7097c16b0468b42d7de0320886fa933">M+ Vamos New Era I</a><br><a href="acestream://2940120bf034db79a7f5849846ccea0255172eae">M+ Vamos New Era I</a><br><a href="acestream://57313e1ef438538df4feb5a6028dc78ee4f66b6a">M+ Vamos New Era I</a><br><a href="acestream://1205151f6fa5d95c0eeb543cbce43ccfa6a1b216">M+ Vamos New Era II</a><br><a href="acestream://55d4602cb22b0d8a33c10c2c2f42dae64a9e8895">M+ Deportes Elcano Antiguas</a><br><a href="acestream://3a74d9869b13e763476800740c6625e715a39879">M+ Deportes Elcano Antiguas</a><br><a href="acestream://acb510858f34c3c6fd5f79395b031abd6885c2b3">M+ Deportes Estable</a><br><a href="acestream://ef9dcc4eaac36a0f608b52a31f8ab237859e071a">M+ Deportes New Era I</a><br><a href="acestream://b5842718859345a596107ab8e6b24d7bfa2d617e">M+ Deportes New Era I</a><br><a href="acestream://be02b9918b8fe7224cfa9af1e37856760f95b1b8">M+ Deportes New Era I</a><br><a href="acestream://67a33c3f74956eed14b9b400523462fe362e0e66">M+ Deportes New Era II</a></td>
+</tr>
 </table>
-</div>
-<p class='footer'>Última actualización: 01/06/2025 10:54:19</p>
+<h2 class='fecha'>03/06/2025 (Martes)</h2>
+<table>
+<tr>
+<th>Hora</th>
+<th>Deporte</th>
+<th>Competición</th>
+<th>Evento</th>
+<th>Canales</th>
+</tr>
+<tr>
+<td>09:55</td>
+<td> <span class='deporte'>Natación sincronizada</span></td>
+<td><span class='flag-icon flag-icon-eu'></span> Europeo de Natación Artística</td>
+<td>Final solo libre F</td>
+<td><a href="acestream://61b9b271c16f970aab43cb753c5f8be181dceece">Teledeporte Elcano Antiguas</a><br><a href="acestream://138b30c93e8a780ac490a4f6d2181c41f3670230">Teledeporte New Era I</a></td>
+</tr>
+</table>
 </body>
 </html>
