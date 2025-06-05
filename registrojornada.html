@@ -312,15 +312,34 @@ if (!entradaValida || !salidaValida) {
       });
 
       const lista = document.getElementById("totalesPorMes");
-      lista.innerHTML = "";
-      for (const mes in totalesPorMes) {
-        const total = totalesPorMes[mes];
-        const horas = Math.floor(total / 60);
-        const minutos = total % 60;
-        const li = document.createElement("li");
-        li.textContent = `${mes.charAt(0).toUpperCase() + mes.slice(1)}: ${horas}h ${minutos}m`;
-        lista.appendChild(li);
-      }
+lista.innerHTML = "";
+
+const objetivoMensualMin = 172 * 60 + 50;
+
+for (const mes in totalesPorMes) {
+  const total = totalesPorMes[mes];
+  const horas = Math.floor(total / 60);
+  const minutos = total % 60;
+
+  const diferencia = objetivoMensualMin - total;
+  const diffHoras = Math.floor(Math.abs(diferencia) / 60);
+  const diffMin = Math.abs(diferencia) % 60;
+
+  const li = document.createElement("li");
+
+  if (diferencia > 0) {
+    li.textContent = `${mes.charAt(0).toUpperCase() + mes.slice(1)}: ${horas}h ${minutos}m — Faltan ${diffHoras}h ${diffMin}m`;
+    li.style.color = "darkred";
+  } else if (diferencia < 0) {
+    li.textContent = `${mes.charAt(0).toUpperCase() + mes.slice(1)}: ${horas}h ${minutos}m — Exceso de ${diffHoras}h ${diffMin}m`;
+    li.style.color = "green";
+  } else {
+    li.textContent = `${mes.charAt(0).toUpperCase() + mes.slice(1)}: ${horas}h ${minutos}m — Objetivo exacto`;
+    li.style.color = "blue";
+  }
+
+  lista.appendChild(li);
+}
 
       const totalHoras = Math.floor(totalGlobalMin / 60);
       const totalMin = totalGlobalMin % 60;
