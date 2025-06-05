@@ -170,7 +170,7 @@
       <tr><td contenteditable="true"> </td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
     </tbody>
   </table>
-  <h3>Totales por mes:</h3>
+  <h3>Totales por mes — Objetivo: 172h 50m:</h3>
 <table>
   <tr>
     <th><ul id="totalesPorMes"></ul></th>
@@ -437,7 +437,7 @@ for (const mes in totalesPorMes) {
 
   doc.setFontSize(12);
   let yStart = doc.lastAutoTable.finalY + 10;
-  doc.text("Totales por mes:", 14, yStart);
+  doc.text("Totales por mes — Objetivo: 172h 50m", 14, yStart);
   totalesText.forEach((linea, i) => {
     doc.text(linea, 14, yStart + 8 + i * 6);
   });
