@@ -373,8 +373,7 @@ for (const mes in totalesPorMes) {
 
     async function descargarPDF() {
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-
+      const doc = new jsPDF();
   doc.setFontSize(14);
   doc.text("Registro de Jornada", 14, 15);
 
