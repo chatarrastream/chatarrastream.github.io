@@ -372,59 +372,85 @@ for (const mes in totalesPorMes) {
     }
 
     async function descargarPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
 
-      doc.setFontSize(14);
-      doc.text("Registro de Jornada", 14, 15);
+  doc.setFontSize(14);
+  doc.text("Registro de Jornada", 14, 15);
 
-      const headers = [];
-      const body = [];
+  const headers = [];
+  const body = [];
 
-      const table = document.getElementById("registroTabla");
-      const headerCells = table.querySelectorAll("thead th");
-      headerCells.forEach(cell => headers.push(cell.innerText.trim()));
+  const table = document.getElementById("registroTabla");
+  const headerCells = table.querySelectorAll("thead th");
+  headerCells.forEach(cell => headers.push(cell.innerText.trim()));
 
-      const rows = table.querySelectorAll("tbody tr");
-      rows.forEach(row => {
-        const rowData = [];
-        const cells = row.querySelectorAll("td");
-        cells.forEach(cell => rowData.push(cell.innerText.trim().toLowerCase()));
-        body.push(rowData);
-      });
+  const rows = table.querySelectorAll("tbody tr");
+  rows.forEach(row => {
+    const rowData = [];
+    const cells = row.querySelectorAll("td");
+    cells.forEach(cell => rowData.push(cell.innerText.trim().toLowerCase()));
+    body.push(rowData);
+  });
 
-      doc.autoTable({
-        head: [headers],
-        body: body,
-        startY: 25,
-        styles: {
-          fontSize: 9,
-          cellPadding: 3,
-          halign: 'center'
-        },
-        headStyles: {
-          fillColor: [41, 128, 185],
-          textColor: 255,
-          halign: 'center'
-        },
-        theme: 'grid',
-      });
+  doc.autoTable({
+    head: [headers],
+    body: body,
+    startY: 25,
+    styles: {
+      fontSize: 9,
+      cellPadding: 3,
+      halign: 'center'
+    },
+    headStyles: {
+      fillColor: [41, 128, 185],
+      textColor: 255,
+      halign: 'center'
+    },
+    theme: 'grid',
+  });
 
-      const resumenTotales = document.getElementById("totalesPorMes");
-      const totalesText = Array.from(resumenTotales.children).map(li => li.innerText);
+  // Obtener totales y añadir diferencias respecto al objetivo mensual
+  const resumenTotales = document.getElementById("totalesPorMes");
+  const totalesText = Array.from(resumenTotales.children).map(li => {
+    const texto = li.innerText;
+    const match = texto.match(/(.+):\s*(\d+)h\s*(\d+)m/i);
+    if (!match) return texto;
 
-      doc.setFontSize(12);
-      let yStart = doc.lastAutoTable.finalY + 10;
-      doc.text("Totales por mes:", 14, yStart);
-      totalesText.forEach((linea, i) => {
-        doc.text(linea, 14, yStart + 8 + i * 6);
-      });
+    const nombreMes = match[1];
+    const horas = parseInt(match[2]);
+    const minutos = parseInt(match[3]);
 
-      const totalGlobal = document.getElementById("totalHoras").innerText;
-      doc.text(`Total global: ${totalGlobal}`, 14, yStart + 8 + totalesText.length * 6 + 6);
+    const totalMin = horas * 60 + minutos;
+    const objetivoMin = 172 * 60 + 50;
+    const diferencia = totalMin - objetivoMin;
+    const diffHoras = Math.floor(Math.abs(diferencia) / 60);
+    const diffMin = Math.abs(diferencia) % 60;
 
-      doc.save("registro_jornada.pdf");
+    let diferenciaTexto = "";
+    if (diferencia > 0) {
+      diferenciaTexto = ` — Exceso de ${diffHoras}h ${diffMin}m`;
+    } else if (diferencia < 0) {
+      diferenciaTexto = ` — Faltan ${diffHoras}h ${diffMin}m`;
+    } else {
+      diferenciaTexto = ` — Objetivo exacto`;
     }
+
+    return `${nombreMes}: ${horas}h ${minutos}m${diferenciaTexto}`;
+  });
+
+  doc.setFontSize(12);
+  let yStart = doc.lastAutoTable.finalY + 10;
+  doc.text("Totales por mes:", 14, yStart);
+  totalesText.forEach((linea, i) => {
+    doc.text(linea, 14, yStart + 8 + i * 6);
+  });
+
+  const totalGlobal = document.getElementById("totalHoras").innerText;
+  doc.text(`Total global: ${totalGlobal}`, 14, yStart + 8 + totalesText.length * 6 + 6);
+
+  doc.save("registro_jornada.pdf");
+}
 
 document.getElementById("cargarCSV").addEventListener("change", function (e) {
   const archivo = e.target.files[0];
