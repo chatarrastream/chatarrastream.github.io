@@ -25,18 +25,21 @@
             text-align: center;
         }
         #searchBox {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 16px;
-        }
-        .search-label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 16px;
+    flex-grow: 1; /* Permite que la caja de búsqueda ocupe el espacio restante */
+    margin-bottom: 0; /* Elimina el margen inferior que tenías */
+}
+
+.search-label {
+    display: block;
+    margin-bottom: 0; /* Elimina el margen inferior que tenías */
+    font-weight: bold;
+
         }
         .table-container {
             overflow-x: auto;
@@ -73,15 +76,29 @@
         .link-url:hover {
             text-decoration: underline;
         }
+        .search-header {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espacio entre los elementos */
+    margin-bottom: 20px; /* Separación de la tabla */
+}
+
+.enlace-izquierdo {
+    text-decoration: none;
+    font-weight: bold;
+    color: #0066cc; /* Color similar a tus enlaces */
+    white-space: nowrap; /* Evita que el texto se parta en varias líneas */
+}
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>LISTA ACTUALIZADA SEPTIEMBRE 2025</h1>
+       <div class="search-header">
   <a href="https://chatarrastream.github.io/canales.html#" class="enlace-izquierdo">Lista Actualizada Septiembre 2025</a>  <label for="searchBox" class="search-label">Buscar en la tabla:</label>
     <input type="text" id="searchBox" placeholder="Escribe para buscar por grupo o nombre.">
-    
+       </div>
     <div class="table-container">
         <table id="iptvTable">
             <thead>
