@@ -111,10 +111,34 @@
   border: 1px solid black;
 
     }
+    .header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #004080;
+  padding-bottom: 5px;
+  text-align: center; /* Esto centra el texto h2 horizontalmente */
+}
+
+.header-container h2 {
+  flex-grow: 1; /* Esto hace que el h2 ocupe todo el espacio disponible */
+  margin: 0;
+  border-bottom: none; /* Quitamos el borde del h2, lo hemos movido al contenedor */
+}
+
+.logo {
+  height: 50px; /* Ajusta el tamaño del logo según tus necesidades */
+  margin-left: 10px; /* Añade un pequeño espacio entre el título y el logo */
+}
+
   </style>
 </head>
 <body>
+  <div class="header-container">
   <h2>®️CHATARRASTREAM 09.2025</h2>
+  <img src="URL_DEL_LOGO.png" alt="Logo de Chatarrastream" class="logo">
+</div>
+
 <!--
 <div class="aviso">
   <p>🚧 SEGUIMOS EN OBRAS 🚧</p>
