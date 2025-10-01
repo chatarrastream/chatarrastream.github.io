@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Jornada - Mejorado</title>
+    <style>
+        /* Estilos CSS (Ver sección siguiente) */
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9; /* Fondo suave */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+        }
+
+        header {
+            margin-bottom: 20px;
+        }
+
+        .contenedor {
+            width: 90%;
+            max-width: 450px; /* Ancho máximo para desktop */
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            background-color: white;
+            text-align: center;
+        }
+
+        .hora-display {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #007bff;
+        }
+
+        #fecha-actual {
+            display: block;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        .button-group button {
+            width: 48%; /* Dos botones en una línea */
+            padding: 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            margin: 5px 1%;
+        }
+
+        #btn-entrada {
+            background-color: #28a745; /* Verde para Entrada */
+            color: white;
+        }
+
+        #btn-entrada:hover {
+            background-color: #218838;
+        }
+
+        #btn-salida {
+            background-color: #dc3545; /* Rojo para Salida */
+            color: white;
+        }
+
+        #btn-salida:hover {
+            background-color: #c82333;
+        }
+
+        #mensaje {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Registro de Jornada</h1>
+    </header>
+
+    <main class="contenedor">
+        <p id="fecha-actual"></p>
+        <p class="hora-display" id="hora-actual">00:00:00</p>
+        
+        <div class="button-group">
+            <button id="btn-entrada">Entrada</button>
+            <button id="btn-salida">Salida</button>
+        </div>
+
+        <p id="mensaje"></p>
+
+        </main>
+
+    <script>
+        // Código JavaScript (Ver sección siguiente)
+        document.addEventListener('DOMContentLoaded', () => {
+            const fechaDisplay = document.getElementById('fecha-actual');
+            const horaDisplay = document.getElementById('hora-actual');
+            const mensajeDisplay = document.getElementById('mensaje');
+            const btnEntrada = document.getElementById('btn-entrada');
+            const btnSalida = document.getElementById('btn-salida');
+
+            // Función para obtener y formatear la fecha y hora
+            const obtenerFechaHora = (date) => {
+                const optionsFecha = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                const optionsHora = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+                
+                const fecha = date.toLocaleDateString('es-ES', optionsFecha);
+                const hora = date.toLocaleTimeString('es-ES', optionsHora);
+                
+                return { fechaCompleta: fecha, horaCompleta: hora };
+            };
+
+            // Función para actualizar la hora en tiempo real (reloj)
+            const actualizarReloj = () => {
+                const ahora = new Date();
+                const hora = ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                horaDisplay.textContent = hora;
+                
+                // Muestra la fecha al cargar, pero no la actualiza cada segundo
+                if (!fechaDisplay.textContent) {
+                    fechaDisplay.textContent = obtenerFechaHora(ahora).fechaCompleta;
+                }
+            };
+
+            // Función para guardar el registro
+            const guardarRegistro = (tipo) => {
+                const ahora = new Date();
+                const { fechaCompleta, horaCompleta } = obtenerFechaHora(ahora);
+
+                // Formato del registro para localStorage
+                const nuevoRegistro = {
+                    tipo: tipo, // 'E' o 'S'
+                    timestamp: ahora.getTime(), // Mejor guardar el timestamp para cálculos
+                    fecha: fechaCompleta,
+                    hora: horaCompleta
+                };
+
+                // Recuperar registros existentes
+                const registrosJSON = localStorage.getItem('registrosJornada');
+                let registros = registrosJSON ? JSON.parse(registrosJSON) : [];
+
+                // Agregar el nuevo registro
+                registros.push(nuevoRegistro);
+
+                // Guardar de nuevo en localStorage
+                try {
+                    localStorage.setItem('registrosJornada', JSON.stringify(registros));
+                    mensajeDisplay.textContent = `${tipo === 'E' ? '✅ Entrada' : '🛑 Salida'} registrada con éxito a las ${horaCompleta}.`;
+                    console.log('Registro guardado:', nuevoRegistro);
+                } catch (error) {
+                    mensajeDisplay.textContent = '❌ Error al guardar el registro. El almacenamiento puede estar lleno.';
+                    console.error('Error al guardar en localStorage:', error);
+                }
+            };
+
+            // Asignar eventos a los botones
+            btnEntrada.addEventListener('click', () => guardarRegistro('E'));
+            btnSalida.addEventListener('click', () => guardarRegistro('S'));
+
+            // Iniciar el reloj al cargar la página
+            actualizarReloj();
+            setInterval(actualizarReloj, 1000); // Actualiza cada segundo
+        });
+    </script>
+</body>
+</html>
