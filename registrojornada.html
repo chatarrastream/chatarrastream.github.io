@@ -63,11 +63,12 @@
     }
 
     /* Día Semanal */
-    #registroTabla td:nth-child(1) {
-      font-weight: bold;
-      background-color: #dbe4f0;
-      text-align: right;
-    }
+    #registroTabla tr > th:first-child,
+#registroTabla tr > td:first-child {
+  font-weight: bold;
+  background-color: #dbe4f0;
+  text-align: right;
+}
     
     /* Botones */
     .action-button, .dropbtn {
