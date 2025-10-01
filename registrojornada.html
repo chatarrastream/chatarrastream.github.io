@@ -604,14 +604,13 @@ celdaEntrada.classList.add("entrada");
 celdaEntrada.textContent = entry.entry;
 
 celdaEntrada.addEventListener("input", (e) => {
-    // Solo limpiar caracteres inválidos en la escritura
-    e.target.textContent = e.target.textContent.replace(/[^0-9:]/g, '');
+    // Ya no llamamos a formatTimeInput aquí
     updateEntry(index, 'entry', e.target.textContent);
-    calcularTodasLasHoras();
+    calcularTodasLasHoras(); // Recalcular inmediatamente
 });
 
 celdaEntrada.addEventListener("blur", (e) => {
-    formatTimeInput(e.target); // Dar formato final HH:MM
+    formatTimeInput(e.target); // ✅ Formato HH:MM solo al salir
     updateEntryAndRender(index, 'entry', e.target.textContent);
 });
 
@@ -622,16 +621,16 @@ celdaSalida.classList.add("salida");
 celdaSalida.textContent = entry.exit;
 
 celdaSalida.addEventListener("input", (e) => {
-    // Solo limpiar caracteres inválidos en la escritura
-    e.target.textContent = e.target.textContent.replace(/[^0-9:]/g, '');
+    // Ya no llamamos a formatTimeInput aquí
     updateEntry(index, 'exit', e.target.textContent);
-    calcularTodasLasHoras();
+    calcularTodasLasHoras(); // Recalcular inmediatamente
 });
 
 celdaSalida.addEventListener("blur", (e) => {
-    formatTimeInput(e.target); // Dar formato final HH:MM
+    formatTimeInput(e.target); // ✅ Formato HH:MM solo al salir
     updateEntryAndRender(index, 'exit', e.target.textContent);
-});        
+});
+          
           // 6: Nota (Editable)
             const celdaNota = nuevaFila.insertCell(6);
             celdaNota.contentEditable = true;
