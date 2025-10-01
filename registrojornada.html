@@ -38,6 +38,7 @@
             window.userId = window.auth.currentUser?.uid || crypto.randomUUID();
             window.isAuthReady = true;
             
+            // Set initial ready state for saving
             document.getElementById("authStatus").textContent = "Listo para guardar en la nube (ID: " + window.userId.substring(0, 8) + "...)";
             console.log("Firebase Auth Ready. User ID:", window.userId);
 
@@ -59,39 +60,42 @@
         onSnapshot(logDocRef, (docSnap) => {
             const tbody = document.getElementById("registroTablaBody");
             
+            // Clear current table content
             tbody.innerHTML = ''; 
 
             if (docSnap.exists() && docSnap.data().htmlContent && docSnap.data().htmlContent.trim().length > 0) {
                 console.log("Datos cargados desde Firestore. Restaurando tabla.");
-                // Restore the saved content
-                const tempDiv = document.createElement('tbody');
-                tempDiv.innerHTML = docSnap.data().htmlContent;
                 
-                // Re-process to ensure dayOfWeek column is present and updated
-                Array.from(tempDiv.children).forEach(row => {
-                    if (row.children.length === 7) { // Old format (no diaSemana)
-                        const newRow = tbody.insertRow();
-                        // Insert empty cell for the new 'diaSemana'
+                const tempTbody = document.createElement('tbody');
+                tempTbody.innerHTML = docSnap.data().htmlContent;
+                
+                // Re-process rows to ensure they have the latest 8-column structure 
+                Array.from(tempTbody.children).forEach(row => {
+                    const newRow = tbody.insertRow();
+                    if (row.children.length === 7) { 
+                        // Old format (no diaSemana). Insert new cell at index 0.
                         newRow.insertCell(0).className = 'p-1 text-center dia-semana font-medium text-xs text-gray-500 bg-gray-50';
                         for (let i = 0; i < row.children.length; i++) {
                             const originalCell = row.children[i];
                             const newCell = newRow.insertCell(i + 1);
-                            newCell.outerHTML = originalCell.outerHTML; // Copy all attributes and content
+                            newCell.outerHTML = originalCell.outerHTML; 
                         }
-                    } else if (row.children.length === 8) { // Correct format
-                        tbody.appendChild(row);
+                    } else if (row.children.length === 8) { 
+                         // Correct format. Just copy inner HTML.
+                         newRow.innerHTML = row.innerHTML;
                     }
                 });
-                
+
             } else {
                 console.log("No hay datos en Firestore. Creando plantilla inicial.");
                 reiniciarTablaLocal(); 
                 guardarTabla(false); 
             }
             
+            // Re-bind events and recalculate
             agregarEventosEdicion();
-            calcularTodasLasHoras(); // This also calculates day of the week
-            
+            calcularTodasLasHoras(); // This recalculates hours and day of the week
+
         }, (error) => {
             console.error("Error en onSnapshot:", error);
             showModal("Error de Conexión", "Fallo al escuchar cambios en la base de datos.", false);
@@ -426,7 +430,7 @@
     
     function agregarFila(diaValue = "", mesValue = "", yearValue = "", shouldSave = false) {
       const nuevaFila = tbody.insertRow(-1);
-      // New structure: dia-semana, dia, mes, año, entrada, salida, nota, horas
+      // Structure: dia-semana, dia, mes, año, entrada, salida, nota, horas
       const cellClasses = ["dia-semana", "dia-select", "mes-select", "year-select", "entrada", "salida", "nota", "horas"]; 
       
       if (!yearValue) {
@@ -512,7 +516,7 @@
         }
     }
 
-    // --- NEW DAY OF WEEK CALCULATION ---
+    // --- DAY OF WEEK CALCULATION ---
 
     function getDiaSemana(dia, mes, year) {
         if (!dia || !mes || !year) {
@@ -560,9 +564,9 @@
 
             // Highlight weekends
             if (diaSemanaTexto === "Sábado" || diaSemanaTexto === "Domingo") {
-                 celdaDiaSemana.classList.add('text-red-500');
+                 celdaDiaSemana.classList.add('text-red-500', 'font-bold');
             } else {
-                 celdaDiaSemana.classList.remove('text-red-500');
+                 celdaDiaSemana.classList.remove('text-red-500', 'font-bold');
             }
         }
 
@@ -879,5 +883,4 @@
 
 
     
-                
-        
+                    
