@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -587,7 +587,7 @@
         const filaCsv = [];
         celdas.forEach(celda => {
           let texto = getCellContent(celda).replace(/"/g, '""');
-          filaCsv.push(`"${texto}"`);
+          filaCsv.push(`"${texto}"`); // ALWAYS quoted for safety
         });
         csv.push(filaCsv.join(","));
       });
@@ -676,51 +676,56 @@
         // Process rows, skipping header (filas[0])
         filas.slice(1).forEach(filaCSV => {
           
-          const columnasRaw = [];
-          let insideQuotes = false;
-          let currentField = '';
+          // --- FIX: Corrected CSV Parsing Logic ---
+          const fields = [];
+          let field = '';
+          let inQuotedField = false;
 
-          // FIX: Robust CSV parsing loop
           for (let i = 0; i < filaCSV.length; i++) {
               const char = filaCSV[i];
               
               if (char === '"') {
-                  // Check for escaped quote ("")
-                  if (insideQuotes && i + 1 < filaCSV.length && filaCSV[i + 1] === '"') {
-                      currentField += '"'; 
-                      i++; // Skip the second quote
+                  if (inQuotedField && i + 1 < filaCSV.length && filaCSV[i + 1] === '"') {
+                      // Escaped internal quote: "" -> "
+                      field += '"';
+                      i++; // Skip the next quote
                   } else {
-                      insideQuotes = !insideQuotes; // Start/end quote
+                      // Toggle quote state (start or end of the field content)
+                      inQuotedField = !inQuotedField;
                   }
-              } else if (char === ',' && !insideQuotes) {
-                  columnasRaw.push(currentField);
-                  currentField = '';
+              } else if (char === ',' && !inQuotedField) {
+                  // Delimiter found outside quotes, push the field content
+                  fields.push(field);
+                  field = '';
               } else {
-                  currentField += char;
+                  field += char;
               }
           }
-          columnasRaw.push(currentField); // Push the last field
+          fields.push(field); // Push the last field
 
-          // FIX: Strip surrounding quotes from the raw fields
-          const columnas = columnasRaw.map(field => {
-              let trimmedField = field.trim();
-              if (trimmedField.startsWith('"') && trimmedField.endsWith('"')) {
-                  // Strip the surrounding quotes and replace internal escaped quotes ("" -> ")
-                  trimmedField = trimmedField.substring(1, trimmedField.length - 1).replace(/""/g, '"');
+          // Cleanup: trim, strip surrounding quotes, and unescape internal quotes
+          const finalColumnas = fields.map(f => {
+              f = f.trim();
+              // Check if field is still surrounded by quotes (which happens after parsing)
+              if (f.startsWith('"') && f.endsWith('"') && f.length >= 2) {
+                  // Strip external quotes and unescape internal quotes
+                  return f.substring(1, f.length - 1).replace(/""/g, '"');
               }
-              return trimmedField;
+              // If it's an empty field (""), it will be handled as is.
+              return f.replace(/""/g, '"');
           });
-          // END FIX
+          // --- END FIX ---
           
-          if (columnas.length < 7) { 
-             console.warn("Fila ignorada por formato incorrecto (esperando 7 columnas):", columnas);
+          if (finalColumnas.length < 7) { 
+             console.warn("Fila ignorada por formato incorrecto (esperando 7 columnas):", finalColumnas);
              return;
           }
 
-          // Use the cleaned 'columnas' array for assignment:
-          const mesCsvValue = columnas[1] ? columnas[1].toLowerCase() : ""; 
-          const diaCsvValue = columnas[0] ? columnas[0].padStart(2, '0') : "";
-          const yearCsvValue = columnas[2] || ""; 
+          // Use the cleaned 'finalColumnas' array for assignment:
+          // The month selector expects a lowercase month name for its value.
+          const mesCsvValue = finalColumnas[1] ? finalColumnas[1].toLowerCase() : ""; 
+          const diaCsvValue = finalColumnas[0] ? finalColumnas[0].padStart(2, '0') : "";
+          const yearCsvValue = finalColumnas[2] || ""; 
 
           // Create row using existing function
           const nuevaFila = tbody.insertRow();
@@ -744,7 +749,7 @@
           celda = nuevaFila.insertCell(3);
           celda.contentEditable = true;
           celda.className = 'p-1 text-center entrada font-mono';
-          celda.textContent = columnas[3] || "";
+          celda.textContent = finalColumnas[3] || "";
           celda.setAttribute('placeholder', 'hh:mm');
           celda.addEventListener("input", handleCellInput);
 
@@ -752,7 +757,7 @@
           celda = nuevaFila.insertCell(4);
           celda.contentEditable = true;
           celda.className = 'p-1 text-center salida font-mono';
-          celda.textContent = columnas[4] || "";
+          celda.textContent = finalColumnas[4] || "";
           celda.setAttribute('placeholder', 'hh:mm');
           celda.addEventListener("input", handleCellInput);
 
@@ -760,7 +765,7 @@
           celda = nuevaFila.insertCell(5);
           celda.contentEditable = true;
           celda.className = 'p-1 text-center nota';
-          celda.textContent = columnas[5] || "";
+          celda.textContent = finalColumnas[5] || "";
           celda.setAttribute('placeholder', 'Descripción o tarea');
           celda.addEventListener("input", handleCellInput);
 
@@ -789,3 +794,5 @@
 </body>
 </html>
 
+      
+                        
