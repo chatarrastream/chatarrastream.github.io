@@ -560,32 +560,40 @@
                         }
                         
                         // Celda de Acción (Botón de Borrado)
+                                                // Celda de Acción (Botón de Borrado)
                         const accionCell = row.insertCell();
                         const deleteButton = document.createElement('button');
                         deleteButton.textContent = '❌';
                         deleteButton.className = 'btn-borrar-registro';
-                        // El botón borra todos los registros asociados a ese día (E, S, o DNT)
-                        deleteButton.setAttribute('data-ids', JSON.stringify(idsDia)); 
                         deleteButton.title = 'Borrar todos los registros de este día';
+                        
+                        // Guarda los IDs de todos los eventos del día en un atributo
+                        // NOTA: Los IDs se pasan como una cadena JSON
+                        deleteButton.setAttribute('data-ids', JSON.stringify(idsDia)); 
+                        
                         deleteButton.addEventListener('click', (e) => {
-                            if (confirm('¿Estás seguro de que quieres borrar TODOS los registros de este día?')) {
+                            if (confirm('¿Estás seguro de que quieres borrar TODOS los registros de este día? Esto incluye Entradas, Salidas y DNT.')) {
+                                
+                                // Parsear la cadena JSON de IDs
                                 const idsParaBorrar = JSON.parse(e.currentTarget.getAttribute('data-ids'));
                                 
+                                // 1. Obtener la lista de registros actual
                                 let registros = JSON.parse(localStorage.getItem('registrosJornada') || '[]');
                                 
-                                // Filtrar: mantener solo los registros cuyo ID no esté en la lista idsParaBorrar
+                                // 2. Filtrar: mantener solo los registros cuyo ID NO esté en la lista idsParaBorrar
+                                // Se usa filter() para crear una nueva lista sin los elementos a borrar
                                 const registrosActualizados = registros.filter(r => !idsParaBorrar.includes(r.id));
                                 
+                                // 3. Guardar la lista actualizada
                                 localStorage.setItem('registrosJornada', JSON.stringify(registrosActualizados));
+                                
+                                // 4. Recargar toda la visualización (tabla y resumen)
                                 mostrarRegistros();
                                 mensajeDisplay.textContent = `🗑️ Se han borrado ${idsParaBorrar.length} registros del día ${dia.dia}.`;
                             }
                         });
                         accionCell.appendChild(deleteButton);
-                    });
-                } else {
-                    noRegistrosMsg.style.display = 'block';
-                }
+
                 
                 // 2. Renderizar Resumen Mensual
                 totalHorasMesDisplay.textContent = msToHoraMinutos(totalMensualMs);
