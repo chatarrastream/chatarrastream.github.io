@@ -238,7 +238,7 @@
         <a href="#" onclick="agregarRegistro(); return false;">➕ AGREGAR FILA</a>
         <a href="#" onclick="descargarDatos(); return false;">⬇️ DESCARGAR CSV</a>
         <a href="#" onclick="descargarPDF(); return false;">📄 DESCARGAR PDF</a>
-        <a href="#" onclick="iniciarBorradoTabla(); return false;" style="color: darkred;">🗑️ BORRAR TABLA (Local)</a>
+        <a href="#" onclick="iniciarBorradoTabla(); return false;" style="color: darkred;">🗑️ BORRAR TABLA</a>
         <label style="cursor: pointer; padding: 10px 12px; display: block;">
           📁 CARGAR CSV
           <input type="file" id="cargarCSV" accept=".csv" style="display: none;">
@@ -250,14 +250,14 @@
       <table id="registroTabla">
         <thead>
           <tr>
-            <th>Día Semanal</th> <th>Día</th>
+            <th>Día</th> <th>Fecha</th>
             <th>Mes</th>
             <th>Año</th> 
             <th>Hora de Entrada</th>
             <th>Hora de Salida</th>
             <th>Nota</th>
             <th>Horas Trabajadas</th>
-            <th>Acciones</th> 
+            <th>❌ línea</th> 
           </tr>
         </thead>
         <tbody id="registroTablaBody">
@@ -619,7 +619,7 @@
             celdaNota.contentEditable = true;
             celdaNota.classList.add("nota");
             celdaNota.textContent = entry.note;
-            celdaNota.addEventListener("input", (e) => updateEntryAndRender(index, 'note', e.target.textContent));
+            celdaNota.addEventListener("blur", (e) => updateEntryAndRender(index, 'note', e.target.textContent));
 
             // 7: Horas Trabajadas (Calculado)
             const celdaHoras = nuevaFila.insertCell(7);
@@ -629,7 +629,7 @@
             // 8: Acciones (Botón de Eliminar)
             const celdaAcciones = nuevaFila.insertCell(8);
             const deleteButton = document.createElement('button');
-            deleteButton.textContent = '❌';
+            deleteButton.textContent = '🆑';
             deleteButton.className = 'delete-btn action-button';
             deleteButton.onclick = () => deleteEntry(index);
             celdaAcciones.appendChild(deleteButton);
