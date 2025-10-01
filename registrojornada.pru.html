@@ -26,8 +26,8 @@
 
         /* Contenedor principal para el diseño moderno */
         .contenedor {
-            width: 90%;
-            max-width: 700px; /* Ancho ampliado para la tabla de horas */
+            width: 95%;
+            max-width: 800px; /* Ancho ampliado para la tabla */
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 6px 15px rgba(0,0,0,0.1);
@@ -35,7 +35,7 @@
             text-align: center;
         }
         
-        /* Estilos del Reloj */
+        /* Estilos del Reloj y Fecha */
         .hora-display {
             font-size: 3em;
             font-weight: bold;
@@ -50,7 +50,7 @@
             color: #555;
         }
 
-        /* Grupo de Botones */
+        /* Grupos de Botones */
         .button-group {
             display: flex;
             justify-content: space-between;
@@ -69,33 +69,14 @@
             transition: background-color 0.3s ease;
         }
 
-        #btn-entrada {
-            background-color: #28a745; /* Verde */
-            color: white;
-        }
+        #btn-entrada { background-color: #28a745; color: white; }
+        #btn-entrada:hover { background-color: #218838; }
 
-        #btn-entrada:hover {
-            background-color: #218838;
-        }
-
-        #btn-salida {
-            background-color: #dc3545; /* Rojo */
-            color: white;
-        }
-
-        #btn-salida:hover {
-            background-color: #c82333;
-        }
+        #btn-salida { background-color: #dc3545; color: white; }
+        #btn-salida:hover { background-color: #c82333; }
         
-        #btn-dnt {
-            background-color: #ffc107; /* Amarillo/Naranja */
-            color: #333;
-            width: 100%; /* El botón de DNT usa todo el ancho en su propia línea */
-        }
-        
-        #btn-dnt:hover {
-            background-color: #e0a800;
-        }
+        #btn-dnt { background-color: #ffc107; color: #333; width: 100%; }
+        #btn-dnt:hover { background-color: #e0a800; }
 
         #mensaje {
             margin-top: 20px;
@@ -103,6 +84,54 @@
             min-height: 20px;
         }
         
+        /* Estilos de Entrada Manual */
+        #entrada-manual-container {
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: left;
+            background-color: #fcfcfc;
+        }
+        
+        #entrada-manual-container h3 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #007bff;
+        }
+
+        .manual-form-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .manual-form-group label, .manual-form-group input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        #manualFecha, #manualEntrada, #manualSalida {
+            flex-grow: 1;
+        }
+
+        #btn-guardar-manual {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        #btn-guardar-manual:hover {
+            background-color: #5a6268;
+        }
+
         /* Estilos del Historial */
         #historial-container {
             text-align: left;
@@ -110,69 +139,35 @@
             padding-top: 20px;
             border-top: 1px solid #eee;
         }
-
-        #historial-container h2 {
-            text-align: center;
-            margin-bottom: 15px;
-            color: #007bff;
-        }
-
-        .filtro-mes {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        #filtroMes {
-            padding: 8px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            flex-grow: 1;
-        }
+        #historial-container h2 { text-align: center; margin-bottom: 15px; color: #007bff; }
+        .filtro-mes { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+        #filtroMes { padding: 8px; border-radius: 4px; border: 1px solid #ccc; flex-grow: 1; }
 
         /* Estilos de la Tabla */
-        #tabla-registros {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            font-size: 0.9em;
-        }
-
-        #tabla-registros th, #tabla-registros td {
-            border: 1px solid #ddd;
-            padding: 10px 5px; /* Padding reducido para más columnas */
-            text-align: center;
-        }
-
-        #tabla-registros th {
-            background-color: #f8f9fa;
-            color: #333;
-        }
-
-        #tabla-registros tbody tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
+        #tabla-registros { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em; }
+        #tabla-registros th, #tabla-registros td { border: 1px solid #ddd; padding: 10px 5px; text-align: center; }
+        #tabla-registros th { background-color: #f8f9fa; color: #333; }
+        #tabla-registros tbody tr:nth-child(even) { background-color: #f9f9f9; }
         
-        /* Colores para el tipo de registro */
         .registro-entrada { color: #28a745; font-weight: bold; }
         .registro-salida { color: #dc3545; font-weight: bold; }
         .registro-dnt { color: #ffc107; font-weight: bold; }
-        
+
+        .btn-borrar-registro {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 1.2em;
+            line-height: 1;
+        }
+        .btn-borrar-registro:hover {
+            color: #c82333;
+        }
+
         /* Resumen Mensual */
-        #resumen-mensual {
-            margin-top: 20px;
-            padding: 15px;
-            border: 2px solid #007bff;
-            border-radius: 8px;
-            background-color: #e9f7ff;
-            text-align: center;
-        }
-        #resumen-mensual p {
-            margin: 5px 0;
-            font-size: 1.1em;
-            font-weight: bold;
-        }
+        #resumen-mensual { margin-top: 20px; padding: 15px; border: 2px solid #007bff; border-radius: 8px; background-color: #e9f7ff; text-align: center; }
+        #resumen-mensual p { margin: 5px 0; font-size: 1.1em; font-weight: bold; }
         .total-positivo { color: #28a745; }
         .total-negativo { color: #dc3545; }
 
@@ -194,6 +189,21 @@
         <button id="btn-dnt">Día No Trabajado (DNT)</button>
 
         <p id="mensaje"></p>
+
+        <div id="entrada-manual-container">
+            <h3>Entrada Manual de Registros</h3>
+            <div class="manual-form-group">
+                <label for="manualFecha">Fecha:</label>
+                <input type="date" id="manualFecha">
+                <label for="manualEntrada">Entrada (HH:MM):</label>
+                <input type="time" id="manualEntrada" value="09:00">
+                <label for="manualSalida">Salida (HH:MM):</label>
+                <input type="time" id="manualSalida" value="18:00">
+                <button id="btn-guardar-manual">Guardar</button>
+            </div>
+            <p id="mensaje-manual" style="color: #dc3545;"></p>
+        </div>
+
 
         <section id="historial-container">
             <h2>Historial y Resumen</h2>
@@ -217,7 +227,7 @@
                         <th>Entrada</th>
                         <th>Salida</th>
                         <th>Horas Diarias</th>
-                    </tr>
+                        <th>Acción</th> </tr>
                 </thead>
                 <tbody>
                     </tbody>
@@ -235,28 +245,30 @@
             const fechaDisplay = document.getElementById('fecha-actual');
             const horaDisplay = document.getElementById('hora-actual');
             const mensajeDisplay = document.getElementById('mensaje');
-            const btnEntrada = document.getElementById('btn-entrada');
-            const btnSalida = document.getElementById('btn-salida');
-            const btnDNT = document.getElementById('btn-dnt'); // Nuevo botón DNT
             const filtroMesInput = document.getElementById('filtroMes');
             const tbody = document.querySelector('#tabla-registros tbody');
             const noRegistrosMsg = document.getElementById('no-registros');
             const totalHorasMesDisplay = document.getElementById('total-horas-mes');
             const diferenciaHorasDisplay = document.getElementById('diferencia-horas');
             
+            // Referencias de Entrada Manual
+            const manualFechaInput = document.getElementById('manualFecha');
+            const manualEntradaInput = document.getElementById('manualEntrada');
+            const manualSalidaInput = document.getElementById('manualSalida');
+            const btnGuardarManual = document.getElementById('btn-guardar-manual');
+            const mensajeManualDisplay = document.getElementById('mensaje-manual');
+            
             const OBJETIVO_HORAS_MENSUAL = 154; // 154 horas
 
             // --- FUNCIONES DE UTILIDAD ---
 
             /**
-             * Convierte milisegundos a formato de hora H:MM.
-             * @param {number} ms - Milisegundos.
-             * @returns {string} Tiempo en formato H:MM o HH:MM.
+             * Convierte milisegundos a formato de hora H:MM (incluye signo negativo).
              */
             const msToHoraMinutos = (ms) => {
                 if (ms === 0) return '00:00';
                 const totalSegundos = Math.abs(Math.round(ms / 1000));
-                const segundos = totalSegundos % 60;
+                const segundos = totalSegundos % 60; // Mantener segundos por si acaso, aunque no se usa en el formato final
                 const minutos = Math.floor(totalSegundos / 60) % 60;
                 const horas = Math.floor(totalSegundos / 3600);
                 
@@ -267,12 +279,19 @@
             
             /**
              * Obtiene la fecha en formato YYYY-MM-DD para agrupar registros.
-             * @param {number} timestamp - Marca de tiempo.
-             * @returns {string} Fecha en formato YYYY-MM-DD.
              */
             const getFechaId = (timestamp) => {
                 const date = new Date(timestamp);
                 return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            };
+
+            /**
+             * Formatea un timestamp a la cadena de fecha larga en español.
+             */
+            const formatTimestampToLongDate = (timestamp) => {
+                const date = new Date(timestamp);
+                const optionsFecha = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                return date.toLocaleDateString('es-ES', optionsFecha);
             };
 
             // --- FUNCIONES DE REGISTRO ---
@@ -301,27 +320,30 @@
                 if (!fechaDisplay.textContent) {
                     fechaDisplay.textContent = obtenerFechaHora(ahora).fechaCompleta;
                 }
+                // Inicializa el campo de fecha manual a hoy
+                if (!manualFechaInput.value) {
+                    manualFechaInput.valueAsDate = ahora;
+                }
             };
 
             /**
              * Guarda un nuevo registro (E, S, o DNT) en localStorage.
-             * @param {string} tipo - 'E', 'S', o 'DNT'.
              */
-            const guardarRegistro = (tipo) => {
-                const ahora = new Date();
+            const guardarRegistro = (tipo, timestamp = null) => {
+                const ahora = timestamp ? new Date(timestamp) : new Date();
                 const { fechaCompleta, horaCompleta } = obtenerFechaHora(ahora);
                 const fechaId = getFechaId(ahora.getTime());
 
                 const nuevoRegistro = {
+                    id: Date.now() + Math.random(), // ID único para borrado individual
                     tipo: tipo,
                     timestamp: ahora.getTime(),
                     fecha: fechaCompleta,
                     hora: horaCompleta,
-                    fechaId: fechaId // Clave para agrupar por día
+                    fechaId: fechaId
                 };
 
-                const registrosJSON = localStorage.getItem('registrosJornada');
-                let registros = registrosJSON ? JSON.parse(registrosJSON) : [];
+                let registros = JSON.parse(localStorage.getItem('registrosJornada') || '[]');
                 
                 // Si es DNT, eliminamos cualquier otro registro del mismo día
                 if (tipo === 'DNT') {
@@ -343,7 +365,10 @@
                     
                     mensajeDisplay.textContent = `${mensajeTipo} registrado con éxito (${tipo === 'DNT' ? 'Día Completo' : horaCompleta}).`;
                     
-                    mostrarRegistros(); 
+                    // Si el registro pertenece al mes actual, actualiza la tabla
+                    if (fechaId.substring(0, 7) === filtroMesInput.value) {
+                        mostrarRegistros(); 
+                    }
 
                 } catch (error) {
                     mensajeDisplay.textContent = '❌ Error al guardar el registro. El almacenamiento puede estar lleno.';
@@ -351,14 +376,60 @@
                 }
             };
             
+            // NUEVA FUNCIÓN: Borrar registro individual por ID
+            const borrarRegistro = (id) => {
+                let registros = JSON.parse(localStorage.getItem('registrosJornada') || '[]');
+                
+                // Filtra la lista, manteniendo solo los registros cuyo ID no coincide con el que queremos borrar
+                const registrosActualizados = registros.filter(r => r.id !== parseFloat(id));
+                
+                localStorage.setItem('registrosJornada', JSON.stringify(registrosActualizados));
+                
+                // Actualiza la tabla inmediatamente
+                mostrarRegistros();
+                mensajeDisplay.textContent = '🗑️ Registro individual borrado con éxito.';
+            };
+            
+            // NUEVA FUNCIÓN: Guardar datos de entrada manual
+            const guardarRegistroManual = () => {
+                const fecha = manualFechaInput.value; // YYYY-MM-DD
+                const horaEntrada = manualEntradaInput.value; // HH:MM
+                const horaSalida = manualSalidaInput.value; // HH:MM
+                
+                mensajeManualDisplay.textContent = ''; // Limpiar mensaje anterior
+                
+                if (!fecha || !horaEntrada || !horaSalida) {
+                    mensajeManualDisplay.textContent = 'Por favor, completa la fecha, entrada y salida.';
+                    return;
+                }
+                
+                // Crear objetos Date (usando la zona horaria local)
+                const tsEntrada = new Date(`${fecha}T${horaEntrada}:00`).getTime();
+                const tsSalida = new Date(`${fecha}T${horaSalida}:00`).getTime();
+                
+                if (isNaN(tsEntrada) || isNaN(tsSalida)) {
+                    mensajeManualDisplay.textContent = 'Error: Formato de fecha/hora inválido.';
+                    return;
+                }
+
+                if (tsSalida <= tsEntrada) {
+                    mensajeManualDisplay.textContent = 'Error: La hora de salida debe ser posterior a la hora de entrada.';
+                    return;
+                }
+                
+                // 1. Guardar la Entrada
+                guardarRegistro('E', tsEntrada);
+                // 2. Guardar la Salida
+                guardarRegistro('S', tsSalida);
+
+                mensajeManualDisplay.textContent = `✅ Registros manuales guardados para el ${fecha}.`;
+            };
+            
             
             // --- FUNCIONES DE HISTORIAL Y CÁLCULOS ---
 
             /**
              * Calcula las horas trabajadas entre dos timestamps.
-             * @param {number} entradaTs - Timestamp de entrada.
-             * @param {number} salidaTs - Timestamp de salida.
-             * @returns {number} Duración en milisegundos.
              */
             const calcularDuracion = (entradaTs, salidaTs) => {
                 return salidaTs - entradaTs;
@@ -366,9 +437,6 @@
 
             /**
              * Procesa los registros para agruparlos por día y calcular la duración.
-             * @param {Array} registros - Lista de todos los registros.
-             * @param {string} filtroValue - Mes y año en formato YYYY-MM.
-             * @returns {object} Objeto con la información diaria y total del mes.
              */
             const procesarRegistros = (registros, filtroValue) => {
                 let totalHorasMesMs = 0;
@@ -381,50 +449,51 @@
                     return anioMesRegistro === filtroValue;
                 });
                 
-                // Ordenar por timestamp
                 registrosFiltrados.sort((a, b) => a.timestamp - b.timestamp);
                 
-                // 2. Agrupar por fechaId (YYYY-MM-DD) y calcular totales
+                // 2. Agrupar por fechaId (YYYY-MM-DD)
                 registrosFiltrados.forEach(registro => {
                     const id = registro.fechaId;
                     
                     if (!registrosDiarios[id]) {
-                        // Inicializar el día
                         registrosDiarios[id] = { 
-                            dia: registro.fecha.split(', ')[1], // e.g., '2 de octubre de 2025'
+                            dia: formatTimestampToLongDate(registro.timestamp).split(', ')[1],
                             eventos: [], 
                             duracionMs: 0,
                             tipo: registro.tipo === 'DNT' ? 'DNT' : 'Jornada'
                         };
                     }
                     
-                    registrosDiarios[id].eventos.push(registro);
+                    // Si el día ya está marcado como DNT, ignorar eventos E/S
+                    if (registrosDiarios[id].tipo === 'DNT' && (registro.tipo === 'E' || registro.tipo === 'S')) {
+                        return;
+                    } 
+                    // Si el nuevo evento es DNT, sobrescribir y limpiar eventos previos del día
+                    if (registro.tipo === 'DNT') {
+                        registrosDiarios[id].tipo = 'DNT';
+                        registrosDiarios[id].eventos = [registro];
+                    } else {
+                        registrosDiarios[id].eventos.push(registro);
+                    }
                 });
                 
                 // 3. Calcular la duración diaria y el total mensual
                 for (const id in registrosDiarios) {
                     const dia = registrosDiarios[id];
                     
-                    if (dia.tipo === 'DNT') {
-                        // DNT no suma horas
-                        dia.duracionMs = 0;
-                        continue;
-                    }
+                    if (dia.tipo === 'DNT') continue;
                     
-                    const eventos = dia.eventos;
+                    const eventos = dia.eventos.filter(e => e.tipo === 'E' || e.tipo === 'S'); // Solo E y S
                     let duracionDiaMs = 0;
-
-                    // Iterar por pares de Entrada (E) y Salida (S)
+                    
                     for (let i = 0; i < eventos.length; i++) {
                         const actual = eventos[i];
                         
-                        // Buscar el siguiente evento de Salida si el actual es Entrada
                         if (actual.tipo === 'E') {
-                            // Buscar una Salida posterior
-                            const salida = eventos.find((e, index) => index > i && e.tipo === 'S');
+                            // Buscar una Salida posterior al evento actual
+                            const salida = eventos.slice(i + 1).find(e => e.tipo === 'S');
                             
                             if (salida) {
-                                // Sumar el tiempo de trabajo (Salida - Entrada)
                                 duracionDiaMs += calcularDuracion(actual.timestamp, salida.timestamp);
                                 i = eventos.indexOf(salida); // Saltar el índice de la Salida ya usada
                             }
@@ -449,18 +518,16 @@
                 tbody.innerHTML = '';
                 noRegistrosMsg.style.display = 'none';
                 
-                // Ocultar diferencia por defecto
                 diferenciaHorasDisplay.classList.remove('total-positivo', 'total-negativo');
 
                 const filtroValue = filtroMesInput.value;
                 if (!filtroValue) return;
 
-                const registrosJSON = localStorage.getItem('registrosJornada');
-                const registros = registrosJSON ? JSON.parse(registrosJSON) : [];
+                const registros = JSON.parse(localStorage.getItem('registrosJornada') || '[]');
                 
                 const { diarios, totalMensualMs } = procesarRegistros(registros, filtroValue);
                 
-                const idsOrdenadas = Object.keys(diarios).sort(); // Ordenar por fechaId (YYYY-MM-DD)
+                const idsOrdenadas = Object.keys(diarios).sort(); 
 
                 // 1. Renderizar filas de la tabla
                 if (idsOrdenadas.length > 0) {
@@ -468,32 +535,53 @@
                         const dia = diarios[id];
                         const row = tbody.insertRow();
                         
-                        const eventos = dia.eventos;
-                        
-                        // Celda de Día
+                        // Encontrar IDs de los eventos E y S/DNT para el borrado
+                        const idsDia = dia.eventos.map(e => e.id);
+
                         row.insertCell().textContent = dia.dia;
                         
-                        // Celda de Tipo
                         const tipoCell = row.insertCell();
+                        tipoCell.textContent = dia.tipo === 'DNT' ? 'DNT' : 'Jornada';
+                        tipoCell.className = dia.tipo === 'DNT' ? 'registro-dnt' : 'registro-jornada';
+                        
                         if (dia.tipo === 'DNT') {
-                            tipoCell.textContent = 'DNT';
-                            tipoCell.className = 'registro-dnt';
-                            row.insertCell().textContent = '-'; // Entrada
-                            row.insertCell().textContent = '-'; // Salida
-                            row.insertCell().textContent = '00:00'; // Horas Diarias
+                            row.insertCell().textContent = '-'; 
+                            row.insertCell().textContent = '-'; 
+                            row.insertCell().textContent = '00:00'; 
                         } else {
-                            tipoCell.textContent = 'Jornada';
-                            
-                            // Encontrar la primera Entrada y la última Salida del día
+                            const eventos = dia.eventos;
                             const primeraEntrada = eventos.find(e => e.tipo === 'E');
                             const ultimaSalida = [...eventos].reverse().find(e => e.tipo === 'S');
                             
                             row.insertCell().textContent = primeraEntrada ? primeraEntrada.hora : 'N/A';
                             row.insertCell().textContent = ultimaSalida ? ultimaSalida.hora : 'N/A';
                             
-                            // Celda de Horas Diarias
                             row.insertCell().textContent = msToHoraMinutos(dia.duracionMs);
                         }
+                        
+                        // Celda de Acción (Botón de Borrado)
+                        const accionCell = row.insertCell();
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = '❌';
+                        deleteButton.className = 'btn-borrar-registro';
+                        // El botón borra todos los registros asociados a ese día (E, S, o DNT)
+                        deleteButton.setAttribute('data-ids', JSON.stringify(idsDia)); 
+                        deleteButton.title = 'Borrar todos los registros de este día';
+                        deleteButton.addEventListener('click', (e) => {
+                            if (confirm('¿Estás seguro de que quieres borrar TODOS los registros de este día?')) {
+                                const idsParaBorrar = JSON.parse(e.currentTarget.getAttribute('data-ids'));
+                                
+                                let registros = JSON.parse(localStorage.getItem('registrosJornada') || '[]');
+                                
+                                // Filtrar: mantener solo los registros cuyo ID no esté en la lista idsParaBorrar
+                                const registrosActualizados = registros.filter(r => !idsParaBorrar.includes(r.id));
+                                
+                                localStorage.setItem('registrosJornada', JSON.stringify(registrosActualizados));
+                                mostrarRegistros();
+                                mensajeDisplay.textContent = `🗑️ Se han borrado ${idsParaBorrar.length} registros del día ${dia.dia}.`;
+                            }
+                        });
+                        accionCell.appendChild(deleteButton);
                     });
                 } else {
                     noRegistrosMsg.style.display = 'block';
@@ -502,7 +590,6 @@
                 // 2. Renderizar Resumen Mensual
                 totalHorasMesDisplay.textContent = msToHoraMinutos(totalMensualMs);
                 
-                // Objetivo en milisegundos (154 horas * 3600 segundos/hora * 1000 ms/segundo)
                 const objetivoMensualMs = OBJETIVO_HORAS_MENSUAL * 3600 * 1000;
                 const diferenciaMs = totalMensualMs - objetivoMensualMs;
                 
@@ -510,8 +597,10 @@
                 
                 if (diferenciaMs >= 0) {
                     diferenciaHorasDisplay.classList.add('total-positivo');
+                    diferenciaHorasDisplay.classList.remove('total-negativo');
                 } else {
                     diferenciaHorasDisplay.classList.add('total-negativo');
+                    diferenciaHorasDisplay.classList.remove('total-positivo');
                 }
             };
 
@@ -531,10 +620,14 @@
             
             // --- INICIALIZACIÓN Y EVENT LISTENERS ---
 
-            // Asignar eventos a los botones de registro
-            btnEntrada.addEventListener('click', () => guardarRegistro('E'));
-            btnSalida.addEventListener('click', () => guardarRegistro('S'));
-            btnDNT.addEventListener('click', () => guardarRegistro('DNT')); // Evento para DNT
+            // Asignar eventos a los botones de registro en tiempo real
+            document.getElementById('btn-entrada').addEventListener('click', () => guardarRegistro('E'));
+            document.getElementById('btn-salida').addEventListener('click', () => guardarRegistro('S'));
+            document.getElementById('btn-dnt').addEventListener('click', () => guardarRegistro('DNT'));
+
+            // Asignar evento al botón de Guardar Manual
+            btnGuardarManual.addEventListener('click', guardarRegistroManual);
+
 
             // Iniciar el reloj al cargar la página y actualizar cada segundo
             actualizarReloj();
@@ -550,5 +643,5 @@
     </script>
 </body>
 </html>
-        
+                                         */
             
