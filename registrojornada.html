@@ -43,7 +43,7 @@
       color: white;
       font-weight: bold;
       font-size: 14px;
-      text-transform: uppercase;
+      /* text-transform: uppercase; */
     }
     td {
       font-size: 14px;
@@ -66,7 +66,7 @@
     #registroTabla td:nth-child(1) {
       font-weight: bold;
       background-color: #dbe4f0;
-      text-align: center;
+      text-align: right;
     }
     
     /* Botones */
@@ -91,7 +91,7 @@
     
     /* Botón de Eliminar Fila */
     .delete-btn {
-        background-color: #e74c3c;
+  
         color: white;
         padding: 6px 10px;
         margin-left: 5px;
@@ -629,7 +629,7 @@
             // 8: Acciones (Botón de Eliminar)
             const celdaAcciones = nuevaFila.insertCell(8);
             const deleteButton = document.createElement('button');
-            deleteButton.textContent = '🆑';
+            deleteButton.textContent = '❌';
             deleteButton.className = 'delete-btn action-button';
             deleteButton.onclick = () => deleteEntry(index);
             celdaAcciones.appendChild(deleteButton);
