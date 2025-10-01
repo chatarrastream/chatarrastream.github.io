@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -25,7 +25,7 @@
     window.app = initializeApp(firebaseConfig);
     window.db = getFirestore(window.app);
     window.auth = getAuth(window.app);
-    window.isAuthReady = false; // Bandera de estado de autenticación
+    window.isAuthReady = false; 
     
     // Function to handle authentication and data loading
     async function initFirebaseAndLoad() {
@@ -40,7 +40,7 @@
             console.log("Firebase Auth Ready. User ID:", window.userId);
             document.getElementById("authStatus").textContent = "Guardando en la nube (ID: " + window.userId.substring(0, 8) + "...)";
 
-            // Start listening for data changes (CRUCIAL: This handles initial load and updates)
+            // Start listening for data changes
             startDataListener();
 
         } catch (error) {
@@ -50,7 +50,7 @@
         }
     }
 
-    // Function to set up real-time listener
+    // Function to set up real-time listener (THE SOURCE OF TRUTH)
     function startDataListener() {
         const docPath = `/artifacts/${appId}/users/${window.userId}/data/time_log`;
         const logDocRef = doc(window.db, docPath);
@@ -58,20 +58,25 @@
         onSnapshot(logDocRef, (docSnap) => {
             const tbody = document.getElementById("registroTablaBody");
             
-            // 1. Check for existing data
+            // 1. Clear the current view to prevent duplication or stale data
+            tbody.innerHTML = ''; 
+
+            // 2. Load or initialize
             if (docSnap.exists() && docSnap.data().htmlContent && docSnap.data().htmlContent.trim().length > 0) {
+                // DATA FOUND: Restore the saved HTML
                 console.log("Datos cargados desde Firestore. Restaurando tabla.");
                 tbody.innerHTML = docSnap.data().htmlContent;
             } else {
-                // 2. Data does not exist (first run or explicitly cleared)
+                // NO DATA FOUND: Create initial template and save this empty state
                 console.log("No hay datos en Firestore. Creando plantilla inicial.");
-                if (tbody.children.length === 0) {
-                    reiniciarTablaLocal(false); // Create the 7 rows
-                    guardarTabla(); // Immediately save the initial empty state to prevent overwrite on next load
-                }
+                reiniciarTablaLocal(); // Creates 7 empty rows (does NOT save)
+                
+                // Immediately save the newly created empty state to prevent 
+                // the listener from firing this block repeatedly.
+                guardarTabla(); 
             }
             
-            // Apply events and calculate totals regardless of load source
+            // 3. Reapply events and calculate totals
             agregarEventosEdicion();
             calcularTodasLasHoras();
 
@@ -265,11 +270,10 @@
         const logDocRef = doc(window.db, docPath);
 
         const tempTbody = tbody.cloneNode(true);
-        // Clean empty rows before saving
+        // Clean empty rows before saving (to minimize saved size)
         Array.from(tempTbody.children).forEach(row => {
              const entrada = row.querySelector(".entrada")?.innerText.trim();
              const salida = row.querySelector(".salida")?.innerText.trim();
-             // Check if all major selectors are unselected, and there's no time/note data
              const diaSelected = !!row.querySelector(".dia-select select")?.value;
              const mesSelected = !!row.querySelector(".mes-select select")?.value;
              const yearSelected = !!row.querySelector(".year-select select")?.value;
@@ -342,7 +346,7 @@
         return select;
     }
     
-    // Utility function to create year selector (NEW)
+    // Utility function to create year selector
     function createYearSelector(selectedValue = "") {
         const currentYear = new Date().getFullYear();
         const select = document.createElement('select');
@@ -354,12 +358,10 @@
         option.textContent = "- Año -";
         select.appendChild(option);
         
-        // Show current year +/- 5 years
         for (let i = currentYear - 5; i <= currentYear + 5; i++) {
             option = document.createElement('option');
             option.value = i.toString();
             option.textContent = i;
-            // Pre-select current year if no value is passed
             if (option.value === selectedValue || (!selectedValue && i === currentYear)) {
                 option.selected = true;
             }
@@ -390,8 +392,9 @@
         guardarTabla();
         calcularTodasLasHoras();
     }
-
-    function agregarFila(diaValue = "", mesValue = "", yearValue = "") {
+    
+    // Added shouldSave parameter, defaults to true for button clicks
+    function agregarFila(diaValue = "", mesValue = "", yearValue = "", shouldSave = true) {
       const nuevaFila = tbody.insertRow(-1);
       const cellClasses = ["dia-select", "mes-select", "year-select", "entrada", "salida", "nota", "horas"]; 
       
@@ -412,33 +415,38 @@
         } else if (cls === "horas") {
           celda.textContent = ""; // Horas Trabajadas
         } else {
-          // --- Added placeholder attribute ---
           celda.contentEditable = true; 
            if (cls === "entrada" || cls === "salida") {
              celda.classList.add('text-center', 'font-mono');
-             celda.setAttribute('placeholder', 'hh:mm'); // Add placeholder
+             celda.setAttribute('placeholder', 'hh:mm'); 
            } else if (cls === "nota") {
              celda.setAttribute('placeholder', 'Descripción o tarea');
            }
           celda.addEventListener("input", handleCellInput);
         }
       });
-      guardarTabla();
+      
+      // Only save if called from an explicit user action (like clicking the Add Row button)
+      if (shouldSave) {
+        guardarTabla();
+      }
     }
     
-    // Takes optional boolean to control if save should happen (used in initial load)
+    // Only responsible for creating the initial visual state, no saving
     function reiniciarTablaLocal() {
         tbody.innerHTML = '';
         const currentYear = new Date().getFullYear().toString();
-        // Add 7 initial rows, pre-selecting the current year
+        
+        // Add 7 initial rows, explicitly setting shouldSave = false
         for(let i=0; i<7; i++) {
-            // NOTE: We don't call guardarTabla here, it's called after the loop finishes in startDataListener
-            agregarFila("", "", currentYear);
+            agregarFila("", "", currentYear, false); 
         }
-        // This is safe because agregarFila no longer calls itself recursively
+
+        // Cleanup any unexpected rows (shouldn't happen with the fix)
         while(tbody.children.length > 7) {
             tbody.lastChild.remove();
         }
+
         agregarEventosEdicion();
         calcularTodasLasHoras();
     }
@@ -447,7 +455,7 @@
         const confirmar = await showModal(
             "Confirmar Borrado",
             "¿Estás seguro de que quieres **borrar todos los datos**? Esto limpiará la tabla en la nube.",
-            true // isConfirm: true
+            true 
         );
         
         if (confirmar) {
@@ -455,13 +463,13 @@
             const logDocRef = doc(window.db, docPath);
 
             try {
-                // Set the content to an empty state which triggers the listener and local reload
+                // Set the content to an empty string to trigger the listener 
+                // to re-initialize the empty table
                  await setDoc(logDocRef, {
                     htmlContent: '',
                     lastUpdated: new Date().toISOString()
                 });
                 console.log("Tabla reiniciada en Firestore.");
-                // The onSnapshot listener will handle calling reiniciarTablaLocal after Firestore update
                 showModal("Éxito", "Todos los datos han sido borrados y la tabla se ha reiniciado.", false);
             } catch (error) {
                  console.error("Error al borrar en Firestore:", error);
@@ -485,17 +493,14 @@
         const mes = mesSelector ? mesSelector.value.trim().toLowerCase() : "";
         const year = yearSelector ? yearSelector.value.trim() : "";
         
-        // Use a composite key to group totals by Month-Year
         const monthlyKey = (mes.length > 0 && year.length > 0) ? `${mes}-${year}` : "";
 
         // Read values from contenteditable cells
-        // Clean innerText to remove placeholder content if present (though :empty:before handles it)
         const entrada = fila.querySelector(".entrada")?.innerText.trim();
         const salida = fila.querySelector(".salida")?.innerText.trim();
         const celdaHoras = fila.querySelector(".horas");
         
         // Validation setup
-        // Regex ensures format is HH:MM and values are valid (H: 00-23, M: 00-59)
         const horaRegex = /^([01]\d|2[0-3]):([0-5]\d)$/; 
         let entradaValida = entrada.length === 0 || horaRegex.test(entrada);
         let salidaValida = salida.length === 0 || horaRegex.test(salida);
@@ -521,7 +526,7 @@
           celdaHoras.textContent = (entrada.length > 0 || salida.length > 0) ? "-" : "";
         }
 
-        // Update Monthly Totals (only if a month AND year are selected)
+        // Update Monthly Totals 
         if (monthlyKey.length > 0) {
           if (!totalesPorMes[monthlyKey]) totalesPorMes[monthlyKey] = 0;
           totalesPorMes[monthlyKey] += minutosTrabajados;
@@ -538,7 +543,7 @@
 
       for (const key in totalesPorMes) {
         const total = totalesPorMes[key];
-        const [mes, year] = key.split('-'); // Split the composite key
+        const [mes, year] = key.split('-'); 
 
         const horas = Math.floor(total / 60);
         const minutos = total % 60;
@@ -579,11 +584,9 @@
 
     // --- CSV / PDF EXPORT/IMPORT ---
     
-    // Helper to get text from a cell (handling select vs contenteditable)
     function getCellContent(cell) {
         const select = cell.querySelector('select');
         if (select) {
-            // For CSV export, use the displayed text value
             return select.options[select.selectedIndex].text.trim();
         }
         return cell.innerText.replace(/\n/g, " ").trim();
@@ -604,7 +607,7 @@
         const filaCsv = [];
         celdas.forEach(celda => {
           let texto = getCellContent(celda).replace(/"/g, '""');
-          filaCsv.push(`"${texto}"`); // ALWAYS quoted for safety
+          filaCsv.push(`"${texto}"`); 
         });
         csv.push(filaCsv.join(","));
       });
@@ -630,7 +633,6 @@
 
         const headers = Array.from(tabla.querySelectorAll("thead th")).map(cell => cell.innerText.trim());
         
-        // Get data from table, reading select values
         const body = Array.from(tbody.querySelectorAll("tr")).map(row => 
             Array.from(row.querySelectorAll("td")).map(cell => getCellContent(cell))
         );
@@ -703,31 +705,26 @@
               
               if (char === '"') {
                   if (inQuotedField && i + 1 < filaCSV.length && filaCSV[i + 1] === '"') {
-                      // Escaped internal quote: "" -> "
                       field += '"';
-                      i++; // Skip the next quote
+                      i++; 
                   } else {
-                      // Toggle quote state (start or end of the field content)
                       inQuotedField = !inQuotedField;
                   }
               } else if (char === ',' && !inQuotedField) {
-                  // Delimiter found outside quotes, push the field content
                   fields.push(field);
                   field = '';
               } else {
                   field += char;
               }
           }
-          fields.push(field); // Push the last field
+          fields.push(field); 
 
           // Cleanup: trim, strip surrounding quotes, and unescape internal quotes
           const finalColumnas = fields.map(f => {
               f = f.trim();
               if (f.startsWith('"') && f.endsWith('"') && f.length >= 2) {
-                  // Strip external quotes and unescape internal quotes
                   f = f.substring(1, f.length - 1).replace(/""/g, '"');
               }
-              // If it wasn't quoted, just unescape internal quotes (though they shouldn't exist)
               return f.replace(/""/g, '"');
           });
           // --- END CSV Parsing ---
@@ -738,19 +735,16 @@
           }
 
           // Use the cleaned 'finalColumnas' array for assignment:
-          // The month selector expects a lowercase month name for its value.
           const mesCsvValue = finalColumnas[1] ? finalColumnas[1].toLowerCase() : ""; 
-          // The day selector expects a string padded with '0'
           const diaCsvValue = finalColumnas[0] && !isNaN(parseInt(finalColumnas[0])) ? finalColumnas[0].padStart(2, '0') : "";
           const yearCsvValue = finalColumnas[2] || ""; 
 
-          // Create row and populate data
+          // Create row and populate data, setting shouldSave = false
           const nuevaFila = tbody.insertRow();
           
           // 0: Dia (Selector)
           let celda = nuevaFila.insertCell(0);
           celda.className = 'p-1 text-center dia-select';
-          // Use the displayed text (which is the number) to find the padded value
           celda.appendChild(createDaySelector(diaCsvValue));
 
           // 1: Mes (Selector)
@@ -795,15 +789,15 @@
 
         e.target.value = null;
         
+        // Save the new, loaded data to Firestore
         guardarTabla();
         calcularTodasLasHoras();
         showModal("Carga Exitosa", "Los datos del archivo CSV han sido cargados.", false);
       };
       lector.readAsText(archivo);
     }
-    
-    // NOTE: Removed the DOMContentLoaded listener. Initialization is now handled by initFirebaseAndLoad -> startDataListener
   </script>
 </body>
 </html>
 
+                                
