@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Jornada Laboral</title>
+  <!-- Load Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Load Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    
+    // Configuración de logging para depuración de Firestore
+    setLogLevel('debug'); 
+
+    // Global variables provided by the environment
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+    const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+    // Initialize Firebase and Global variables
+    window.app = initializeApp(firebaseConfig);
+    window.db = getFirestore(window.app);
+    window.auth = getAuth(window.app);
+    window.isAuthReady = false; // Bandera de estado de autenticación
+    
+    // Function to handle authentication and data loading
+    async function initFirebaseAndLoad() {
+        try {
+            if (initialAuthToken) {
+                await signInWithCustomToken(window.auth, initialAuthToken);
+            } else {
+                await signInAnonymously(window.auth);
+            }
+            window.userId = window.auth.currentUser?.uid || crypto.randomUUID();
+            window.isAuthReady = true;
+            console.log("Firebase Auth Ready. User ID:", window.userId);
+            document.getElementById("authStatus").textContent = "Guardando en la nube (ID: " + window.userId.substring(0, 8) + "...)";
+
+            // Start listening for data changes (CRUCIAL: This handles initial load and updates)
+            startDataListener();
+
+        } catch (error) {
+            console.error("Error during Firebase initialization or sign-in:", error);
+            showModal("Error de Carga", "No se pudo conectar a la base de datos en la nube. Los cambios NO se guardarán.", false);
+            window.isAuthReady = false;
+        }
+    }
+
+    // Function to set up real-time listener
+    function startDataListener() {
+        const docPath = `/artifacts/${appId}/users/${window.userId}/data/time_log`;
+        const logDocRef = doc(window.db, docPath);
+
+        onSnapshot(logDocRef, (docSnap) => {
+            const tbody = document.getElementById("registroTablaBody");
+            
+            // 1. Check for existing data
+            if (docSnap.exists() && docSnap.data().htmlContent && docSnap.data().htmlContent.trim().length > 0) {
+                console.log("Datos cargados desde Firestore. Restaurando tabla.");
+                tbody.innerHTML = docSnap.data().htmlContent;
+            } else {
+                // 2. Data does not exist (first run or explicitly cleared)
+                console.log("No hay datos en Firestore. Creando plantilla inicial.");
+                if (tbody.children.length === 0) {
+                    reiniciarTablaLocal(false); // Create the 7 rows
+                    guardarTabla(); // Immediately save the initial empty state to prevent overwrite on next load
+                }
+            }
+            
+            // Apply events and calculate totals regardless of load source
+            agregarEventosEdicion();
+            calcularTodasLasHoras();
+
+        }, (error) => {
+            console.error("Error en onSnapshot:", error);
+            showModal("Error de Conexión", "Fallo al escuchar cambios en la base de datos.", false);
+        });
+    }
+
+    // Attach to window load
+    window.onload = initFirebaseAndLoad;
+  </script>
+  <!-- Load jspdf for PDF generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+  <style>
+    /* Custom styling for invalid cells (only for hour input now) */
+    .invalid-hora {
+      background-color: #fef08a !important; /* Tailwind yellow-200 */
+      border: 1px solid #f97316; /* Tailwind orange-500 */
+    }
+    td[contenteditable="true"]:focus {
+        outline: 2px solid #3b82f6; /* Focus ring */
+    }
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 50;
+    }
+    .modal-content {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        width: 90%;
+        max-width: 400px;
+        color: #1f2937;
+    }
+    /* Style for Selectors inside table cells */
+    .table-select {
+        @apply block w-full text-sm p-1 border border-gray-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500;
+    }
+    #cargarCSV { display: none; }
+    /* Style for placeholders in contenteditable elements */
+    [contenteditable=true]:empty:before {
+      content: attr(placeholder);
+      color: #9ca3af; /* Tailwind gray-400 */
+      font-style: italic;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 p-4 font-sans text-gray-800">
+  <div class="max-w-4xl mx-auto">
+    <h2 class="text-2xl font-extrabold text-blue-700 mb-4 text-center">
+      REGISTRO DE JORNADA DIARIA
+    </h2>
+    <p id="authStatus" class="text-xs text-center mb-4 text-gray-600">
+        Cargando datos...
+    </p>
+
+    <!-- Dropdown Menu and Controls -->
+    <div class="flex flex-wrap gap-2 justify-center sm:justify-start mb-4">
+      
+      <!-- Dropdown -->
+      <div class="relative inline-block group">
+        <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-150 ease-in-out dropbtn">
+          Opciones ▼
+        </button>
+        <div class="absolute mt-2 w-48 rounded-lg shadow-xl bg-white ring-1 ring-black ring-opacity-5 hidden group-hover:block z-20 dropdown-content">
+          <a href="#" onclick="agregarFila(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg">➕ Agregar Fila</a>
+          <a href="#" onclick="descargarDatos(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">⬇️ Descargar CSV</a>
+          <a href="#" onclick="descargarPDF(); return false;" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">📄 Descargar PDF</a>
+          <label class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+              📁 Cargar CSV
+              <input type="file" id="cargarCSV" accept=".csv" onchange="cargarCSV(event);">
+          </label>
+          <a href="#" onclick="iniciarBorradoTabla(); return false;" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-100 rounded-b-lg">🗑️ Borrar Tabla</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table Container for Horizontal Scrolling on Mobile -->
+    <div class="overflow-x-auto rounded-lg shadow-lg">
+      <table id="registroTabla" class="min-w-full bg-white divide-y divide-gray-200">
+        <thead class="bg-blue-100 text-blue-800 sticky top-0">
+          <tr>
+            <th class="px-3 py-2 text-xs font-medium uppercase tracking-wider">Día</th>
+            <th class="px-3 py-2 text-xs font-medium uppercase tracking-wider">Mes</th>
+            <th class="px-3 py-2 text-xs font-medium uppercase tracking-wider">Año</th>
+            <th class="px-3 py-2 text-xs font-medium uppercase tracking-wider">Entrada</th>
+            <th class="px-3 py-2 text-xs font-medium uppercase tracking-wider">Salida</th>
+            <th class="px-3 py-2 text-xs font-medium uppercase tracking-wider">Nota</th>
+            <th class="px-3 py-2 text-xs font-medium uppercase tracking-wider">Horas</th>
+          </tr>
+        </thead>
+        <tbody id="registroTablaBody" class="divide-y divide-gray-100 text-sm">
+          <!-- Rows will be dynamically added/loaded from Firestore -->
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- Totals and Summary Section -->
+    <div class="mt-8 p-4 bg-white rounded-lg shadow-xl border border-blue-200">
+      <h3 class="text-lg font-bold text-gray-700 mb-3">Resumen:</h3>
+      
+      <div class="mb-4">
+        <span class="text-sm font-semibold text-gray-600 block">Total Global Acumulado:</span>
+        <span id="totalHoras" class="text-2xl font-extrabold text-blue-600">0h 0m</span>
+      </div>
+
+      <h4 class="text-md font-semibold text-gray-700 mb-2">
+        Totales por mes — Objetivo: 154h:
+      </h4>
+      <ul id="totalesPorMes" class="list-none space-y-1 text-sm">
+        <!-- Totals populated by JS -->
+      </ul>
+    </div>
+  </div>
+
+  <!-- Custom Modal/Dialog Structure (Hidden by default) -->
+  <div id="customModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3 id="modalTitle" class="text-xl font-bold mb-3 text-gray-800"></h3>
+      <p id="modalMessage" class="mb-4 text-gray-700"></p>
+      <div id="modalActions" class="flex justify-end space-x-3">
+        <!-- Buttons added by JS -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const tabla = document.getElementById("registroTabla");
+    const tbody = document.getElementById("registroTablaBody");
+    const mesesValidos = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+    
+    // --- MODAL FUNCTIONS (Replaces alert/confirm) ---
+
+    let modalResolve = null;
+
+    function showModal(title, message, isConfirm = false, callback = null) {
+        document.getElementById("modalTitle").textContent = title;
+        document.getElementById("modalMessage").innerHTML = message; // Use innerHTML for bold formatting
+        const actionsDiv = document.getElementById("modalActions");
+        actionsDiv.innerHTML = '';
+        
+        const closeButton = document.createElement('button');
+        closeButton.className = 'bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-150';
+        closeButton.textContent = isConfirm ? 'Cancelar' : 'Cerrar';
+        closeButton.onclick = () => {
+            document.getElementById("customModal").classList.add('hidden');
+            if (isConfirm && modalResolve) modalResolve(false);
+            if (!isConfirm && callback) callback();
+        };
+        actionsDiv.appendChild(closeButton);
+
+        if (isConfirm) {
+            const confirmButton = document.createElement('button');
+            confirmButton.className = 'bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-150';
+            confirmButton.textContent = 'Aceptar';
+            confirmButton.onclick = () => {
+                document.getElementById("customModal").classList.add('hidden');
+                if (modalResolve) modalResolve(true);
+            };
+            actionsDiv.appendChild(confirmButton);
+            
+            document.getElementById("customModal").classList.remove('hidden');
+            return new Promise(resolve => { modalResolve = resolve; });
+        }
+        
+        document.getElementById("customModal").classList.remove('hidden');
+    }
+
+    // --- FIREBASE / DATA PERSISTENCE ---
+
+    async function guardarTabla() {
+        if (!window.isAuthReady || !window.db || !window.userId) {
+            console.warn("Firestore no está listo para guardar.");
+            document.getElementById("authStatus").textContent = "Guardando temporalmente...";
+            return;
+        }
+
+        const docPath = `/artifacts/${appId}/users/${window.userId}/data/time_log`;
+        const logDocRef = doc(window.db, docPath);
+
+        const tempTbody = tbody.cloneNode(true);
+        // Clean empty rows before saving
+        Array.from(tempTbody.children).forEach(row => {
+             const entrada = row.querySelector(".entrada")?.innerText.trim();
+             const salida = row.querySelector(".salida")?.innerText.trim();
+             // Check if all major selectors are unselected, and there's no time/note data
+             const diaSelected = !!row.querySelector(".dia-select select")?.value;
+             const mesSelected = !!row.querySelector(".mes-select select")?.value;
+             const yearSelected = !!row.querySelector(".year-select select")?.value;
+             const nota = row.querySelector(".nota")?.innerText.trim();
+
+             if (!diaSelected && !mesSelected && !yearSelected && !entrada && !salida && !nota) {
+                row.remove();
+             }
+        });
+
+        try {
+            await setDoc(logDocRef, {
+                htmlContent: tempTbody.innerHTML,
+                lastUpdated: new Date().toISOString()
+            });
+            document.getElementById("authStatus").textContent = "Datos guardados en la nube ✅";
+        } catch (error) {
+            console.error("Error al guardar en Firestore:", error);
+            document.getElementById("authStatus").textContent = "Error al guardar ❌";
+        }
+    }
+
+    // --- TABLE MANIPULATION ---
+
+    // Utility function to create day selector
+    function createDaySelector(selectedValue = "") {
+        const select = document.createElement('select');
+        select.className = 'table-select text-center';
+        select.name = 'dia';
+        
+        let option = document.createElement('option');
+        option.value = "";
+        option.textContent = "- Día -";
+        select.appendChild(option);
+        
+        for (let i = 1; i <= 31; i++) {
+            option = document.createElement('option');
+            option.value = i.toString().padStart(2, '0');
+            option.textContent = i;
+            if (option.value === selectedValue) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        }
+        select.addEventListener("change", handleCellInput);
+        return select;
+    }
+
+    // Utility function to create month selector
+    function createMonthSelector(selectedValue = "") {
+        const select = document.createElement('select');
+        select.className = 'table-select text-center';
+        select.name = 'mes';
+        
+        let option = document.createElement('option');
+        option.value = "";
+        option.textContent = "- Mes -";
+        select.appendChild(option);
+
+        mesesValidos.forEach(mes => {
+            option = document.createElement('option');
+            option.value = mes;
+            option.textContent = mes.charAt(0).toUpperCase() + mes.slice(1);
+            if (mes === selectedValue) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        });
+        select.addEventListener("change", handleCellInput);
+        return select;
+    }
+    
+    // Utility function to create year selector (NEW)
+    function createYearSelector(selectedValue = "") {
+        const currentYear = new Date().getFullYear();
+        const select = document.createElement('select');
+        select.className = 'table-select text-center';
+        select.name = 'year';
+        
+        let option = document.createElement('option');
+        option.value = "";
+        option.textContent = "- Año -";
+        select.appendChild(option);
+        
+        // Show current year +/- 5 years
+        for (let i = currentYear - 5; i <= currentYear + 5; i++) {
+            option = document.createElement('option');
+            option.value = i.toString();
+            option.textContent = i;
+            // Pre-select current year if no value is passed
+            if (option.value === selectedValue || (!selectedValue && i === currentYear)) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        }
+        select.addEventListener("change", handleCellInput);
+        return select;
+    }
+
+
+    function agregarEventosEdicion() {
+      // Re-attach listeners for contenteditable cells (Hours, Note)
+      const celdasEditables = tabla.querySelectorAll("td[contenteditable='true']");
+      celdasEditables.forEach(celda => {
+        celda.removeEventListener("input", handleCellInput);
+        celda.addEventListener("input", handleCellInput);
+      });
+
+      // Re-attach listeners for selectors (Day, Month, Year)
+      const selectores = tabla.querySelectorAll("select");
+      selectores.forEach(select => {
+        select.removeEventListener("change", handleCellInput);
+        select.addEventListener("change", handleCellInput);
+      });
+    }
+
+    function handleCellInput() {
+        guardarTabla();
+        calcularTodasLasHoras();
+    }
+
+    function agregarFila(diaValue = "", mesValue = "", yearValue = "") {
+      const nuevaFila = tbody.insertRow(-1);
+      const cellClasses = ["dia-select", "mes-select", "year-select", "entrada", "salida", "nota", "horas"]; 
+      
+      if (!yearValue) {
+          yearValue = new Date().getFullYear().toString();
+      }
+
+      cellClasses.forEach((cls, i) => {
+        const celda = nuevaFila.insertCell(i);
+        celda.className = `p-1 text-center ${cls}`;
+        
+        if (cls === "dia-select") {
+            celda.appendChild(createDaySelector(diaValue));
+        } else if (cls === "mes-select") {
+            celda.appendChild(createMonthSelector(mesValue));
+        } else if (cls === "year-select") {
+            celda.appendChild(createYearSelector(yearValue));
+        } else if (cls === "horas") {
+          celda.textContent = ""; // Horas Trabajadas
+        } else {
+          // --- Added placeholder attribute ---
+          celda.contentEditable = true; 
+           if (cls === "entrada" || cls === "salida") {
+             celda.classList.add('text-center', 'font-mono');
+             celda.setAttribute('placeholder', 'hh:mm'); // Add placeholder
+           } else if (cls === "nota") {
+             celda.setAttribute('placeholder', 'Descripción o tarea');
+           }
+          celda.addEventListener("input", handleCellInput);
+        }
+      });
+      guardarTabla();
+    }
+    
+    // Takes optional boolean to control if save should happen (used in initial load)
+    function reiniciarTablaLocal() {
+        tbody.innerHTML = '';
+        const currentYear = new Date().getFullYear().toString();
+        // Add 7 initial rows, pre-selecting the current year
+        for(let i=0; i<7; i++) {
+            // NOTE: We don't call guardarTabla here, it's called after the loop finishes in startDataListener
+            agregarFila("", "", currentYear);
+        }
+        // This is safe because agregarFila no longer calls itself recursively
+        while(tbody.children.length > 7) {
+            tbody.lastChild.remove();
+        }
+        agregarEventosEdicion();
+        calcularTodasLasHoras();
+    }
+
+    async function iniciarBorradoTabla() {
+        const confirmar = await showModal(
+            "Confirmar Borrado",
+            "¿Estás seguro de que quieres **borrar todos los datos**? Esto limpiará la tabla en la nube.",
+            true // isConfirm: true
+        );
+        
+        if (confirmar) {
+            const docPath = `/artifacts/${appId}/users/${window.userId}/data/time_log`;
+            const logDocRef = doc(window.db, docPath);
+
+            try {
+                // Set the content to an empty state which triggers the listener and local reload
+                 await setDoc(logDocRef, {
+                    htmlContent: '',
+                    lastUpdated: new Date().toISOString()
+                });
+                console.log("Tabla reiniciada en Firestore.");
+                // The onSnapshot listener will handle calling reiniciarTablaLocal after Firestore update
+                showModal("Éxito", "Todos los datos han sido borrados y la tabla se ha reiniciado.", false);
+            } catch (error) {
+                 console.error("Error al borrar en Firestore:", error);
+                 showModal("Error de Borrado", "Fallo al borrar los datos en la nube.", false);
+            }
+        }
+    }
+
+    // --- CALCULATIONS AND VALIDATIONS ---
+
+    function calcularTodasLasHoras() {
+      const filas = tbody.querySelectorAll("tr");
+      const totalesPorMes = {};
+      let totalGlobalMin = 0;
+
+      filas.forEach(fila => {
+        // Read values from selectors for day, month, and year
+        const mesSelector = fila.querySelector(".mes-select select");
+        const yearSelector = fila.querySelector(".year-select select");
+        
+        const mes = mesSelector ? mesSelector.value.trim().toLowerCase() : "";
+        const year = yearSelector ? yearSelector.value.trim() : "";
+        
+        // Use a composite key to group totals by Month-Year
+        const monthlyKey = (mes.length > 0 && year.length > 0) ? `${mes}-${year}` : "";
+
+        // Read values from contenteditable cells
+        // Clean innerText to remove placeholder content if present (though :empty:before handles it)
+        const entrada = fila.querySelector(".entrada")?.innerText.trim();
+        const salida = fila.querySelector(".salida")?.innerText.trim();
+        const celdaHoras = fila.querySelector(".horas");
+        
+        // Validation setup
+        // Regex ensures format is HH:MM and values are valid (H: 00-23, M: 00-59)
+        const horaRegex = /^([01]\d|2[0-3]):([0-5]\d)$/; 
+        let entradaValida = entrada.length === 0 || horaRegex.test(entrada);
+        let salidaValida = salida.length === 0 || horaRegex.test(salida);
+        
+        fila.querySelector(".entrada")?.classList.toggle("invalid-hora", entrada.length > 0 && !entradaValida);
+        fila.querySelector(".salida")?.classList.toggle("invalid-hora", salida.length > 0 && !salidaValida);
+        
+        let minutosTrabajados = 0;
+
+        // Calculate Hours if both are valid and present
+        if (entrada && salida && entradaValida && salidaValida) {
+          const [h1, m1] = entrada.split(":").map(Number);
+          const [h2, m2] = salida.split(":").map(Number);
+
+          let totalMin = (h2 * 60 + m2) - (h1 * 60 + m1);
+          if (totalMin < 0) totalMin += 1440; 
+
+          minutosTrabajados = totalMin;
+          const horas = Math.floor(totalMin / 60);
+          const minutos = totalMin % 60;
+          celdaHoras.textContent = `${horas}h ${minutos}m`;
+        } else {
+          celdaHoras.textContent = (entrada.length > 0 || salida.length > 0) ? "-" : "";
+        }
+
+        // Update Monthly Totals (only if a month AND year are selected)
+        if (monthlyKey.length > 0) {
+          if (!totalesPorMes[monthlyKey]) totalesPorMes[monthlyKey] = 0;
+          totalesPorMes[monthlyKey] += minutosTrabajados;
+        }
+
+        totalGlobalMin += minutosTrabajados;
+      });
+
+      // Update Monthly Summary UI
+      const lista = document.getElementById("totalesPorMes");
+      lista.innerHTML = "";
+
+      const objetivoMensualMin = 154 * 60; // 154 hours
+
+      for (const key in totalesPorMes) {
+        const total = totalesPorMes[key];
+        const [mes, year] = key.split('-'); // Split the composite key
+
+        const horas = Math.floor(total / 60);
+        const minutos = total % 60;
+        const diferencia = objetivoMensualMin - total;
+        const diffHoras = Math.floor(Math.abs(diferencia) / 60);
+        const diffMin = Math.abs(diferencia) % 60;
+
+        const li = document.createElement("li");
+        li.className = "flex justify-between";
+        
+        let diferenciaTexto = "";
+        let colorClass = "text-gray-700";
+
+        if (diferencia > 0) {
+          diferenciaTexto = `Faltan ${diffHoras}h ${diffMin}m`;
+          colorClass = "text-red-600 font-medium";
+        } else if (diferencia < 0) {
+          diferenciaTexto = `Exceso de ${diffHoras}h ${diffMin}m`;
+          colorClass = "text-green-600 font-medium";
+        } else {
+          diferenciaTexto = `Objetivo exacto`;
+          colorClass = "text-blue-600 font-medium";
+        }
+
+        const nombreMesCapitalizado = mes.charAt(0).toUpperCase() + mes.slice(1);
+        li.innerHTML = `
+            <span>${nombreMesCapitalizado} ${year}: <strong class="text-blue-700">${horas}h ${minutos}m</strong></span>
+            <span class="${colorClass}">${diferenciaTexto}</span>
+        `;
+        lista.appendChild(li);
+      }
+
+      // Update Global Total UI
+      const totalHoras = Math.floor(totalGlobalMin / 60);
+      const totalMin = totalGlobalMin % 60;
+      document.getElementById("totalHoras").textContent = `${totalHoras}h ${totalMin}m`;
+    }
+
+    // --- CSV / PDF EXPORT/IMPORT ---
+    
+    // Helper to get text from a cell (handling select vs contenteditable)
+    function getCellContent(cell) {
+        const select = cell.querySelector('select');
+        if (select) {
+            // For CSV export, use the displayed text value
+            return select.options[select.selectedIndex].text.trim();
+        }
+        return cell.innerText.replace(/\n/g, " ").trim();
+    }
+    
+    function descargarDatos() {
+      let csv = [];
+      const filas = tabla.querySelectorAll("tr");
+      
+      // 1. Add Header row
+      const headerCells = tabla.querySelectorAll("thead th");
+      const headerCsv = Array.from(headerCells).map(th => `"${th.innerText.trim().replace(/"/g, '""')}"`);
+      csv.push(headerCsv.join(","));
+
+      // 2. Add Data rows
+      filas.forEach((fila, rowIndex) => {
+        const celdas = fila.querySelectorAll("td");
+        const filaCsv = [];
+        celdas.forEach(celda => {
+          let texto = getCellContent(celda).replace(/"/g, '""');
+          filaCsv.push(`"${texto}"`); // ALWAYS quoted for safety
+        });
+        csv.push(filaCsv.join(","));
+      });
+
+      const csvContent = csv.join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", "registro_jornada.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    async function descargarPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        doc.setFontSize(14);
+        doc.text("Registro de Jornada Laboral", 14, 15);
+
+        const headers = Array.from(tabla.querySelectorAll("thead th")).map(cell => cell.innerText.trim());
+        
+        // Get data from table, reading select values
+        const body = Array.from(tbody.querySelectorAll("tr")).map(row => 
+            Array.from(row.querySelectorAll("td")).map(cell => getCellContent(cell))
+        );
+
+        doc.autoTable({
+            head: [headers],
+            body: body,
+            startY: 25,
+            styles: { fontSize: 9, cellPadding: 3, halign: 'center' },
+            headStyles: { fillColor: [59, 130, 246], textColor: 255, halign: 'center' },
+            theme: 'grid',
+        });
+
+        const resumenTotales = document.getElementById("totalesPorMes");
+        const totalesText = Array.from(resumenTotales.children).map(li => li.innerText.replace(/\s+/g, ' ').trim());
+
+        doc.setFontSize(12);
+        let yStart = doc.lastAutoTable.finalY + 10;
+        doc.text("Totales por mes — Objetivo: 154h", 14, yStart);
+        totalesText.forEach((linea, i) => {
+            doc.text(linea, 14, yStart + 8 + i * 6);
+        });
+        
+        const totalGlobal = document.getElementById("totalHoras").innerText;
+        doc.text(`Total global acumulado: ${totalGlobal}`, 14, yStart + 8 + totalesText.length * 6 + 8);
+
+        doc.save("registro_jornada.pdf");
+    }
+
+    async function cargarCSV(e) {
+      const archivo = e.target.files[0];
+      if (!archivo) return;
+
+      if (!archivo.name.toLowerCase().endsWith(".csv")) {
+        showModal("Error de Archivo", "Solo se permiten archivos con extensión .csv.", false);
+        e.target.value = null; 
+        return;
+      }
+
+      const lector = new FileReader();
+      lector.onload = async function (event) {
+        const texto = event.target.result;
+        const filas = texto.split(/\r\n|\n/).filter(f => f.trim() !== "");
+        
+        if (filas.length <= 1) {
+            showModal("Error de Contenido", "El archivo CSV está vacío o solo tiene encabezados.", false);
+            return;
+        }
+
+        const confirmarLimpieza = await showModal(
+            "Limpiar Tabla",
+            "¿Quieres limpiar la tabla actual antes de cargar el CSV?",
+            true
+        );
+
+        if (confirmarLimpieza) {
+            tbody.innerHTML = "";
+        }
+
+        // Process rows, skipping header (filas[0])
+        filas.slice(1).forEach(filaCSV => {
+          
+          // --- CSV Parsing Logic (Robust) ---
+          const fields = [];
+          let field = '';
+          let inQuotedField = false;
+
+          for (let i = 0; i < filaCSV.length; i++) {
+              const char = filaCSV[i];
+              
+              if (char === '"') {
+                  if (inQuotedField && i + 1 < filaCSV.length && filaCSV[i + 1] === '"') {
+                      // Escaped internal quote: "" -> "
+                      field += '"';
+                      i++; // Skip the next quote
+                  } else {
+                      // Toggle quote state (start or end of the field content)
+                      inQuotedField = !inQuotedField;
+                  }
+              } else if (char === ',' && !inQuotedField) {
+                  // Delimiter found outside quotes, push the field content
+                  fields.push(field);
+                  field = '';
+              } else {
+                  field += char;
+              }
+          }
+          fields.push(field); // Push the last field
+
+          // Cleanup: trim, strip surrounding quotes, and unescape internal quotes
+          const finalColumnas = fields.map(f => {
+              f = f.trim();
+              if (f.startsWith('"') && f.endsWith('"') && f.length >= 2) {
+                  // Strip external quotes and unescape internal quotes
+                  f = f.substring(1, f.length - 1).replace(/""/g, '"');
+              }
+              // If it wasn't quoted, just unescape internal quotes (though they shouldn't exist)
+              return f.replace(/""/g, '"');
+          });
+          // --- END CSV Parsing ---
+          
+          if (finalColumnas.length < 7) { 
+             console.warn("Fila ignorada por formato incorrecto (esperando 7 columnas):", finalColumnas);
+             return;
+          }
+
+          // Use the cleaned 'finalColumnas' array for assignment:
+          // The month selector expects a lowercase month name for its value.
+          const mesCsvValue = finalColumnas[1] ? finalColumnas[1].toLowerCase() : ""; 
+          // The day selector expects a string padded with '0'
+          const diaCsvValue = finalColumnas[0] && !isNaN(parseInt(finalColumnas[0])) ? finalColumnas[0].padStart(2, '0') : "";
+          const yearCsvValue = finalColumnas[2] || ""; 
+
+          // Create row and populate data
+          const nuevaFila = tbody.insertRow();
+          
+          // 0: Dia (Selector)
+          let celda = nuevaFila.insertCell(0);
+          celda.className = 'p-1 text-center dia-select';
+          // Use the displayed text (which is the number) to find the padded value
+          celda.appendChild(createDaySelector(diaCsvValue));
+
+          // 1: Mes (Selector)
+          celda = nuevaFila.insertCell(1);
+          celda.className = 'p-1 text-center mes-select';
+          celda.appendChild(createMonthSelector(mesCsvValue));
+          
+          // 2: Año (Selector)
+          celda = nuevaFila.insertCell(2);
+          celda.className = 'p-1 text-center year-select';
+          celda.appendChild(createYearSelector(yearCsvValue));
+
+          // 3: Entrada (Editable)
+          celda = nuevaFila.insertCell(3);
+          celda.contentEditable = true;
+          celda.className = 'p-1 text-center entrada font-mono';
+          celda.textContent = finalColumnas[3] || "";
+          celda.setAttribute('placeholder', 'hh:mm');
+          celda.addEventListener("input", handleCellInput);
+
+          // 4: Salida (Editable)
+          celda = nuevaFila.insertCell(4);
+          celda.contentEditable = true;
+          celda.className = 'p-1 text-center salida font-mono';
+          celda.textContent = finalColumnas[4] || "";
+          celda.setAttribute('placeholder', 'hh:mm');
+          celda.addEventListener("input", handleCellInput);
+
+          // 5: Nota (Editable)
+          celda = nuevaFila.insertCell(5);
+          celda.contentEditable = true;
+          celda.className = 'p-1 text-center nota';
+          celda.textContent = finalColumnas[5] || "";
+          celda.setAttribute('placeholder', 'Descripción o tarea');
+          celda.addEventListener("input", handleCellInput);
+
+          // 6: Horas (Calculated)
+          celda = nuevaFila.insertCell(6);
+          celda.className = 'p-1 text-center horas';
+          celda.textContent = "";
+        });
+
+        e.target.value = null;
+        
+        guardarTabla();
+        calcularTodasLasHoras();
+        showModal("Carga Exitosa", "Los datos del archivo CSV han sido cargados.", false);
+      };
+      lector.readAsText(archivo);
+    }
+    
+    // NOTE: Removed the DOMContentLoaded listener. Initialization is now handled by initFirebaseAndLoad -> startDataListener
+  </script>
+</body>
+</html>
+
