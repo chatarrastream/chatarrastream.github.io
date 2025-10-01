@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registro de Jornada</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      margin: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    td, th {
+      border: 1px solid #999;
+      padding: 8px;
+      text-align: center;
+    }
+    td[contenteditable="true"] {
+      background-color: #f9f9f9;
+      font-size: 14px;
+      text-transform: lowercase;
+    }
+    #registroTabla td:nth-child(1) {
+      text-align: right;
+    }
+    button {
+      margin-top: 10px;
+      margin-right: 10px;
+      padding: 8px 12px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .invalid-mes {
+      background-color: #fdd;
+      position: relative;
+    }
+    .invalid-mes::after {
+      content: "Mes inválido";
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: #f44336;
+      color: white;
+      padding: 4px 6px;
+      font-size: 12px;
+      white-space: nowrap;
+      border-radius: 4px;
+      margin-top: 2px;
+      z-index: 10;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+    .invalid-mes:hover::after {
+      opacity: 1;
+    }
+    .dropdown {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.dropbtn {
+  background-color: #3498db;
+  color: white;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 180px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  z-index: 1;
+  border-radius: 4px;
+}
+
+.dropdown-content a,
+.dropdown-content label {
+  color: black;
+  padding: 10px 12px;
+  text-decoration: none;
+  display: block;
+  font-size: 14px;
+}
+
+.dropdown-content a:hover,
+.dropdown-content label:hover {
+  background-color: #f1f1f1;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown:hover .dropbtn {
+  background-color: #2980b9;
+}
+.invalid-hora {
+  background-color: #92c5fc;
+  border: 2px solid red;
+  position: relative;
+}
+
+.invalid-hora::after {
+  content: "Formato inválido (hh:mm)";
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #f44336;
+  color: white;
+  padding: 4px 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  border-radius: 4px;
+  margin-top: 2px;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.invalid-hora:hover::after {
+  opacity: 1;
+}
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+  <h2>REGISTRO DE JORNADA DIARIA</h2>
+
+  <div class="dropdown">
+  <button class="dropbtn">Opciones</button>
+  <div class="dropdown-content">
+    <a href="#" onclick="agregarFila()">AGREGAR FILA</a>
+    <a href="#" onclick="descargarDatos()">DESCARGAR CSV</a>
+    <a href="#" onclick="descargarPDF()">DESCARGAR PDF</a>
+    <a href="#" onclick="reiniciarTabla()">BORRAR TABLA</a>
+    <label style="cursor: pointer; padding: 10px 12px; display: block;">
+  📁 CARGAR CSV
+  <input type="file" id="cargarCSV" accept=".csv" style="display: none;">
+</label>
+  </div>
+</div>
+  <table id="registroTabla">
+    <thead>
+      <tr>
+        <th>Día</th>
+        <th>Mes</th>
+        <th>Hora de Entrada</th>
+        <th>Hora de Salida</th>
+        <th>Nota</th>
+        <th>Horas Trabajadas</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td contenteditable="true"> </td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
+      <tr><td contenteditable="true"> </td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
+      <tr><td contenteditable="true"> </td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
+      <tr><td contenteditable="true"> </td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
+      <tr><td contenteditable="true"> </td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
+      <tr><td contenteditable="true"> </td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
+      <tr><td contenteditable="true"> </td><td contenteditable="true"></td><td contenteditable="true" class="entrada"></td><td contenteditable="true" class="salida"></td><td contenteditable="true"></td><td class="horas"></td></tr>
+    </tbody>
+  </table>
+  <h3>Totales por mes — Objetivo: 154h:</h3>
+<table>
+  <tr>
+    <th><ul id="totalesPorMes"></ul></th>
+    
+  </tr>
+</table>
+  
+  <script>
+    const tabla = document.getElementById("registroTabla");
+    const mesesValidos = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+    
+    window.onload = function () {
+      const datosGuardados = localStorage.getItem("tablaDatos");
+      if (datosGuardados) {
+        tabla.innerHTML = datosGuardados;
+      }
+      agregarEventosEdicion();
+      calcularTodasLasHoras();
+    };
+
+    function agregarEventosEdicion() {
+      const celdas = tabla.querySelectorAll("td[contenteditable='true']");
+      celdas.forEach(celda => {
+        celda.addEventListener("input", () => {
+          guardarTabla();
+          calcularTodasLasHoras();
+        });
+      });
+    }
+
+    function guardarTabla() {
+  const tablaClon = tabla.cloneNode(true);
+  const filas = tablaClon.querySelectorAll("tbody tr");
+
+  filas.forEach(fila => {
+    const celdas = fila.querySelectorAll("td[contenteditable='true']");
+    const estaVacia = Array.from(celdas).every(celda => celda.innerText.trim() === "");
+
+    if (estaVacia) {
+      fila.remove(); // Elimina la fila vacía
+    } else {
+      celdas.forEach(celda => {
+        celda.innerText = celda.innerText.toLowerCase();
+      });
+    }
+  });
+
+  localStorage.setItem("tablaDatos", tablaClon.innerHTML);
+}
+
+    function agregarFila() {
+      const nuevaFila = tabla.insertRow(-1);
+      const contenido = ["", "", "", "", "", ""];
+      contenido.forEach((_, i) => {
+        const celda = nuevaFila.insertCell(i);
+        if (i === 5) {
+          celda.classList.add("horas");
+        } else {
+          celda.contentEditable = true;
+          if (i === 2) celda.classList.add("entrada");
+          if (i === 3) celda.classList.add("salida");
+          celda.addEventListener("input", () => {
+            guardarTabla();
+            calcularTodasLasHoras();
+          });
+        }
+      });
+      guardarTabla();
+    }
+
+    function reiniciarTabla() {
+      if (confirm("¿Estás seguro de que quieres borrar todos los datos?")) {
+        localStorage.removeItem("tablaDatos");
+        location.reload();
+      }
+    }
+
+    function calcularTodasLasHoras() {
+      const filas = tabla.querySelectorAll("tbody tr");
+      const totalesPorMes = {};
+      let totalGlobalMin = 0;
+
+      filas.forEach(fila => {
+        const entrada = fila.querySelector(".entrada")?.innerText.trim();
+        const salida = fila.querySelector(".salida")?.innerText.trim();
+        const celdaHoras = fila.querySelector(".horas");
+        const horaRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+
+        const mesCelda = fila.cells[1];
+       let mes = mesCelda?.innerText.trim().toLowerCase();
+        if (!mesesValidos.includes(mes)) {
+          mesCelda.classList.add("invalid-mes");
+          mes = null;
+        } else {
+          mesCelda.classList.remove("invalid-mes");
+        }
+        
+let entradaValida = horaRegex.test(entrada);
+let salidaValida = horaRegex.test(salida);
+
+fila.querySelector(".entrada")?.classList.toggle("invalid-hora", !entradaValida);
+fila.querySelector(".salida")?.classList.toggle("invalid-hora", !salidaValida);
+
+if (!entradaValida || !salidaValida) {
+  celdaHoras.textContent = "-";
+  return;
+}
+        let minutosTrabajados = 0;
+
+        if (entrada && salida) {
+          const [h1, m1] = entrada.split(":").map(Number);
+          const [h2, m2] = salida.split(":").map(Number);
+
+          if (!isNaN(h1) && !isNaN(m1) && !isNaN(h2) && !isNaN(m2)) {
+            let totalMin = (h2 * 60 + m2) - (h1 * 60 + m1);
+            if (totalMin < 0) totalMin += 1440;
+
+            minutosTrabajados = totalMin;
+            const horas = Math.floor(totalMin / 60);
+            const minutos = totalMin % 60;
+            celdaHoras.textContent = `${horas}h ${minutos}m`;
+          } else {
+            celdaHoras.textContent = "formato inválido";
+          }
+        } else {
+          celdaHoras.textContent = "";
+        }
+
+        
+        if (mes) {
+          if (!totalesPorMes[mes]) totalesPorMes[mes] = 0;
+          totalesPorMes[mes] += minutosTrabajados;
+        }
+
+        totalGlobalMin += minutosTrabajados;
+      });
+
+      const lista = document.getElementById("totalesPorMes");
+lista.innerHTML = "";
+
+const objetivoMensualMin = 154 * 60 + 00;
+
+for (const mes in totalesPorMes) {
+  const total = totalesPorMes[mes];
+  const horas = Math.floor(total / 60);
+  const minutos = total % 60;
+
+  const diferencia = objetivoMensualMin - total;
+  const diffHoras = Math.floor(Math.abs(diferencia) / 60);
+  const diffMin = Math.abs(diferencia) % 60;
+
+  const li = document.createElement("li");
+
+  if (diferencia > 0) {
+    li.textContent = `${mes.charAt(0).toUpperCase() + mes.slice(1)}: ${horas}h ${minutos}m — Faltan ${diffHoras}h ${diffMin}m`;
+    li.style.color = "darkred";
+  } else if (diferencia < 0) {
+    li.textContent = `${mes.charAt(0).toUpperCase() + mes.slice(1)}: ${horas}h ${minutos}m — Exceso de ${diffHoras}h ${diffMin}m`;
+    li.style.color = "green";
+  } else {
+    li.textContent = `${mes.charAt(0).toUpperCase() + mes.slice(1)}: ${horas}h ${minutos}m — Objetivo exacto`;
+    li.style.color = "blue";
+  }
+
+  lista.appendChild(li);
+}
+
+      const totalHoras = Math.floor(totalGlobalMin / 60);
+      const totalMin = totalGlobalMin % 60;
+      document.getElementById("totalHoras").textContent = `${totalHoras}h ${totalMin}m`;
+    }
+
+    function descargarDatos() {
+      let csv = [];
+      const filas = tabla.querySelectorAll("tr");
+      filas.forEach(fila => {
+        const celdas = fila.querySelectorAll("th, td");
+        const filaCsv = [];
+        celdas.forEach(celda => {
+          let texto = celda.innerText.replace(/\n/g, " ").replace(/"/g, '""');
+          filaCsv.push(`"${texto}"`);
+        });
+        csv.push(filaCsv.join(","));
+      });
+
+      const csvContent = csv.join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", "registro_jornada.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    async function descargarPDF() {
+  const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+  doc.setFontSize(14);
+  doc.text("Registro de Jornada", 14, 15);
+
+  const headers = [];
+  const body = [];
+
+  const table = document.getElementById("registroTabla");
+  const headerCells = table.querySelectorAll("thead th");
+  headerCells.forEach(cell => headers.push(cell.innerText.trim()));
+
+  const rows = table.querySelectorAll("tbody tr");
+  rows.forEach(row => {
+    const rowData = [];
+    const cells = row.querySelectorAll("td");
+    cells.forEach(cell => rowData.push(cell.innerText.trim().toLowerCase()));
+    body.push(rowData);
+  });
+
+  doc.autoTable({
+    head: [headers],
+    body: body,
+    startY: 25,
+    styles: {
+      fontSize: 9,
+      cellPadding: 3,
+      halign: 'center'
+    },
+    headStyles: {
+      fillColor: [41, 128, 185],
+      textColor: 255,
+      halign: 'center'
+    },
+    theme: 'grid',
+  });
+
+  // Obtener totales y añadir diferencias respecto al objetivo mensual
+  const resumenTotales = document.getElementById("totalesPorMes");
+  const totalesText = Array.from(resumenTotales.children).map(li => {
+    const texto = li.innerText;
+    const match = texto.match(/(.+):\s*(\d+)h\s*(\d+)m/i);
+    if (!match) return texto;
+
+    const nombreMes = match[1];
+    const horas = parseInt(match[2]);
+    const minutos = parseInt(match[3]);
+
+    const totalMin = horas * 60 + minutos;
+    const objetivoMin = 154 * 60 + 00;
+    const diferencia = totalMin - objetivoMin;
+    const diffHoras = Math.floor(Math.abs(diferencia) / 60);
+    const diffMin = Math.abs(diferencia) % 60;
+
+    let diferenciaTexto = "";
+    if (diferencia > 0) {
+      diferenciaTexto = ` — Exceso de ${diffHoras}h ${diffMin}m`;
+    } else if (diferencia < 0) {
+      diferenciaTexto = ` — Faltan ${diffHoras}h ${diffMin}m`;
+    } else {
+      diferenciaTexto = ` — Objetivo exacto`;
+    }
+
+    return `${nombreMes}: ${horas}h ${minutos}m${diferenciaTexto}`;
+  });
+
+  doc.setFontSize(12);
+  let yStart = doc.lastAutoTable.finalY + 10;
+  doc.text("Totales por mes — Objetivo: 154h", 14, yStart);
+  totalesText.forEach((linea, i) => {
+    doc.text(linea, 14, yStart + 8 + i * 6);
+  });
+
+ // const totalGlobal = document.getElementById("totalHoras").innerText;
+//  doc.text(`Total global: ${totalGlobal}`, 14, yStart + 8 + totalesText.length * 6 + 6);
+
+  doc.save("registro_jornada.pdf");
+}
+
+document.getElementById("cargarCSV").addEventListener("change", function (e) {
+  const archivo = e.target.files[0];
+  if (!archivo) return;
+
+  if (!archivo.name.toLowerCase().endsWith(".csv")) {
+    alert("Solo se permiten archivos con extensión .csv");
+    return;
+  }
+
+  const lector = new FileReader();
+  lector.onload = function (event) {
+    const texto = event.target.result;
+    const filas = texto.split("\n").filter(f => f.trim() !== "");
+    const tabla = document.getElementById("registroTabla");
+    const tbody = tabla.querySelector("tbody");
+
+    if (confirm("¿Quieres limpiar la tabla antes de cargar el CSV?")) {
+  tbody.innerHTML = "";
+}
+
+    filas.slice(1).forEach(filaCSV => {
+      const columnas = filaCSV.split(",").map(col =>
+        col.replace(/^"|"$/g, "").replace(/""/g, '"').trim()
+      );
+      const nuevaFila = tbody.insertRow();
+      columnas.forEach((col, i) => {
+        const celda = nuevaFila.insertCell(i);
+        if (i === 5) {
+          celda.classList.add("horas");
+          celda.textContent = col;
+        } else {
+          celda.contentEditable = true;
+          if (i === 2) celda.classList.add("entrada");
+          if (i === 3) celda.classList.add("salida");
+          celda.textContent = col;
+          celda.addEventListener("input", () => {
+            guardarTabla();
+            calcularTodasLasHoras();
+          });
+        }
+      });
+    });
+
+    guardarTabla();
+    calcularTodasLasHoras();
+  };
+  lector.readAsText(archivo);
+});
+
+
+  </script>
+</body>
+</html>
