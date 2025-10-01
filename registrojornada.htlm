@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Jornada</title>
+  <style>
+    /* Estilos base */
+    body {
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      margin: 15px;
+      color: #333;
+      background-color: #f4f7f9;
+    }
+    h2, h3 {
+      color: #34495e;
+    }
+    
+    /* Contenedor principal para centrar en móvil */
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    /* Estilos de tabla */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden; 
+    }
+    td, th {
+      border: 1px solid #ddd;
+      padding: 10px 8px;
+      text-align: center;
+      vertical-align: middle;
+    }
+    th {
+      background-color: #3498db;
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+    td {
+      font-size: 14px;
+      background-color: white;
+    }
+    
+    /* Estilos de edición */
+    td[contenteditable="true"] {
+      background-color: #ecf0f1;
+      text-transform: lowercase;
+      cursor: text;
+      transition: background-color 0.1s;
+    }
+    td[contenteditable="true"]:focus {
+        background-color: #e0e6e9;
+        outline: 1px solid #3498db;
+    }
+
+    /* Día Semanal */
+    #registroTabla td:nth-child(1) {
+      font-weight: bold;
+      background-color: #dbe4f0;
+      text-align: center;
+    }
+    
+    /* Botones */
+    .action-button, .dropbtn {
+      padding: 10px 14px;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      background-color: #3498db;
+      color: white;
+      transition: background-color 0.2s, transform 0.1s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .action-button:hover, .dropbtn:hover {
+      background-color: #2980b9;
+      transform: translateY(-1px);
+    }
+    .action-button:active, .dropbtn:active {
+      transform: translateY(0);
+    }
+    
+    /* Botón de Eliminar Fila */
+    .delete-btn {
+        background-color: #e74c3c;
+        color: white;
+        padding: 6px 10px;
+        margin-left: 5px;
+        font-size: 12px;
+    }
+    .delete-btn:hover {
+        background-color: #c0392b;
+    }
+
+    /* Dropdown Styles */
+    .dropdown {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: white;
+      min-width: 180px;
+      box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+      z-index: 10;
+      border-radius: 6px;
+      overflow: hidden;
+      top: 100%; 
+      left: 0;
+      margin-top: 5px;
+    }
+    .dropdown-content a,
+    .dropdown-content label {
+      color: #333;
+      padding: 10px 12px;
+      text-decoration: none;
+      display: block;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .dropdown-content a:hover,
+    .dropdown-content label:hover {
+      background-color: #f1f1f1;
+    }
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    /* Validation Styles */
+    .invalid-hora {
+      background-color: #f9e3e3 !important; 
+      border: 1px solid #e74c3c !important; 
+    }
+    .invalid-fecha {
+      background-color: #f9e3e3 !important; 
+      color: #e74c3c;
+      font-weight: bold;
+    }
+    .weekend-day {
+      color: #e74c3c;
+      font-weight: bold;
+    }
+
+    /* Selectors in Table (Ajuste de Ancho) */
+    .table-select {
+        border: 1px solid #ccc;
+        padding: 6px;
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 13px;
+        background-color: #f7f9fa;
+    }
+
+    .dia-select {
+        max-width: 60px; /* Ajuste para el Día */
+    }
+
+    .mes-select {
+        max-width: 90px; /* Ajuste para el Mes */
+    }
+    
+    .year-select {
+        max-width: 75px; /* Ajuste para el Año */
+    }
+
+    /* Total Section Styling */
+    #totalHoras {
+        font-size: 1.6em;
+        font-weight: 700;
+        color: #27ae60; 
+        display: block;
+        margin-top: 5px;
+    }
+    #totalesPorMes li {
+        margin-bottom: 8px;
+        padding: 5px 0;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 15px;
+    }
+    
+    /* Modal Styles */
+    .hidden { display: none !important; }
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+    .modal-content {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        width: 90%;
+        max-width: 380px;
+        color: #333;
+    }
+    .modal-actions {
+        text-align: right;
+        margin-top: 20px;
+    }
+    .modal-actions button {
+        margin-left: 10px;
+        padding: 8px 15px;
+    }
+    
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <h2>REGISTRO DE JORNADA DIARIA</h2>
+
+    <div class="dropdown">
+      <button class="dropbtn">Opciones</button>
+      <div class="dropdown-content">
+        <a href="#" onclick="agregarRegistro(); return false;">➕ AGREGAR FILA</a>
+        <a href="#" onclick="descargarDatos(); return false;">⬇️ DESCARGAR CSV</a>
+        <a href="#" onclick="descargarPDF(); return false;">📄 DESCARGAR PDF</a>
+        <a href="#" onclick="iniciarBorradoTabla(); return false;" style="color: darkred;">🗑️ BORRAR TABLA (Local)</a>
+        <label style="cursor: pointer; padding: 10px 12px; display: block;">
+          📁 CARGAR CSV
+          <input type="file" id="cargarCSV" accept=".csv" style="display: none;">
+        </label>
+      </div>
+    </div>
+
+    <div style="overflow-x: auto;">
+      <table id="registroTabla">
+        <thead>
+          <tr>
+            <th>Día Semanal</th> <th>Día</th>
+            <th>Mes</th>
+            <th>Año</th> 
+            <th>Hora de Entrada</th>
+            <th>Hora de Salida</th>
+            <th>Nota</th>
+            <th>Horas Trabajadas</th>
+            <th>Acciones</th> 
+          </tr>
+        </thead>
+        <tbody id="registroTablaBody">
+          <!-- Las filas se renderizan dinámicamente desde logEntries -->
+          </tbody>
+      </table>
+    </div>
+
+    <h3>Total Global Acumulado: <span id="totalHoras">0h 0m</span></h3>
+    
+    <h3>Totales por mes — Objetivo: 154h:</h3>
+    <div>
+      <ul id="totalesPorMes"></ul>
+    </div>
+
+    <div id="customModal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <h3 id="modalTitle" style="font-size: 1.2em; font-weight: bold; margin-bottom: 10px;"></h3>
+        <p id="modalMessage" style="margin-bottom: 15px;"></p>
+        <div id="modalActions" class="modal-actions">
+          </div>
+      </div>
+    </div>
+</div>
+
+<script>
+    const STORAGE_KEY = "registroJornadaDatosJson";
+    const tbody = document.getElementById("registroTablaBody");
+    
+    // Modelo de datos central
+    let logEntries = []; 
+
+    const mesesValidos = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+    const mesesMap = {
+        "enero": 0, "febrero": 1, "marzo": 2, "abril": 3, "mayo": 4, "junio": 5, 
+        "julio": 6, "agosto": 7, "septiembre": 8, "octubre": 9, "noviembre": 10, "diciembre": 11
+    };
+    const diasSemana = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+    const currentYear = new Date().getFullYear().toString();
+
+
+    // --- MODAL FUNCTIONS (Replaces alert/confirm) ---
+
+    let modalResolve = null;
+
+    function showModal(title, message, isConfirm = false) {
+        document.getElementById("modalTitle").textContent = title;
+        document.getElementById("modalMessage").innerHTML = message; 
+        const actionsDiv = document.getElementById("modalActions");
+        actionsDiv.innerHTML = '';
+        const modal = document.getElementById("customModal");
+        
+        const closeButton = document.createElement('button');
+        closeButton.textContent = isConfirm ? 'Cancelar' : 'Cerrar';
+        closeButton.className = 'action-button';
+        closeButton.style.backgroundColor = '#6c757d'; 
+        closeButton.onclick = () => {
+            modal.classList.add('hidden');
+            if (isConfirm && modalResolve) modalResolve(false);
+        };
+        actionsDiv.appendChild(closeButton);
+
+        if (isConfirm) {
+            const confirmButton = document.createElement('button');
+            confirmButton.textContent = 'Aceptar';
+            confirmButton.className = 'action-button';
+            confirmButton.style.backgroundColor = '#dc3545';
+            confirmButton.onclick = () => {
+                modal.classList.add('hidden');
+                if (modalResolve) modalResolve(true);
+            };
+            actionsDiv.appendChild(confirmButton);
+            
+            modal.classList.remove('hidden');
+            return new Promise(resolve => { modalResolve = resolve; });
+        }
+        
+        modal.classList.remove('hidden');
+    }
+    
+    // --- UTILITIES FOR DATE SELECTORS ---
+
+    function createDaySelector(entryIndex, selectedValue = "") {
+        const select = document.createElement('select');
+        select.className = 'table-select dia-select';
+        
+        let option = document.createElement('option');
+        option.value = "";
+        option.textContent = "- Día -";
+        select.appendChild(option);
+        
+        for (let i = 1; i <= 31; i++) {
+            option = document.createElement('option');
+            const dayValue = i.toString().padStart(2, '0');
+            option.value = dayValue;
+            option.textContent = i;
+            if (dayValue === selectedValue) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        }
+        select.addEventListener("change", (e) => updateEntryAndRender(entryIndex, 'day', e.target.value));
+        return select;
+    }
+
+    function createMonthSelector(entryIndex, selectedValue = "") {
+        const select = document.createElement('select');
+        select.className = 'table-select mes-select';
+        
+        let option = document.createElement('option');
+        option.value = "";
+        option.textContent = "- Mes -";
+        select.appendChild(option);
+
+        mesesValidos.forEach(mes => {
+            option = document.createElement('option');
+            option.value = mes;
+            option.textContent = mes.charAt(0).toUpperCase() + mes.slice(1);
+            if (mes === selectedValue) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        });
+        select.addEventListener("change", (e) => updateEntryAndRender(entryIndex, 'month', e.target.value));
+        return select;
+    }
+
+    function createYearSelector(entryIndex, selectedValue = "") {
+        const select = document.createElement('select');
+        select.className = 'table-select year-select';
+        
+        let option = document.createElement('option');
+        option.value = "";
+        option.textContent = "- Año -";
+        select.appendChild(option);
+        
+        const currentY = new Date().getFullYear();
+        // Generar años: Actual, anterior, y dos siguientes
+        const years = [currentY - 1, currentY, currentY + 1, currentY + 2]; 
+
+        years.forEach(year => {
+            const yearStr = year.toString();
+            option = document.createElement('option');
+            option.value = yearStr;
+            option.textContent = yearStr;
+            if (yearStr === selectedValue || (!selectedValue && yearStr === currentYear)) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        });
+        select.addEventListener("change", (e) => updateEntryAndRender(entryIndex, 'year', e.target.value));
+        return select;
+    }
+    
+    function createDiaSemanalCell(textContent = "") {
+        const celda = document.createElement('td');
+        celda.className = 'dia-semanal';
+        celda.textContent = textContent;
+        return celda;
+    }
+
+    /**
+     * Inserta automáticamente un ":" después de los primeros dos dígitos si aún no está presente.
+     * @param {HTMLElement} element - La celda contenteditable.
+     */
+    function formatTimeInput(element) {
+        let text = element.textContent.trim();
+        
+        // Limpiar texto para mantener solo dígitos
+        let digits = text.replace(/[^0-9]/g, '');
+        
+        if (digits.length >= 3 && !text.includes(':')) {
+            // Insertar el ":" después del segundo dígito
+            text = digits.substring(0, 2) + ':' + digits.substring(2);
+            element.textContent = text.substring(0, 5); // Limitar a HH:MM
+            
+            // Mover el cursor al final
+            const range = document.createRange();
+            const sel = window.getSelection();
+            range.setStart(element.childNodes[0] || element, text.length < 5 ? text.length : 5);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+        } else if (text.length > 5) {
+            // Si el usuario introduce más de 5 caracteres sin el ":" (ej. 123456), lo limitamos
+            element.textContent = text.substring(0, 5);
+        }
+    }
+
+
+    // --- DATA MODEL & RENDERING FUNCTIONS ---
+
+    function saveLogEntries() {
+        logEntries.forEach(entry => {
+            entry.note = (entry.note || '').toLowerCase();
+            entry.entry = (entry.entry || '').toLowerCase();
+            entry.exit = (entry.exit || '').toLowerCase();
+            entry.year = entry.year || ''; 
+        });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(logEntries));
+    }
+
+    function loadLogEntries() {
+        const datosGuardados = localStorage.getItem(STORAGE_KEY);
+        if (datosGuardados) {
+            try {
+                const loadedEntries = JSON.parse(datosGuardados);
+                
+                logEntries = loadedEntries.map(entry => ({
+                    // Ignoramos 'project' si viene de una versión anterior
+                    day: entry.day || "",
+                    month: entry.month || "",
+                    year: entry.year || currentYear, 
+                    entry: (entry.entry || "").toLowerCase(),
+                    exit: (entry.exit || "").toLowerCase(),
+                    note: (entry.note || "").toLowerCase(),
+                }));
+
+                if (logEntries.length === 0) {
+                    addInitialRows(7);
+                }
+            } catch (e) {
+                console.error("Error al parsear datos de localStorage:", e);
+                logEntries = [];
+                addInitialRows(7);
+            }
+        } else {
+            addInitialRows(7);
+        }
+    }
+
+    function addInitialRows(count) {
+        for (let i = 0; i < count; i++) {
+            // Se inicializa sin 'project'
+            logEntries.push({ day: "", month: "", year: currentYear, entry: "", exit: "", note: "" });
+        }
+    }
+    
+    function updateEntry(index, key, value) {
+        if (index >= 0 && index < logEntries.length) {
+            if (key === 'note' || key === 'entry' || key === 'exit') {
+                value = value.toLowerCase();
+            }
+            logEntries[index][key] = value.trim();
+        }
+    }
+
+    function updateEntryAndRender(index, key, value) {
+        updateEntry(index, key, value);
+        saveLogEntries();
+        renderTable(); 
+    }
+    
+    function deleteEntry(index) {
+        if (index >= 0 && index < logEntries.length) {
+            const entry = logEntries[index];
+            const isEntryEmpty = isRowEmpty(entry); 
+
+            if (isEntryEmpty && logEntries.length > 1) {
+                logEntries.splice(index, 1);
+                saveLogEntries();
+                renderTable(); 
+                return;
+            }
+            
+            showModal(
+                "Confirmar Eliminación",
+                `¿Estás seguro de que quieres eliminar la fila para el ${entry.day}/${entry.month}/${entry.year}?`,
+                true
+            ).then(confirmed => {
+                if (confirmed) {
+                    logEntries.splice(index, 1);
+                    saveLogEntries();
+                    renderTable(); 
+                }
+            });
+        }
+    }
+
+
+    function agregarRegistro() {
+        // Se añade una nueva entrada vacía sin 'project'
+        logEntries.push({ day: "", month: "", year: currentYear, entry: "", exit: "", note: "" });
+        saveLogEntries();
+        renderTable(); 
+    }
+    
+    function renderTable() {
+        tbody.innerHTML = ""; 
+        
+        // Se mantiene la lógica de limpieza de filas vacías
+        while (logEntries.length > 1 && isRowEmpty(logEntries[logEntries.length - 1])) {
+             logEntries.pop();
+        }
+
+        if (logEntries.length === 0) {
+            addInitialRows(7);
+        }
+
+        logEntries.forEach((entry, index) => {
+            const nuevaFila = tbody.insertRow();
+            
+            // Calculamos día de la semana y validación de fecha
+            const { dayOfWeekText, isInvalidDate } = getDiaSemana(entry.day, entry.month, entry.year);
+            
+            // 0: Día Semanal (Calculado)
+            const celdaDiaSemanal = createDiaSemanalCell(dayOfWeekText);
+            celdaDiaSemanal.classList.toggle('invalid-fecha', isInvalidDate);
+            if (dayOfWeekText === "Sábado" || dayOfWeekText === "Domingo") {
+                celdaDiaSemanal.classList.add('weekend-day');
+            } else {
+                celdaDiaSemanal.classList.remove('weekend-day');
+            }
+            nuevaFila.insertCell(0).appendChild(celdaDiaSemanal);
+            
+            // 1: Día (Selector)
+            const celdaDia = nuevaFila.insertCell(1);
+            celdaDia.appendChild(createDaySelector(index, entry.day));
+            celdaDia.classList.toggle('invalid-fecha', isInvalidDate); 
+
+            // 2: Mes (Selector)
+            const celdaMes = nuevaFila.insertCell(2);
+            celdaMes.appendChild(createMonthSelector(index, entry.month));
+            celdaMes.classList.toggle('invalid-fecha', isInvalidDate);
+
+            // 3: Año (Selector)
+            const celdaAnio = nuevaFila.insertCell(3);
+            celdaAnio.appendChild(createYearSelector(index, entry.year));
+            celdaAnio.classList.toggle('invalid-fecha', isInvalidDate);
+            
+            // 4: Entrada (Editable)
+            const celdaEntrada = nuevaFila.insertCell(4);
+            celdaEntrada.contentEditable = true;
+            celdaEntrada.classList.add("entrada");
+            celdaEntrada.textContent = entry.entry;
+            celdaEntrada.addEventListener("input", (e) => {
+                formatTimeInput(e.target); // Aplicar formato HH:MM
+                updateEntry(index, 'entry', e.target.textContent);
+                calcularTodasLasHoras(); // Recalcular inmediatamente
+            });
+            celdaEntrada.addEventListener("blur", (e) => updateEntryAndRender(index, 'entry', e.target.textContent));
+
+
+            // 5: Salida (Editable)
+            const celdaSalida = nuevaFila.insertCell(5);
+            celdaSalida.contentEditable = true;
+            celdaSalida.classList.add("salida");
+            celdaSalida.textContent = entry.exit;
+            celdaSalida.addEventListener("input", (e) => {
+                formatTimeInput(e.target); // Aplicar formato HH:MM
+                updateEntry(index, 'exit', e.target.textContent);
+                calcularTodasLasHoras(); // Recalcular inmediatamente
+            });
+            celdaSalida.addEventListener("blur", (e) => updateEntryAndRender(index, 'exit', e.target.textContent));
+
+
+            // 6: Nota (Editable)
+            const celdaNota = nuevaFila.insertCell(6);
+            celdaNota.contentEditable = true;
+            celdaNota.classList.add("nota");
+            celdaNota.textContent = entry.note;
+            celdaNota.addEventListener("input", (e) => updateEntryAndRender(index, 'note', e.target.textContent));
+
+            // 7: Horas Trabajadas (Calculado)
+            const celdaHoras = nuevaFila.insertCell(7);
+            celdaHoras.classList.add("horas");
+            celdaHoras.textContent = "";
+
+            // 8: Acciones (Botón de Eliminar)
+            const celdaAcciones = nuevaFila.insertCell(8);
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = '❌';
+            deleteButton.className = 'delete-btn action-button';
+            deleteButton.onclick = () => deleteEntry(index);
+            celdaAcciones.appendChild(deleteButton);
+        });
+
+        calcularTodasLasHoras();
+    }
+    
+    function isRowEmpty(entry) {
+        // Se ha quitado la comprobación de 'project'
+        return !entry.day && !entry.month && !entry.year && !entry.entry && !entry.exit && !entry.note;
+    }
+
+
+    // --- UTILITIES & CALCULATIONS ---
+
+    function getDiaSemana(dia, mes, anioStr) {
+        const anio = parseInt(anioStr);
+        if (!dia || !mes || !anio || isNaN(anio)) {
+            return { dayOfWeekText: "", isInvalidDate: false };
+        }
+        
+        const diaNum = parseInt(dia);
+        const mesIndex = mesesMap[mes.toLowerCase()];
+        
+        // Comprobación de fecha válida (punto 2)
+        const date = new Date(anio, mesIndex, diaNum);
+
+        // Date.getDate() debería coincidir con diaNum. Si no coincide (ej. 31 de Febrero), es inválido.
+        if (date.getFullYear() !== anio || date.getMonth() !== mesIndex || date.getDate() !== diaNum) {
+            return { dayOfWeekText: "Fecha Inválida", isInvalidDate: true };
+        }
+        
+        const dayIndex = date.getDay();
+        return { 
+            dayOfWeekText: diasSemana[dayIndex].charAt(0).toUpperCase() + diasSemana[dayIndex].slice(1), 
+            isInvalidDate: false 
+        };
+    }
+    
+    function formatMinutesToHours(totalMinutes) {
+        const horas = Math.floor(totalMinutes / 60);
+        const minutos = totalMinutes % 60;
+        return `${horas}h ${minutos}m`;
+    }
+
+    function parseTime(timeStr) {
+        const [h, m] = timeStr.split(":").map(Number);
+        return h * 60 + m; // Total minutes from midnight
+    }
+
+    function calcularTodasLasHoras() {
+        const filas = tbody.querySelectorAll("tr");
+        const totalesPorMesAnio = {};
+        let totalGlobalMin = 0;
+        const horaRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+
+        filas.forEach((fila, index) => {
+            const entry = logEntries[index];
+            if (!entry) return; 
+
+            // Celdas de tiempo y resultado
+            const entradaCelda = fila.querySelector(".entrada");
+            const salidaCelda = fila.querySelector(".salida");
+            const celdaHoras = fila.querySelector(".horas");
+            
+            const entrada = entry.entry.trim();
+            const salida = entry.exit.trim();
+            
+            // Validación de fecha (ya estilizada en renderTable)
+            const { isInvalidDate } = getDiaSemana(entry.day, entry.month, entry.year);
+
+
+            // 2. Validación y Cálculo de diferencia
+            let minutosTrabajados = 0;
+            let esValido = true;
+
+            const entradaValida = entrada.length === 0 || horaRegex.test(entrada);
+            const salidaValida = salida.length === 0 || horaRegex.test(salida);
+            
+            entradaCelda?.classList.toggle("invalid-hora", entrada.length > 0 && !entradaValida);
+            salidaCelda?.classList.toggle("invalid-hora", salida.length > 0 && !salidaValida);
+            
+            if (!entradaValida || !salidaValida || isInvalidDate) {
+                esValido = false;
+            }
+
+            if (entrada && salida && esValido) {
+                const totalMinEntrada = parseTime(entrada);
+                let totalMinSalida = parseTime(salida);
+
+                let totalMin = totalMinSalida - totalMinEntrada;
+                
+                if (totalMin < 0) totalMin += 1440; 
+
+                minutosTrabajados = totalMin;
+                celdaHoras.textContent = formatMinutesToHours(minutosTrabajados);
+            } else if (entrada.length > 0 || salida.length > 0 || isInvalidDate) {
+                celdaHoras.textContent = esValido ? "" : "ERROR";
+            } else {
+                celdaHoras.textContent = "";
+            }
+
+
+            // 3. Suma de totales
+            if (entry.month && entry.year && minutosTrabajados > 0 && esValido) {
+                const monthlyKey = `${entry.month}-${entry.year}`;
+                if (!totalesPorMesAnio[monthlyKey]) totalesPorMesAnio[monthlyKey] = 0;
+                totalesPorMesAnio[monthlyKey] += minutosTrabajados;
+            }
+
+            totalGlobalMin += minutosTrabajados;
+        });
+
+        // 4. Actualizar Totales por mes
+        const lista = document.getElementById("totalesPorMes");
+        lista.innerHTML = "";
+        const objetivoMensualMin = 154 * 60; 
+
+        // Ordenar los meses para mostrarlos cronológicamente
+        const sortedKeys = Object.keys(totalesPorMesAnio).sort((a, b) => {
+            const [mesA, anioA] = a.split('-');
+            const [mesB, anioB] = b.split('-');
+            if (anioA !== anioB) return parseInt(anioA) - parseInt(anioB);
+            return mesesMap[mesA] - mesesMap[mesB];
+        });
+
+        sortedKeys.forEach(key => {
+            const total = totalesPorMesAnio[key];
+            const [mes, year] = key.split('-'); 
+
+            const totalFormato = formatMinutesToHours(total);
+            const diferencia = objetivoMensualMin - total;
+            const diffAbs = Math.abs(diferencia);
+            const diffFormato = formatMinutesToHours(diffAbs);
+
+            const li = document.createElement("li");
+            let diferenciaTexto = "";
+            let color = "#3498db"; 
+
+            if (diferencia > 0) {
+                diferenciaTexto = `Faltan ${diffFormato}`;
+                color = "#e67e22"; 
+            } else if (diferencia < 0) {
+                diferenciaTexto = `Exceso de ${diffFormato}`;
+                color = "#27ae60"; 
+            } else {
+                diferenciaTexto = `Objetivo exacto`;
+            }
+
+            const nombreMesCapitalizado = mes.charAt(0).toUpperCase() + mes.slice(1);
+            li.innerHTML = `
+                <span>${nombreMesCapitalizado} ${year}: <strong>${totalFormato}</strong></span>
+                <span style="color: ${color}; font-weight: 500;">${diferenciaTexto}</span>
+            `;
+            lista.appendChild(li);
+        });
+
+        // 5. Actualizar Total Global
+        document.getElementById("totalHoras").textContent = formatMinutesToHours(totalGlobalMin);
+    }
+
+    window.onload = function () {
+      loadLogEntries();
+      renderTable();
+    };
+
+
+    async function iniciarBorradoTabla() {
+        const confirmar = await showModal(
+            "Confirmar Borrado",
+            "¿Estás seguro de que quieres borrar **todos** los datos? Esto limpiará el registro de tu navegador de forma permanente.",
+            true 
+        );
+        
+        if (confirmar) {
+            localStorage.removeItem(STORAGE_KEY);
+            logEntries = []; 
+            addInitialRows(7); 
+            renderTable();
+            showModal("Éxito", "Todos los datos han sido borrados.", false);
+        }
+    }
+
+
+    // --- CSV / PDF EXPORT/IMPORT ---
+    
+    function getCellData(entry, field) {
+        // Obtenemos los datos base
+        let content = entry[field] || '';
+
+        // Para horas trabajadas
+        if (field === 'workedHours') {
+            const horaRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+            const entradaValida = entry.entry.length === 0 || horaRegex.test(entry.entry);
+            const salidaValida = entry.exit.length === 0 || horaRegex.test(entry.exit);
+            const { isInvalidDate } = getDiaSemana(entry.day, entry.month, entry.year);
+            
+            if (entry.entry && entry.exit && entradaValida && salidaValida && !isInvalidDate) {
+                const totalMinEntrada = parseTime(entry.entry);
+                let totalMinSalida = parseTime(entry.exit);
+                let totalMin = totalMinSalida - totalMinEntrada;
+                if (totalMin < 0) totalMin += 1440;
+                return formatMinutesToHours(totalMin);
+            }
+            return '';
+        }
+        // Para el día semanal:
+        if (field === 'dayOfWeek') {
+             return getDiaSemana(entry.day, entry.month, entry.year).dayOfWeekText;
+        }
+        return content;
+    }
+
+    function descargarDatos() {
+        let csv = [];
+        // Headers actualizados (sin Proyecto/Cliente)
+        const tableHeaders = [
+            "Día Semanal", "Día", "Mes", "Año", "Hora de Entrada", "Hora de Salida", "Nota", "Horas Trabajadas"
+        ];
+        csv.push(tableHeaders.map(h => `"${h.replace(/"/g, '""')}"`).join(","));
+
+        const entriesToExport = logEntries.filter(entry => !isRowEmpty(entry));
+        
+        entriesToExport.forEach(entry => {
+            // Se ha quitado entry.project
+            const rowData = [
+                getCellData(entry, 'dayOfWeek'),
+                entry.day,
+                entry.month,
+                entry.year, 
+                entry.entry,
+                entry.exit,
+                entry.note,
+                getCellData(entry, 'workedHours')
+            ];
+            
+            const filaCsv = rowData.map(data => `"${(data || '').toString().replace(/"/g, '""')}"`);
+            csv.push(filaCsv.join(","));
+        });
+
+        const csvContent = csv.join("\n");
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", "registro_jornada_v4.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    async function descargarPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        doc.setFontSize(14);
+        doc.text("Registro de Jornada Laboral", 14, 15);
+
+        // Headers actualizados (sin Proyecto/Cliente)
+        const headers = [
+            "Día Semanal", "Día", "Mes", "Año", "Hora Entrada", "Hora Salida", "Nota", "Horas Trabajadas"
+        ];
+        
+        const body = logEntries
+            .filter(entry => !isRowEmpty(entry))
+            .map(entry => [
+                getCellData(entry, 'dayOfWeek'),
+                entry.day,
+                entry.month.charAt(0).toUpperCase() + entry.month.slice(1),
+                entry.year, 
+                entry.entry,
+                entry.exit,
+                entry.note,
+                getCellData(entry, 'workedHours')
+            ]);
+
+        doc.autoTable({
+            head: [headers],
+            body: body,
+            startY: 25,
+            styles: { fontSize: 8, cellPadding: 2, halign: 'center' }, // Aumentar fuente un poco ya que hay menos columnas
+            headStyles: { fillColor: [52, 152, 219], textColor: 255, halign: 'center' },
+            theme: 'grid',
+        });
+
+        const resumenTotales = document.getElementById("totalesPorMes");
+        const totalesText = Array.from(resumenTotales.children).map(li => li.innerText.replace(/\s+/g, ' ').trim());
+
+        doc.setFontSize(10);
+        let yStart = doc.lastAutoTable.finalY + 10;
+        doc.text("Totales por mes — Objetivo: 154h:", 14, yStart);
+        totalesText.forEach((linea, i) => {
+            doc.text(linea, 14, yStart + 6 + i * 5);
+        });
+        
+        const totalGlobal = document.getElementById("totalHoras").innerText;
+        doc.setFontSize(11);
+        doc.text(`Total global acumulado: ${totalGlobal}`, 14, yStart + 6 + totalesText.length * 5 + 8);
+
+        doc.save("registro_jornada_v4.pdf");
+    }
+
+    document.getElementById("cargarCSV").addEventListener("change", async function (e) {
+        const archivo = e.target.files[0];
+        if (!archivo) return;
+
+        if (!archivo.name.toLowerCase().endsWith(".csv")) {
+            showModal("Error de Archivo", "Solo se permiten archivos con extensión .csv.", false);
+            return;
+        }
+
+        const lector = new FileReader();
+        lector.onload = async function (event) {
+            const texto = event.target.result;
+            const filas = texto.split(/\r\n|\n/).filter(f => f.trim() !== "");
+            
+            if (filas.length <= 1) {
+                showModal("Error de Contenido", "El archivo CSV está vacío o solo tiene encabezados.", false);
+                return;
+            }
+
+            const confirmarLimpieza = await showModal(
+                "Limpiar Tabla",
+                "¿Quieres limpiar la tabla actual antes de cargar el CSV? (Recomendado)",
+                true
+            );
+
+            if (confirmarLimpieza) {
+                logEntries = [];
+            }
+            
+            let nuevosRegistros = [];
+            
+            filas.slice(1).forEach(filaCSV => {
+                
+                const columnas = [];
+                let inQuote = false;
+                let current = '';
+                for (let i = 0; i < filaCSV.length; i++) {
+                    const char = filaCSV[i];
+                    
+                    if (char === '"') {
+                        if (inQuote && filaCSV[i + 1] === '"') {
+                            current += '"';
+                            i++;
+                        } else {
+                            inQuote = !inQuote;
+                        }
+                    } else if (char === ',' && !inQuote) {
+                        columnas.push(current.trim().replace(/^"|"$/g, ""));
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                columnas.push(current.trim().replace(/^"|"$/g, "")); 
+                
+                // Formato actual esperado (8 columnas de datos): 
+                // [0:Día Semanal, 1:Día, 2:Mes, 3:Año, 4:Entrada, 5:Salida, 6:Nota, 7:Horas Trabajadas]
+                if (columnas.length < 7) {
+                    console.warn("Fila ignorada por formato incorrecto:", columnas);
+                    return;
+                }
+                
+                let day, month, year, entry, exit, note;
+                
+                // Intentamos parsear usando el formato V4/V2 (Día Semanal, Día, Mes, Año, Entrada, Salida, Nota...)
+                day = columnas[1] || "";
+                month = columnas[2]?.toLowerCase() || "";
+                year = columnas[3] || currentYear; 
+                entry = columnas[4] || "";
+                exit = columnas[5] || "";
+                note = columnas[6] || "";
+
+                if (day || month || year || entry || exit || note) {
+                    nuevosRegistros.push({
+                        day: day,
+                        month: month,
+                        year: year,
+                        entry: entry.toLowerCase(),
+                        exit: exit.toLowerCase(),
+                        note: note.toLowerCase()
+                    });
+                }
+            });
+
+            if (nuevosRegistros.length > 0) {
+                logEntries = logEntries.concat(nuevosRegistros);
+                
+                saveLogEntries();
+                renderTable(); 
+                showModal("Carga Exitosa", `Se han cargado ${nuevosRegistros.length} nuevos registros.`, false);
+            } else {
+                showModal("Advertencia", "No se encontraron registros válidos para cargar.", false);
+            }
+
+            e.target.value = null; 
+        };
+        lector.readAsText(archivo);
+    });
+  </script>
+</body>
+</html>
+
