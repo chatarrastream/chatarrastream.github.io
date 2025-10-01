@@ -63,8 +63,7 @@
     }
 
     /* Día Semanal */
-    #registroTabla tr > th:first-child,
-#registroTabla tr > td:first-child {
+    #registroTabla td:nth-child(1) {
   font-weight: bold;
   background-color: #dbe4f0;
   text-align: right;
@@ -425,28 +424,35 @@
      * @param {HTMLElement} element - La celda contenteditable.
      */
     function formatTimeInput(element) {
-        let text = element.textContent.trim();
-        
-        // Limpiar texto para mantener solo dígitos
-        let digits = text.replace(/[^0-9]/g, '');
-        
-        if (digits.length >= 3 && !text.includes(':')) {
-            // Insertar el ":" después del segundo dígito
-            text = digits.substring(0, 2) + ':' + digits.substring(2);
-            element.textContent = text.substring(0, 5); // Limitar a HH:MM
-            
-            // Mover el cursor al final
-            const range = document.createRange();
-            const sel = window.getSelection();
-            range.setStart(element.childNodes[0] || element, text.length < 5 ? text.length : 5);
-            range.collapse(true);
-            sel.removeAllRanges();
-            sel.addRange(range);
-        } else if (text.length > 5) {
-            // Si el usuario introduce más de 5 caracteres sin el ":" (ej. 123456), lo limitamos
-            element.textContent = text.substring(0, 5);
-        }
+    let text = element.textContent.trim();
+
+    // Mantener solo dígitos
+    let digits = text.replace(/[^0-9]/g, '');
+
+    // Limitar a 4 dígitos máximo (HHMM)
+    if (digits.length > 4) {
+        digits = digits.substring(0, 4);
     }
+
+    // Si hay al menos 3 dígitos y aún no tiene ':'
+    if (digits.length >= 3) {
+        text = digits.substring(0, 2) + ':' + digits.substring(2);
+    } else {
+        text = digits;
+    }
+
+    element.textContent = text;
+
+    // Mover el cursor al final
+    const range = document.createRange();
+    const sel = window.getSelection();
+    if (element.firstChild) {
+        range.setStart(element.firstChild, element.textContent.length);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+}
 
 
     // --- DATA MODEL & RENDERING FUNCTIONS ---
@@ -589,36 +595,47 @@
             celdaAnio.appendChild(createYearSelector(index, entry.year));
             celdaAnio.classList.toggle('invalid-fecha', isInvalidDate);
             
-            // 4: Entrada (Editable)
-            const celdaEntrada = nuevaFila.insertCell(4);
-            celdaEntrada.contentEditable = true;
-            celdaEntrada.classList.add("entrada");
-            celdaEntrada.textContent = entry.entry;
-            celdaEntrada.addEventListener("input", (e) => {
-                formatTimeInput(e.target); // Aplicar formato HH:MM
-                updateEntry(index, 'entry', e.target.textContent);
-                calcularTodasLasHoras(); // Recalcular inmediatamente
-            });
-            celdaEntrada.addEventListener("blur", (e) => updateEntryAndRender(index, 'entry', e.target.textContent));
+            
+            
+   // 4: Entrada (Editable)
+const celdaEntrada = nuevaFila.insertCell(4);
+celdaEntrada.contentEditable = true;
+celdaEntrada.classList.add("entrada");
+celdaEntrada.textContent = entry.entry;
 
+celdaEntrada.addEventListener("input", (e) => {
+    // Solo limpiar caracteres inválidos en la escritura
+    e.target.textContent = e.target.textContent.replace(/[^0-9:]/g, '');
+    updateEntry(index, 'entry', e.target.textContent);
+    calcularTodasLasHoras();
+});
 
-            // 5: Salida (Editable)
-            const celdaSalida = nuevaFila.insertCell(5);
-            celdaSalida.contentEditable = true;
-            celdaSalida.classList.add("salida");
-            celdaSalida.textContent = entry.exit;
-            celdaSalida.addEventListener("input", (e) => {
-                formatTimeInput(e.target); // Aplicar formato HH:MM
-                updateEntry(index, 'exit', e.target.textContent);
-                calcularTodasLasHoras(); // Recalcular inmediatamente
-            });
-            celdaSalida.addEventListener("blur", (e) => updateEntryAndRender(index, 'exit', e.target.textContent));
+celdaEntrada.addEventListener("blur", (e) => {
+    formatTimeInput(e.target); // Dar formato final HH:MM
+    updateEntryAndRender(index, 'entry', e.target.textContent);
+});
 
+// 5: Salida (Editable)
+const celdaSalida = nuevaFila.insertCell(5);
+celdaSalida.contentEditable = true;
+celdaSalida.classList.add("salida");
+celdaSalida.textContent = entry.exit;
 
-            // 6: Nota (Editable)
+celdaSalida.addEventListener("input", (e) => {
+    // Solo limpiar caracteres inválidos en la escritura
+    e.target.textContent = e.target.textContent.replace(/[^0-9:]/g, '');
+    updateEntry(index, 'exit', e.target.textContent);
+    calcularTodasLasHoras();
+});
+
+celdaSalida.addEventListener("blur", (e) => {
+    formatTimeInput(e.target); // Dar formato final HH:MM
+    updateEntryAndRender(index, 'exit', e.target.textContent);
+});        
+          // 6: Nota (Editable)
             const celdaNota = nuevaFila.insertCell(6);
             celdaNota.contentEditable = true;
-            celdaNota.classList.add("nota");
+          celdaNota.classList.add("nota");
             celdaNota.textContent = entry.note;
             celdaNota.addEventListener("blur", (e) => updateEntryAndRender(index, 'note', e.target.textContent));
 
@@ -849,7 +866,7 @@
         let csv = [];
         // Headers actualizados (sin Proyecto/Cliente)
         const tableHeaders = [
-            "Día Semanal", "Día", "Mes", "Año", "Hora de Entrada", "Hora de Salida", "Nota", "Horas Trabajadas"
+            "Día", "Fecha", "Mes", "Año", "Hora de Entrada", "Hora de Salida", "Nota", "Horas Trabajadas"
         ];
         csv.push(tableHeaders.map(h => `"${h.replace(/"/g, '""')}"`).join(","));
 
@@ -893,7 +910,7 @@
 
         // Headers actualizados (sin Proyecto/Cliente)
         const headers = [
-            "Día Semanal", "Día", "Mes", "Año", "Hora Entrada", "Hora Salida", "Nota", "Horas Trabajadas"
+            "Día", "Fecha", "Mes", "Año", "Hora Entrada", "Hora Salida", "Nota", "Horas Trabajadas"
         ];
         
         const body = logEntries
