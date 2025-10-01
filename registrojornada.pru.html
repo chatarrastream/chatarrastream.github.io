@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Jornada - Mejorado</title>
+    
     <style>
-        /* Estilos CSS (Ver sección siguiente) */
+        /* Reset y configuración base */
         body {
             display: flex;
             flex-direction: column;
@@ -13,25 +14,28 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            background-color: #f4f4f9; /* Fondo suave */
+            background-color: #f4f4f9;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #333;
+            padding: 20px;
         }
 
         header {
             margin-bottom: 20px;
         }
 
+        /* Contenedor principal para el diseño moderno */
         .contenedor {
             width: 90%;
-            max-width: 450px; /* Ancho máximo para desktop */
+            max-width: 550px; /* Ancho ajustado para incluir la tabla */
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 6px 15px rgba(0,0,0,0.1);
             background-color: white;
             text-align: center;
         }
-
+        
+        /* Estilos del Reloj */
         .hora-display {
             font-size: 3em;
             font-weight: bold;
@@ -46,8 +50,15 @@
             color: #555;
         }
 
+        /* Grupo de Botones */
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
         .button-group button {
-            width: 48%; /* Dos botones en una línea */
+            flex-grow: 1; /* Distribuye el espacio equitativamente */
             padding: 15px;
             font-size: 1.1em;
             font-weight: bold;
@@ -55,7 +66,6 @@
             border: none;
             border-radius: 8px;
             transition: background-color 0.3s ease;
-            margin: 5px 1%;
         }
 
         #btn-entrada {
@@ -79,8 +89,69 @@
         #mensaje {
             margin-top: 20px;
             font-weight: bold;
+            min-height: 20px; /* Evita que el layout salte al mostrar el mensaje */
+        }
+        
+        /* Estilos del Historial */
+        #historial-container {
+            text-align: left;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        #historial-container h2 {
+            text-align: center;
+            margin-bottom: 15px;
             color: #007bff;
         }
+
+        .filtro-mes {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #filtroMes {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            flex-grow: 1;
+        }
+
+        /* Estilos de la Tabla */
+        #tabla-registros {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        #tabla-registros th, #tabla-registros td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        #tabla-registros th {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        #tabla-registros tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        /* Clases de colores para el tipo de registro */
+        .registro-entrada {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .registro-salida {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
     </style>
 </head>
 <body>
@@ -99,18 +170,52 @@
 
         <p id="mensaje"></p>
 
-        </main>
+        <section id="historial-container">
+            <h2>Historial de Registros</h2>
+            
+            <div class="filtro-mes">
+                <label for="filtroMes">Selecciona Mes:</label>
+                <input type="month" id="filtroMes">
+            </div>
+
+            <table id="tabla-registros">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Hora</th>
+                        <th>Tipo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+
+            <p id="no-registros" style="color: #888; margin-top: 15px; display: none; text-align: center;">
+                No hay registros para el mes seleccionado.
+            </p>
+        </section>
+    </main>
 
     <script>
-        // Código JavaScript (Ver sección siguiente)
         document.addEventListener('DOMContentLoaded', () => {
+            // Referencias a elementos del DOM
             const fechaDisplay = document.getElementById('fecha-actual');
             const horaDisplay = document.getElementById('hora-actual');
             const mensajeDisplay = document.getElementById('mensaje');
             const btnEntrada = document.getElementById('btn-entrada');
             const btnSalida = document.getElementById('btn-salida');
+            const filtroMesInput = document.getElementById('filtroMes');
+            const tbody = document.querySelector('#tabla-registros tbody');
+            const noRegistrosMsg = document.getElementById('no-registros');
 
-            // Función para obtener y formatear la fecha y hora
+
+            // --- FUNCIONES DE REGISTRO ---
+
+            /**
+             * Obtiene y formatea la fecha y hora de un objeto Date.
+             * @param {Date} date - Objeto de fecha/hora.
+             * @returns {object} Objeto con la fecha y hora formateadas.
+             */
             const obtenerFechaHora = (date) => {
                 const optionsFecha = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                 const optionsHora = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
@@ -121,57 +226,138 @@
                 return { fechaCompleta: fecha, horaCompleta: hora };
             };
 
-            // Función para actualizar la hora en tiempo real (reloj)
+            /**
+             * Actualiza el reloj en la interfaz y la fecha al inicio.
+             */
             const actualizarReloj = () => {
                 const ahora = new Date();
                 const hora = ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
                 horaDisplay.textContent = hora;
                 
-                // Muestra la fecha al cargar, pero no la actualiza cada segundo
+                // Muestra la fecha solo al cargar la primera vez
                 if (!fechaDisplay.textContent) {
                     fechaDisplay.textContent = obtenerFechaHora(ahora).fechaCompleta;
                 }
             };
 
-            // Función para guardar el registro
+            /**
+             * Guarda un nuevo registro de Entrada o Salida en localStorage.
+             * @param {string} tipo - 'E' para Entrada, 'S' para Salida.
+             */
             const guardarRegistro = (tipo) => {
                 const ahora = new Date();
                 const { fechaCompleta, horaCompleta } = obtenerFechaHora(ahora);
 
-                // Formato del registro para localStorage
                 const nuevoRegistro = {
-                    tipo: tipo, // 'E' o 'S'
-                    timestamp: ahora.getTime(), // Mejor guardar el timestamp para cálculos
+                    tipo: tipo,
+                    timestamp: ahora.getTime(), // Importante para el filtrado y cálculos
                     fecha: fechaCompleta,
                     hora: horaCompleta
                 };
 
-                // Recuperar registros existentes
                 const registrosJSON = localStorage.getItem('registrosJornada');
                 let registros = registrosJSON ? JSON.parse(registrosJSON) : [];
 
-                // Agregar el nuevo registro
                 registros.push(nuevoRegistro);
 
-                // Guardar de nuevo en localStorage
                 try {
                     localStorage.setItem('registrosJornada', JSON.stringify(registros));
                     mensajeDisplay.textContent = `${tipo === 'E' ? '✅ Entrada' : '🛑 Salida'} registrada con éxito a las ${horaCompleta}.`;
-                    console.log('Registro guardado:', nuevoRegistro);
+                    
+                    // Después de guardar, recarga el historial
+                    mostrarRegistros(); 
+
                 } catch (error) {
                     mensajeDisplay.textContent = '❌ Error al guardar el registro. El almacenamiento puede estar lleno.';
                     console.error('Error al guardar en localStorage:', error);
                 }
             };
+            
+            
+            // --- FUNCIONES DE HISTORIAL Y FILTRADO ---
 
-            // Asignar eventos a los botones
+            /**
+             * Renderiza los registros en la tabla basándose en el mes seleccionado.
+             */
+            const mostrarRegistros = () => {
+                // Limpiar la tabla y el mensaje
+                tbody.innerHTML = '';
+                noRegistrosMsg.style.display = 'none';
+
+                // Obtener el valor del filtro (formato YYYY-MM)
+                const filtroValue = filtroMesInput.value;
+                if (!filtroValue) return;
+
+                const registrosJSON = localStorage.getItem('registrosJornada');
+                const registros = registrosJSON ? JSON.parse(registrosJSON) : [];
+
+                // 1. Filtrar los registros por el año y mes del filtro
+                const registrosFiltrados = registros.filter(registro => {
+                    const fechaRegistro = new Date(registro.timestamp);
+                    // Formato de comparación: YYYY-MM
+                    const anioMesRegistro = `${fechaRegistro.getFullYear()}-${String(fechaRegistro.getMonth() + 1).padStart(2, '0')}`;
+                    
+                    return anioMesRegistro === filtroValue;
+                });
+                
+                // 2. Renderizar los registros
+                if (registrosFiltrados.length > 0) {
+                    // Ordenar por timestamp (más antiguo primero)
+                    registrosFiltrados.sort((a, b) => a.timestamp - b.timestamp);
+                    
+                    registrosFiltrados.forEach(registro => {
+                        const row = tbody.insertRow();
+                        
+                        // Celda de Fecha
+                        row.insertCell().textContent = registro.fecha.split(', ')[1]; // Muestra solo 'día de mes de año'
+                        
+                        // Celda de Hora
+                        row.insertCell().textContent = registro.hora;
+                        
+                        // Celda de Tipo
+                        const tipoTexto = registro.tipo === 'E' ? 'Entrada' : 'Salida';
+                        const tipoCell = row.insertCell();
+                        tipoCell.textContent = tipoTexto;
+                        tipoCell.className = registro.tipo === 'E' ? 'registro-entrada' : 'registro-salida';
+                    });
+                } else {
+                    noRegistrosMsg.style.display = 'block';
+                }
+            };
+
+            /**
+             * Inicializa el campo de filtro con el mes y año actuales.
+             */
+            const inicializarFiltro = () => {
+                const hoy = new Date();
+                
+                // Formato YYYY-MM
+                const mesActual = String(hoy.getMonth() + 1).padStart(2, '0');
+                const anioActual = hoy.getFullYear();
+                
+                filtroMesInput.value = `${anioActual}-${mesActual}`;
+            };
+            
+            
+            // --- INICIALIZACIÓN Y EVENT LISTENERS ---
+
+            // Asignar eventos a los botones de registro
             btnEntrada.addEventListener('click', () => guardarRegistro('E'));
             btnSalida.addEventListener('click', () => guardarRegistro('S'));
 
-            // Iniciar el reloj al cargar la página
+            // Iniciar el reloj al cargar la página y actualizar cada segundo
             actualizarReloj();
-            setInterval(actualizarReloj, 1000); // Actualiza cada segundo
+            setInterval(actualizarReloj, 1000); 
+            
+            // Inicializar el filtro con el mes actual y cargar los registros por primera vez
+            inicializarFiltro();
+            mostrarRegistros(); 
+            
+            // Agregar evento para recargar la tabla cuando se cambia el mes en el selector
+            filtroMesInput.addEventListener('change', mostrarRegistros);
         });
     </script>
 </body>
 </html>
+
+                
