@@ -532,19 +532,22 @@
                 }
             };
 
-            const guardarRegistroManual = () => {
+                        const guardarRegistroManual = () => {
                 const fecha = manualFechaInput.value;
                 const horaEntrada = manualEntradaInput.value;
                 const horaSalida = manualSalidaInput.value;
+                
+                // 🚩 LIMPIAR MENSAJES antes de intentar procesar
                 mensajeManualDisplay.textContent = '';
+                mensajeDisplay.textContent = ''; 
 
                 if (!fecha || !horaEntrada || !horaSalida) {
-                    mensajeManualDisplay.textContent = 'Por favor, completa la fecha, entrada y salida.';
+                    mensajeManualDisplay.textContent = '❌ Error: Por favor, completa la fecha, hora de entrada y hora de salida.';
                     return;
                 }
 
                 if (!/^\d{2}:\d{2}$/.test(horaEntrada) || !/^\d{2}:\d{2}$/.test(horaSalida)) {
-                    mensajeManualDisplay.textContent = 'Error: El formato de hora debe ser HH:MM.';
+                    mensajeManualDisplay.textContent = '❌ Error: El formato de hora debe ser HH:MM.';
                     return;
                 }
 
@@ -555,7 +558,7 @@
                 let tsSalida = new Date(`${fecha}T${horaSalida}:00`).getTime();
 
                 if (isNaN(tsEntrada) || isNaN(tsSalida)) {
-                    mensajeManualDisplay.textContent = 'Error: Formato de fecha/hora inválido.';
+                    mensajeManualDisplay.textContent = '❌ Error: Formato de fecha/hora inválido.';
                     return;
                 }
 
@@ -566,19 +569,62 @@
                     // Añadir 24 horas (86,400,000 milisegundos) al timestamp de salida
                     tsSalida += 24 * 60 * 60 * 1000;
                 }
+                
+                // LÓGICA DE GUARDADO ATÓMICO: Crear los registros directamente
+                
+                const fechaId = getFechaId(tsEntrada);
+                const fechaSalidaId = getFechaId(tsSalida);
 
-                // La entrada manual guarda automáticamente un par (E y S)
-                guardarRegistro('E', tsEntrada);
-                guardarRegistro('S', tsSalida);
+                let registros = JSON.parse(localStorage.getItem('registrosJornada') || '[]');
+                
+                // Eliminar cualquier registro existente (E, S o DNT) para esa fechaId de Entrada
+                registros = registros.filter(r => r.fechaId !== fechaId);
+                
+                // Si la Salida cae en un día diferente, también eliminamos el DNT de ese día
+                if(fechaId !== fechaSalidaId) {
+                    registros = registros.filter(r => r.fechaId !== fechaSalidaId || r.tipo !== 'DNT');
+                }
+                
+                // Añadir los nuevos registros
+                const nuevoRegistroEntrada = {
+                    id: Date.now() + Math.random(),
+                    tipo: 'E',
+                    timestamp: tsEntrada,
+                    fecha: obtenerFechaHora(new Date(tsEntrada)).fechaCompleta,
+                    hora: obtenerFechaHora(new Date(tsEntrada)).horaCompleta,
+                    fechaId: fechaId
+                };
+                
+                const nuevoRegistroSalida = {
+                    id: Date.now() + Math.random() + 1,
+                    tipo: 'S',
+                    timestamp: tsSalida,
+                    fecha: obtenerFechaHora(new Date(tsSalida)).fechaCompleta,
+                    hora: obtenerFechaHora(new Date(tsSalida)).horaCompleta,
+                    fechaId: fechaSalidaId
+                };
 
-                // Opcional: mostrar un mensaje que indique que la salida fue al día siguiente
-                const fechaSalida = getFechaId(tsSalida);
-                if (fechaSalida !== fecha) {
-                    mensajeManualDisplay.textContent = `✅ Registros manuales guardados. La Salida fue el día siguiente (${fechaSalida}).`;
-                } else {
-                    mensajeManualDisplay.textContent = `✅ Registros manuales guardados para el ${fecha}.`;
+                registros.push(nuevoRegistroEntrada, nuevoRegistroSalida);
+
+                try {
+                    localStorage.setItem('registrosJornada', JSON.stringify(registros));
+                    
+                    let mensaje = `✅ Registros manuales guardados para el ${fecha}.`;
+                    if (fechaId !== fechaSalidaId) {
+                        mensaje = `✅ Registros manuales guardados (Jornada Nocturna: ${fecha} a ${fechaSalidaId}).`;
+                    }
+                    mensajeManualDisplay.textContent = mensaje;
+                    
+                    // Actualizar la vista del historial
+                    if (fechaId.substring(0, 7) === filtroMesInput.value) {
+                        mostrarRegistros();
+                    }
+                } catch (error) {
+                    mensajeManualDisplay.textContent = '❌ Error al guardar el registro. El almacenamiento puede estar lleno.';
+                    console.error('Error al guardar en localStorage:', error);
                 }
             };
+
 
             //Día no trabajado
             const guardarDNTManual = () => {
