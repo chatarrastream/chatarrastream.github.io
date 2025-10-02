@@ -144,6 +144,21 @@
             background-color: #5a6268;
         }
 
+           /* NUEVO ESTILO para el botón DNT manual */
+        #btn-dnt-manual {
+            background-color: #ffc107; /* Color similar al DNT de arriba */
+            color: #333;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        #btn-dnt-manual:hover {
+            background-color: #e0a800;
+        }
+        
         /* Estilos del Historial */
         #historial-container {
             text-align: left;
@@ -238,6 +253,7 @@
                 <label for="manualSalida">Salida:</label>
                 <input type="time" id="manualSalida" value="18:00">
                 <button id="btn-guardar-manual">Guardar</button>
+                <button id="btn-dnt-manual">Guardar DNT</button>
             </div>
             <p id="mensaje-manual" style="color: #dc3545;"></p>
         </div>
@@ -296,6 +312,8 @@
             const manualEntradaInput = document.getElementById('manualEntrada');
             const manualSalidaInput = document.getElementById('manualSalida');
             const btnGuardarManual = document.getElementById('btn-guardar-manual');
+            const mensajeManualDisplay = document.getElementById('mensaje-manual');
+            const btnDNTManual = document.getElementById('btn-dnt-manual'); 
             const mensajeManualDisplay = document.getElementById('mensaje-manual');
             
             // Referencia del nuevo botón de Reseteo
@@ -428,6 +446,21 @@
 
                 mensajeManualDisplay.textContent = `✅ Registros manuales guardados para el ${fecha}.`;
             };
+
+              //Día no trabajado
+            const guardarDNTManual = () => {
+const fecha = manualFechaInput.value;
+mensaje ManualDisplay.textContent = ";
+if (!fecha) {
+mensaje ManualDisplay.textContent ='Por favor, selecciona la fecha del Día No Trabajado.';
+return;
+}
+const tsDNT = new Date('${fecha}
+T12:00:00').getTime(); // Usar el mediodía como referencia
+guardar Registro('DNT', tsDNT);
+mensaje ManualDisplay.textContent = 'Día No Trabajado (DNT) guardado para el ${fecha}.';
+};
+
             
             // --- FUNCIÓN DE RESETEO ---
 
@@ -623,6 +656,7 @@
             document.getElementById('btn-salida').addEventListener('click', () => guardarRegistro('S'));
             document.getElementById('btn-dnt').addEventListener('click', () => guardarRegistro('DNT'));
             btnGuardarManual.addEventListener('click', guardarRegistroManual);
+            btnDNTManual.addEventListener('click', guardarDNTManual); 
             
             btnResetTodo.addEventListener('click', resetearTodo); 
 
