@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Jornada - Flexible Atómica</title>
+    <style>
+        /* Reset y configuración base */
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            padding: 20px;
+        }
+
+        header {
+            margin-bottom: 20px;
+        }
+
+        /* Contenedor principal para el diseño moderno */
+        
+        .contenedor {
+            width: 95%;
+            max-width: 800px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            text-align: center;
+        }
+
+        .hora-display {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        #fecha-actual {
+            display: block;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        /* Estilos de Entrada Manual (PRIORIDAD) */
+        
+        #entrada-manual-container {
+            border: 2px solid #007bff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 10px;
+            text-align: left;
+            background-color: #e9f7ff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        #entrada-manual-container h3 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #007bff;
+            font-size: 1.5em;
+        }
+        
+        .segmento-group {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        .manual-form-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        
+        .manual-form-group input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            flex: 1 1 100px;
+            box-sizing: border-box;
+        }
+
+        .manual-form-group label {
+            flex: 0 0 auto;
+            font-weight: bold;
+            color: #333;
+        }
+
+        #btn-group-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        #btn-guardar-manual {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            flex-grow: 1;
+            font-weight: bold;
+        }
+
+        #btn-guardar-manual:hover {
+            background-color: #218838;
+        }
+
+        #btn-dnt-manual {
+            background-color: #ffc107;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            flex-grow: 1;
+            font-weight: bold;
+        }
+
+        #btn-dnt-manual:hover {
+            background-color: #e0a800;
+        }
+
+        /* Estilos del Historial */
+        
+        #historial-container {
+            text-align: left;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        #historial-container h2 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #007bff;
+        }
+
+        .filtro-mes {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: space-between;
+        }
+
+        #filtroMes {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            flex-grow: 1;
+            max-width: 200px;
+        }
+
+        #btn-reset-todo {
+            background-color: #7d0000;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        #btn-reset-todo:hover {
+            background-color: #4f0000;
+        }
+
+        /* Estilos de la Tabla */
+        
+        #tabla-registros {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.85em;
+        }
+
+        #tabla-registros th,
+        #tabla-registros td {
+            border: 1px solid #ddd;
+            padding: 10px 3px;
+            text-align: center;
+        }
+
+        #tabla-registros th {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        #tabla-registros tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .registro-jornada {
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .registro-dnt {
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        .btn-borrar-registro {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 1.2em;
+            line-height: 1;
+        }
+
+        .btn-borrar-registro:hover {
+            color: #c82333;
+        }
+
+        /* Resumen Mensual */
+        
+        #resumen-mensual {
+            margin-top: 20px;
+            padding: 15px;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            background-color: #e9f7ff;
+            text-align: center;
+        }
+
+        #resumen-mensual p {
+            margin: 5px 0;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .total-positivo {
+            color: #28a745;
+        }
+
+        .total-negativo {
+            color: #dc3545;
+        }
+
+        #mensaje-manual {
+            margin-top: 10px;
+            font-weight: bold;
+            min-height: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Registro de Jornada Flexible (Manual)</h1>
+    </header>
+    <main class="contenedor">
+        <p id="fecha-actual"></p>
+        <p class="hora-display" id="hora-actual">00:00:00</p>
+
+        <div id="entrada-manual-container">
+            <h3>Registro Manual de Jornada</h3>
+            <div class="manual-form-group">
+                <label for="manualFecha">Fecha Jornada:</label>
+                <input type="date" id="manualFecha">
+            </div>
+
+            <div class="segmento-group">
+                <h4>Segmento 1 (Continua o Mañana)</h4>
+                <div class="manual-form-group">
+                    <label for="manualEntrada1">Entrada 1:</label>
+                    <input type="time" id="manualEntrada1" value="09:00" required> 
+                    <label for="manualSalida1">Salida 1:</label>
+                    <input type="time" id="manualSalida1" value="17:00" required>
+                </div>
+            </div>
+
+            <div class="segmento-group">
+                <h4>Segmento 2 (Tarde - Opcional)</h4>
+                <div class="manual-form-group">
+                    <label for="manualEntrada2">Entrada 2:</label>
+                    <input type="time" id="manualEntrada2" value=""> 
+                    <label for="manualSalida2">Salida 2:</label>
+                    <input type="time" id="manualSalida2" value="">
+                </div>
+                <small style="display: block; text-align: center; color: #666;">Dejar Segmento 2 vacío para Jornada Continua. Rellenar para Jornada Partida.</small>
+            </div>
+            
+            <div id="btn-group-actions">
+                <button id="btn-guardar-manual">Guardar Jornada</button>
+                <button id="btn-dnt-manual">Guardar Día No Trabajado (DNT)</button>
+            </div>
+            
+            <p id="mensaje-manual" style="color: #007bff;"></p>
+        </div>
+
+        <section id="historial-container">
+            <h2>Historial y Resumen Mensual</h2>
+            <div class="filtro-mes">
+                <label for="filtroMes">Selecciona Mes:</label>
+                <input type="month" id="filtroMes">
+                <button id="btn-reset-todo">🔴 Resetear Todo</button>
+            </div>
+            <div id="resumen-mensual">
+                <p>Total Horas Trabajadas: <span id="total-horas-mes">00:00</span></p>
+                <p>Objetivo Mensual: 154:00 horas</p>
+                <p>Diferencia: <span id="diferencia-horas">00:00</span></p>
+            </div>
+            <table id="tabla-registros">
+                <thead>
+                    <tr>
+                        <th>Día</th>
+                        <th>Tipo</th>
+                        <th>E1</th>
+                        <th>S1</th>
+                        <th>E2</th>
+                        <th>S2</th>
+                        <th>Horas Diarias</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <p id="no-registros" style="color: #888; margin-top: 15px; display: none; text-align: center;"> No hay
+                registros para el mes seleccionado. </p>
+        </section>
+    </main>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Referencias a elementos del DOM
+            const fechaDisplay = document.getElementById('fecha-actual');
+            const horaDisplay = document.getElementById('hora-actual');
+            const filtroMesInput = document.getElementById('filtroMes');
+            const tbody = document.querySelector('#tabla-registros tbody');
+            const noRegistrosMsg = document.getElementById('no-registros');
+            const totalHorasMesDisplay = document.getElementById('total-horas-mes');
+            const diferenciaHorasDisplay = document.getElementById('diferencia-horas');
+
+            // Referencias de Entrada Manual
+            const manualFechaInput = document.getElementById('manualFecha');
+            const manualEntrada1Input = document.getElementById('manualEntrada1');
+            const manualSalida1Input = document.getElementById('manualSalida1');
+            const manualEntrada2Input = document.getElementById('manualEntrada2');
+            const manualSalida2Input = document.getElementById('manualSalida2');
+
+            const btnGuardarManual = document.getElementById('btn-guardar-manual');
+            const mensajeManualDisplay = document.getElementById('mensaje-manual');
+            const btnDNTManual = document.getElementById('btn-dnt-manual');
+            const btnResetTodo = document.getElementById('btn-reset-todo');
+
+            const OBJETIVO_HORAS_MENSUAL = 154;
+            const LOCAL_STORAGE_KEY = 'jornadasCompletas'; 
+
+            // --- FUNCIONES DE UTILIDAD ---
+            const msToHoraMinutos = (ms) => {
+                if (ms === 0) return '00:00';
+                const totalSegundos = Math.abs(Math.round(ms / 1000));
+                const minutos = Math.floor(totalSegundos / 60) % 60;
+                const horas = Math.floor(totalSegundos / 3600);
+                const signo = ms < 0 ? '-' : '';
+                return `${signo}${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}`;
+            };
+
+            const getFechaId = (timestamp) => {
+                const date = new Date(timestamp);
+                return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            };
+
+            const formatTimestampToLongDate = (timestamp) => {
+                const date = new Date(timestamp);
+                const optionsFecha = {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                };
+                return date.toLocaleDateString('es-ES', optionsFecha);
+            };
+
+            const actualizarReloj = () => {
+                const ahora = new Date();
+                const hora = ahora.toLocaleTimeString('es-ES', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                });
+                horaDisplay.textContent = hora;
+                if (!fechaDisplay.textContent) {
+                    const optionsFecha = {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    };
+                    fechaDisplay.textContent = ahora.toLocaleDateString('es-ES', optionsFecha);
+                }
+                if (!manualFechaInput.value) {
+                    manualFechaInput.valueAsDate = ahora;
+                }
+            };
+
+            // FUNCIÓN PRINCIPAL PARA GUARDAR JORNADA CONTINUA O PARTIDA
+            const guardarRegistroManual = () => {
+                const fecha = manualFechaInput.value;
+                const hE1 = manualEntrada1Input.value;
+                const hS1 = manualSalida1Input.value;
+                // Los Segmento 2 ahora están vacíos por defecto
+                const hE2 = manualEntrada2Input.value; 
+                const hS2 = manualSalida2Input.value; 
+                
+                mensajeManualDisplay.textContent = '';
+
+                // VALIDACIÓN BASE: Segmento 1 es obligatorio
+                if (!fecha || !hE1 || !hS1) {
+                    mensajeManualDisplay.textContent = '❌ Error: Por favor, completa la fecha y las horas de Entrada 1 y Salida 1.';
+                    return;
+                }
+
+                // Determinar si es Jornada Partida o Continua
+                const esJornadaPartida = hE2 && hS2;
+                
+                // 1. Calcular Timestamps del Segmento 1
+                const fechaId = fecha; 
+                const tsE1 = new Date(`${fecha}T${hE1}:00`).getTime();
+                let tsS1 = new Date(`${fecha}T${hS1}:00`).getTime();
+                
+                // Validar Timestamps iniciales
+                if (isNaN(tsE1) || isNaN(tsS1)) {
+                    mensajeManualDisplay.textContent = '❌ Error: Formato de fecha/hora inválido en Segmento 1.';
+                    return;
+                }
+
+                // 2. Lógica de Pausa y Noche (Segmento 1)
+                
+                // A. Corregir Salida 1 si pasa la medianoche
+                if (tsS1 <= tsE1) {
+                    tsS1 += 24 * 60 * 60 * 1000;
+                }
+                
+                const duracionSeg1 = tsS1 - tsE1;
+                if (duracionSeg1 <= 0) {
+                     mensajeManualDisplay.textContent = '❌ Error: La duración del Segmento 1 debe ser positiva.';
+                    return;
+                }
+                
+                let duracionMsTotal = duracionSeg1;
+                let tsS2 = tsS1; // Si es continua, la salida final es la salida 1
+                
+                // 3. Procesar Segmento 2 (SOLO si es jornada partida)
+                if (esJornadaPartida) {
+                    const tsE2 = new Date(`${fecha}T${hE2}:00`).getTime();
+                    tsS2 = new Date(`${fecha}T${hS2}:00`).getTime(); // Inicializamos Salida 2
+                    
+                    if (isNaN(tsE2) || isNaN(tsS2)) {
+                        mensajeManualDisplay.textContent = '❌ Error: Formato de fecha/hora inválido en Segmento 2.';
+                        return;
+                    }
+
+                    // B. La Entrada 2 debe ser estrictamente después de la Salida 1 (Pausa)
+                    if (tsE2 <= tsS1) {
+                        mensajeManualDisplay.textContent = '❌ Error: La Entrada 2 debe ser posterior a la Salida 1 (Pausa no válida o nula).';
+                        return;
+                    }
+                    
+                    // C. Corregir Salida 2 si pasa la medianoche (Jornada Nocturna)
+                    if (tsS2 <= tsE2) {
+                        tsS2 += 24 * 60 * 60 * 1000;
+                    }
+
+                    const duracionSeg2 = tsS2 - tsE2;
+                    if (duracionSeg2 <= 0) {
+                        mensajeManualDisplay.textContent = '❌ Error: La duración del Segmento 2 debe ser positiva.';
+                        return;
+                    }
+
+                    duracionMsTotal += duracionSeg2;
+                }
+                
+                // 4. Carga y Sobreescritura (Atómica)
+                let jornadas = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
+                
+                // Eliminar cualquier registro (Jornada o DNT) con esta misma fechaId
+                jornadas = jornadas.filter(j => j.fechaId !== fechaId);
+                
+                // 5. Crear el Objeto de Jornada Atómica
+                const nuevaJornada = {
+                    fechaId: fechaId,
+                    tipo: esJornadaPartida ? 'Partida' : 'Continua',
+                    entradaHora: hE1, 
+                    salidaHora: esJornadaPartida ? hS2 : hS1, // La hora de salida final
+                    entradaTs: tsE1,
+                    salidaTs: tsS2,
+                    duracionMs: duracionMsTotal,
+                    // Guardar los 4 segmentos para referencia en la tabla
+                    seg1: { e: hE1, s: hS1 },
+                    seg2: esJornadaPartida ? { e: hE2, s: hS2 } : { e: '-', s: '-' }
+                };
+                
+                jornadas.push(nuevaJornada);
+
+                try {
+                    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(jornadas));
+                    
+                    let tipoJornada = esJornadaPartida ? 'partida' : 'continua';
+                    let mensaje = `✅ Jornada ${tipoJornada} guardada para el ${fecha}. Total: ${msToHoraMinutos(duracionMsTotal)}.`;
+                    if (new Date(tsS2).getDate() !== new Date(tsE1).getDate()) {
+                         mensaje = `✅ Jornada ${tipoJornada} guardada (Finaliza el ${getFechaId(tsS2)}). Total: ${msToHoraMinutos(duracionMsTotal)}.`;
+                    }
+                    mensajeManualDisplay.textContent = mensaje;
+                    
+                    if (fechaId.substring(0, 7) === filtroMesInput.value) {
+                        mostrarRegistros();
+                    }
+                } catch (error) {
+                    mensajeManualDisplay.textContent = '❌ Error al guardar el registro. El almacenamiento puede estar lleno.';
+                    console.error('Error al guardar en localStorage:', error);
+                }
+            };
+            
+            // Día no trabajado manual (guarda un objeto de tipo DNT)
+            const guardarDNTManual = () => {
+                const fechaId = manualFechaInput.value;
+                mensajeManualDisplay.textContent = '';
+
+                if (!fechaId) {
+                    mensajeManualDisplay.textContent = 'Por favor, selecciona la fecha del Día No Trabajado.';
+                    return;
+                }
+
+                let jornadas = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
+                
+                // Eliminar cualquier registro (Jornada o DNT) con esta misma fechaId
+                jornadas = jornadas.filter(j => j.fechaId !== fechaId);
+                
+                const nuevoDNT = {
+                    fechaId: fechaId,
+                    tipo: 'DNT',
+                    entradaHora: '-',
+                    salidaHora: '-',
+                    duracionMs: 0,
+                    seg1: { e: '-', s: '-' },
+                    seg2: { e: '-', s: '-' }
+                };
+                
+                jornadas.push(nuevoDNT);
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(jornadas));
+
+                mensajeManualDisplay.textContent = `🌴 Día No Trabajado (DNT) guardado para el ${fechaId}.`;
+                if (fechaId.substring(0, 7) === filtroMesInput.value) {
+                    mostrarRegistros();
+                }
+            };
+
+            // --- FUNCIÓN DE RESETEO ---
+            const resetearTodo = () => {
+                if (confirm('🚨 ¡ADVERTENCIA! ¿Estás ABSOLUTAMENTE seguro de que quieres BORRAR TODOS los registros de jornada? Esta acción es irreversible.')) {
+                    localStorage.removeItem(LOCAL_STORAGE_KEY);
+                    mostrarRegistros();
+                    mensajeManualDisplay.textContent = '✅ Todos los registros han sido borrados con éxito.';
+                }
+            };
+
+            // --- FUNCIONES DE HISTORIAL Y CÁLCULOS ---
+
+            const procesarRegistros = (filtroValue) => {
+                let totalHorasMesMs = 0;
+                const jornadas = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
+                const jornadasDiarias = {};
+
+                // 1. Filtrar solo las jornadas que caen en el mes seleccionado
+                const jornadasFiltradas = jornadas
+                    .filter(jornada => jornada.fechaId.substring(0, 7) === filtroValue)
+                    .sort((a, b) => a.fechaId.localeCompare(b.fechaId)); // Ordenar por fechaId
+
+                // 2. Cómputo Final
+                jornadasFiltradas.forEach(jornada => {
+                    const id = jornada.fechaId;
+                    const diaSemana = formatTimestampToLongDate(new Date(`${id}T00:00:00`).getTime()).split(', ')[1];
+
+                    jornadasDiarias[id] = {
+                        dia: diaSemana,
+                        ...jornada 
+                    };
+                    
+                    totalHorasMesMs += jornada.duracionMs;
+                });
+
+                return { diarios: jornadasDiarias, totalMensualMs: totalHorasMesMs };
+            };
+
+
+            const mostrarRegistros = () => {
+                // 1. Limpieza y preparación
+                tbody.innerHTML = '';
+                noRegistrosMsg.style.display = 'none';
+                diferenciaHorasDisplay.classList.remove('total-positivo', 'total-negativo');
+
+                const filtroValue = filtroMesInput.value;
+                if (!filtroValue) return;
+
+                const {
+                    diarios,
+                    totalMensualMs
+                } = procesarRegistros(filtroValue);
+                const idsOrdenadas = Object.keys(diarios).sort();
+
+                // 2. Renderizar filas de la tabla
+                if (idsOrdenadas.length > 0) {
+                    idsOrdenadas.forEach(id => {
+                        const dia = diarios[id];
+                        const row = tbody.insertRow();
+
+                        row.insertCell().textContent = dia.dia;
+                        const tipoCell = row.insertCell();
+                        tipoCell.textContent = dia.tipo === 'DNT' ? 'DNT' : dia.tipo; // Muestra Continua/Partida
+                        tipoCell.className = dia.tipo === 'DNT' ? 'registro-dnt' : 'registro-jornada';
+
+                        // Mostrar los 4 segmentos de hora
+                        row.insertCell().textContent = dia.seg1.e;
+                        row.insertCell().textContent = dia.seg1.s;
+                        row.insertCell().textContent = dia.seg2.e;
+                        row.insertCell().textContent = dia.seg2.s;
+                        row.insertCell().textContent = msToHoraMinutos(dia.duracionMs);
+
+                        // Celda de Acción (Botón de Borrado)
+                        const accionCell = row.insertCell();
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = '❌';
+                        deleteButton.className = 'btn-borrar-registro';
+                        deleteButton.title = 'Borrar el registro de este día';
+                        
+                        deleteButton.addEventListener('click', () => {
+                            if (confirm(`¿Estás seguro de que quieres borrar el registro del día ${dia.dia} (${id})?`)) {
+                                
+                                let jornadas = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
+                                
+                                const jornadasActualizadas = jornadas.filter(j => j.fechaId !== id); 
+
+                                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(jornadasActualizadas));
+                                mostrarRegistros();
+                                mensajeManualDisplay.textContent = `🗑️ Se ha borrado el registro del día ${dia.dia}.`;
+                            }
+                        });
+                        accionCell.appendChild(deleteButton);
+                    });
+                } else {
+                    noRegistrosMsg.style.display = 'block';
+                }
+
+                // 3. Renderizar Resumen Mensual
+                totalHorasMesDisplay.textContent = msToHoraMinutos(totalMensualMs);
+                const objetivoMensualMs = OBJETIVO_HORAS_MENSUAL * 3600 * 1000;
+                const diferenciaMs = totalMensualMs - objetivoMensualMs;
+                diferenciaHorasDisplay.textContent = msToHoraMinutos(diferenciaMs);
+
+                if (diferenciaMs >= 0) {
+                    diferenciaHorasDisplay.classList.add('total-positivo');
+                    diferenciaHorasDisplay.classList.remove('total-negativo');
+                } else {
+                    diferenciaHorasDisplay.classList.add('total-negativo');
+                    diferenciaHorasDisplay.classList.remove('total-positivo');
+                }
+            };
+
+            const inicializarFiltro = () => {
+                const hoy = new Date();
+                const mesActual = String(hoy.getMonth() + 1).padStart(2, '0');
+                const anioActual = hoy.getFullYear();
+                filtroMesInput.value = `${anioActual}-${mesActual}`;
+            };
+
+            // --- INICIALIZACIÓN Y EVENT LISTENERS ---
+            btnGuardarManual.addEventListener('click', guardarRegistroManual);
+            btnDNTManual.addEventListener('click', guardarDNTManual);
+            btnResetTodo.addEventListener('click', resetearTodo);
+
+            actualizarReloj();
+            setInterval(actualizarReloj, 1000);
+
+            inicializarFiltro();
+            mostrarRegistros();
+
+            filtroMesInput.addEventListener('change', mostrarRegistros);
+        });
+    </script>
+</body>
+
+</html>
