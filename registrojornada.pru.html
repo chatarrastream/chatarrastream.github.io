@@ -448,18 +448,27 @@
             };
 
               //Día no trabajado
-            const guardarDNTManual = () => {
-const fecha = manualFechaInput.value;
-mensaje ManualDisplay.textContent = ";
-if (!fecha) {
-mensaje ManualDisplay.textContent ='Por favor, selecciona la fecha del Día No Trabajado.';
-return;
-}
-const tsDNT = new Date('${fecha}
-T12:00:00').getTime(); // Usar el mediodía como referencia
-guardar Registro('DNT', tsDNT);
-mensaje ManualDisplay.textContent = 'Día No Trabajado (DNT) guardado para el ${fecha}.';
+const guardarDNTManual = () => {
+    // 1. Asumiendo que la variable es 'manualFechaInput' (sin espacios)
+    const fecha = manualFechaInput.value;
+    
+    // 2. Corrigiendo el nombre de la variable y asignando una cadena vacía
+    mensajeManualDisplay.textContent = '';
+    
+    if (!fecha) {
+        mensajeManualDisplay.textContent = 'Por favor, selecciona la fecha del Día No Trabajado.';
+        return;
+    }
+
+    // 3. Corrigiendo la sintaxis de la plantilla literal con backticks (`)
+    const tsDNT = new Date(`${fecha}T12:00:00`).getTime(); // Usar el mediodía como referencia
+
+    guardarRegistro('DNT', tsDNT);
+    
+    // 4. Corrigiendo el nombre de la variable para mostrar el mensaje final
+    mensajeManualDisplay.textContent = `Día No Trabajado (DNT) guardado para el ${fecha}.`;
 };
+
 
             
             // --- FUNCIÓN DE RESETEO ---
