@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Jornada - Completo</title>
+    
+    <style>
+        /* Reset y configuración base */
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            padding: 20px;
+        }
+
+        header {
+            margin-bottom: 20px;
+        }
+
+        /* Contenedor principal para el diseño moderno */
+        .contenedor {
+            width: 95%;
+            max-width: 800px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            background-color: white;
+            text-align: center;
+        }
+        
+        /* Estilos del Reloj y Fecha */
+        .hora-display {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #007bff;
+        }
+
+        #fecha-actual {
+            display: block;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        /* Grupos de Botones */
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .button-group button {
+            flex-grow: 1; 
+            padding: 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
+        #btn-entrada { background-color: #28a745; color: white; }
+        #btn-entrada:hover { background-color: #218838; }
+
+        #btn-salida { background-color: #dc3545; color: white; }
+        #btn-salida:hover { background-color: #c82333; }
+        
+        #btn-dnt { background-color: #ffc107; color: #333; width: 100%; }
+        #btn-dnt:hover { background-color: #e0a800; }
+
+        #mensaje {
+            margin-top: 20px;
+            font-weight: bold;
+            min-height: 20px;
+        }
+        
+        /* Estilos de Entrada Manual */
+        #entrada-manual-container {
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: left;
+            background-color: #fcfcfc;
+        }
+        
+        #entrada-manual-container h3 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #007bff;
+        }
+
+        .manual-form-group {
+            display: flex;
+            flex-wrap: wrap; 
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .manual-form-group > * {
+            flex: 1 1 auto; 
+            min-width: 100px; 
+        }
+
+        .manual-form-group label, .manual-form-group input {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #btn-guardar-manual {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            flex: 0 0 auto; 
+        }
+        
+        #btn-guardar-manual:hover {
+            background-color: #5a6268;
+        }
+
+        /* Estilos del Historial */
+        #historial-container {
+            text-align: left;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        #historial-container h2 { text-align: center; margin-bottom: 15px; color: #007bff; }
+        .filtro-mes { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+        #filtroMes { padding: 8px; border-radius: 4px; border: 1px solid #ccc; flex-grow: 1; }
+
+        /* Estilos de la Tabla */
+        #tabla-registros { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em; }
+        #tabla-registros th, #tabla-registros td { border: 1px solid #ddd; padding: 10px 5px; text-align: center; }
+        #tabla-registros th { background-color: #f8f9fa; color: #333; }
+        #tabla-registros tbody tr:nth-child(even) { background-color: #f9f9f9; }
+        
+        .registro-entrada { color: #28a745; font-weight: bold; }
+        .registro-salida { color: #dc3545; font-weight: bold; }
+        .registro-dnt { color: #ffc107; font-weight: bold; }
+
+        .btn-borrar-registro {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            font-size: 1.2em;
+            line-height: 1;
+        }
+        .btn-borrar-registro:hover {
+            color: #c82333;
+        }
+
+        /* Resumen Mensual */
+        #resumen-mensual { margin-top: 20px; padding: 15px; border: 2px solid #007bff; border-radius: 8px; background-color: #e9f7ff; text-align: center; }
+        #resumen-mensual p { margin: 5px 0; font-size: 1.1em; font-weight: bold; }
+        .total-positivo { color: #28a745; }
+        .total-negativo { color: #dc3545; }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Registro de Jornada</h1>
+    </header>
+
+    <main class="contenedor">
+        <p id="fecha-actual"></p>
+        <p class="hora-display" id="hora-actual">00:00:00</p>
+        
+        <div class="button-group">
+            <button id="btn-entrada">Entrada</button>
+            <button id="btn-salida">Salida</button>
+        </div>
+        <button id="btn-dnt">Día No Trabajado (DNT)</button>
+
+        <p id="mensaje"></p>
+
+        <div id="entrada-manual-container">
+            <h3>Entrada Manual de Registros</h3>
+            <div class="manual-form-group">
+                <label for="manualFecha">Fecha:</label>
+                <input type="date" id="manualFecha">
+                <label for="manualEntrada">Entrada (HH:MM):</label>
+                <input type="time" id="manualEntrada" value="09:00">
+                <label for="manualSalida">Salida (HH:MM):</label>
+                <input type="time" id="manualSalida" value="18:00">
+                <button id="btn-guardar-manual">Guardar</button>
+            </div>
+            <p id="mensaje-manual" style="color: #dc3545;"></p>
+        </div>
+
+
+        <section id="historial-container">
+            <h2>Historial y Resumen</h2>
+            
+            <div class="filtro-mes">
+                <label for="filtroMes">Selecciona Mes:</label>
+                <input type="month" id="filtroMes">
+            </div>
+            
+            <div id="resumen-mensual">
+                <p>Total Horas Trabajadas: <span id="total-horas-mes">00:00</span></p>
+                <p>Objetivo Mensual: 154:00 horas</p>
+                <p>Diferencia: <span id="diferencia-horas">00:00</span></p>
+            </div>
+
+            <table id="tabla-registros">
+                <thead>
+                    <tr>
+                        <th>Día</th>
+                        <th>Tipo</th>
+                        <th>Entrada</th>
+                        <th>Salida</th>
+                        <th>Horas Diarias</th>
+                        <th>Acción</th> 
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+
+            <p id="no-registros" style="color: #888; margin-top: 15px; display: none; text-align: center;">
+                No hay registros para el mes seleccionado.
+            </p>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Referencias a elementos del DOM
+            const fechaDisplay = document.getElementById('fecha-actual');
+            const horaDisplay = document.getElementById('hora-actual');
+            const mensajeDisplay = document.getElementById('mensaje');
+            const filtroMesInput = document.getElementById('filtroMes');
+            const tbody = document.querySelector('#tabla-registros tbody');
+            const noRegistrosMsg = document.getElementById('no-registros');
+            const totalHorasMesDisplay = document.getElementById('total-horas-mes');
+            const diferenciaHorasDisplay = document.getElementById('diferencia-horas');
+            
+            // Referencias de Entrada Manual
+            const manualFechaInput = document.getElementById('manualFecha');
+            const manualEntradaInput = document.getElementById('manualEntrada');
+            const manualSalidaInput = document.getElementById('manualSalida');
+            const btnGuardarManual = document.getElementById('btn-guardar-manual');
+            const mensajeManualDisplay = document.getElementById('mensaje-manual');
+            
+            const OBJETIVO_HORAS_MENSUAL = 154;
+
+            // --- FUNCIONES DE UTILIDAD ---
+
+            const msToHoraMinutos = (ms) => {
+                if (ms === 0) return '00:00';
+                const totalSegundos = Math.abs(Math.round(ms / 1000));
+                const minutos = Math.floor(totalSegundos / 60) % 60;
+                const horas = Math.floor(totalSegundos / 3600);
+                const signo = ms < 0 ? '-' : '';
+                return `${signo}${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}`;
+            };
+            
+            const getFechaId = (timestamp) => {
+                const date = new Date(timestamp);
+                return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            };
+
+            const formatTimestampToLongDate = (timestamp) => {
+                const date = new Date(timestamp);
+                const optionsFecha = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                return date.toLocaleDateString('es-ES', optionsFecha);
+            };
+
+            // --- FUNCIONES DE REGISTRO ---
+
+            const obtenerFechaHora = (date) => {
+                const optionsFecha = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                const optionsHora = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+                const fecha = date.toLocaleDateString('es-ES', optionsFecha);
+                const hora = date.toLocaleTimeString('es-ES', optionsHora);
+                return { fechaCompleta: fecha, horaCompleta: hora };
+            };
+
+            const actualizarReloj = () => {
+                const ahora = new Date();
+                const hora = ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                horaDisplay.textContent = hora;
+                
+                if (!fechaDisplay.textContent) {
+                    fechaDisplay.textContent = obtenerFechaHora(ahora).fechaCompleta;
+                }
+                if (!manualFechaInput.value) {
+                    manualFechaInput.valueAsDate = ahora;
+                }
+            };
+
+            const guardarRegistro = (tipo, timestamp = null) => {
+                const ahora = timestamp ? new Date(timestamp) : new Date();
+                const { fechaCompleta, horaCompleta } = obtenerFechaHora(ahora);
+                const fechaId = getFechaId(ahora.getTime());
+
+                const nuevoRegistro = {
+                    id: Date.now() + Math.random(), 
+                    tipo: tipo,
+                    timestamp: ahora.getTime(),
+                    fecha: fechaCompleta,
+                    hora: horaCompleta,
+                    fechaId: fechaId
+                };
+
+                let registros = JSON.parse(localStorage.getItem('registrosJornada') || '[]');
+                
+                // Lógica para manejar la exclusividad del DNT
+                if (tipo === 'DNT') {
+                    registros = registros.filter(r => r.fechaId !== fechaId);
+                } else if (tipo === 'E' || tipo === 'S') {
+                    registros = registros.filter(r => !(r.fechaId === fechaId && r.tipo === 'DNT'));
+                }
+
+                registros.push(nuevoRegistro);
+
+                try {
+                    localStorage.setItem('registrosJornada', JSON.stringify(registros));
+                    
+                    let mensajeTipo;
+                    if (tipo === 'E') mensajeTipo = '✅ Entrada';
+                    else if (tipo === 'S') mensajeTipo = '🛑 Salida';
+                    else if (tipo === 'DNT') mensajeTipo = '🌴 Día No Trabajado';
+                    
+                    mensajeDisplay.textContent = `${mensajeTipo} registrado con éxito (${tipo === 'DNT' ? 'Día Completo' : horaCompleta}).`;
+                    
+                    if (fechaId.substring(0, 7) === filtroMesInput.value) {
+                        mostrarRegistros(); 
+                    }
+
+                } catch (error) {
+                    mensajeDisplay.textContent = '❌ Error al guardar el registro. El almacenamiento puede estar lleno.';
+                    console.error('Error al guardar en localStorage:', error);
+                }
+            };
+            
+            const guardarRegistroManual = () => {
+                const fecha = manualFechaInput.value; 
+                const horaEntrada = manualEntradaInput.value; 
+                const horaSalida = manualSalidaInput.value; 
+                
+                mensajeManualDisplay.textContent = ''; 
+                
+                if (!fecha || !horaEntrada || !horaSalida) {
+                    mensajeManualDisplay.textContent = 'Por favor, completa la fecha, entrada y salida.';
+                    return;
+                }
+                
+                if (!/^\d{2}:\d{2}$/.test(horaEntrada) || !/^\d{2}:\d{2}$/.test(horaSalida)) {
+                    mensajeManualDisplay.textContent = 'Error: El formato de hora debe ser HH:MM.';
+                    return;
+                }
+
+                const tsEntrada = new Date(`${fecha}T${horaEntrada}:00`).getTime();
+                const tsSalida = new Date(`${fecha}T${horaSalida}:00`).getTime();
+                
+                if (isNaN(tsEntrada) || isNaN(tsSalida)) {
+                    mensajeManualDisplay.textContent = 'Error: Formato de fecha/hora inválido.';
+                    return;
+                }
+
+                if (tsSalida <= tsEntrada) {
+                    mensajeManualDisplay.textContent = 'Error: La hora de salida debe ser posterior a la hora de entrada.';
+                    return;
+                }
+                
+                guardarRegistro('E', tsEntrada);
+                guardarRegistro('S', tsSalida);
+
+                mensajeManualDisplay.textContent = `✅ Registros manuales guardados para el ${fecha}.`;
+            };
+            
+            // --- FUNCIONES DE HISTORIAL Y CÁLCULOS ---
+
+            const calcularDuracion = (entradaTs, salidaTs) => {
+                return salidaTs - entradaTs;
+            };
+
+            const procesarRegistros = (registros, filtroValue) => {
+                let totalHorasMesMs = 0;
+                const registrosDiarios = {};
+
+                // Filtramos por mes y ordenamos por timestamp
+                const registrosFiltrados = registros
+                    .filter(registro => {
+                        const fechaRegistro = new Date(registro.timestamp);
+                        const anioMesRegistro = `${fechaRegistro.getFullYear()}-${String(fechaRegistro.getMonth() + 1).padStart(2, '0')}`;
+                        return anioMesRegistro === filtroValue;
+                    })
+                    .sort((a, b) => a.timestamp - b.timestamp);
+                
+                // Agrupación por fechaId
+                registrosFiltrados.forEach(registro => {
+                    const id = registro.fechaId;
+                    
+                    if (!registrosDiarios[id]) {
+                        registrosDiarios[id] = { 
+                            dia: formatTimestampToLongDate(registro.timestamp).split(', ')[1],
+                            eventos: [], 
+                            duracionMs: 0,
+                            tipo: 'Jornada'
+                        };
+                    }
+                    
+                    // Lógica para asignar el tipo de día (DNT o Jornada)
+                    if (registro.tipo === 'DNT') {
+                        registrosDiarios[id].tipo = 'DNT';
+                        registrosDiarios[id].eventos = [registro]; 
+                    } else if (registrosDiarios[id].tipo !== 'DNT') {
+                        registrosDiarios[id].eventos.push(registro);
+                    }
+                });
+                
+                // Cálculo de la duración diaria y el total mensual
+                for (const id in registrosDiarios) {
+                    const dia = registrosDiarios[id];
+                    
+                    if (dia.tipo === 'DNT') continue;
+                    
+                    // Solo eventos E y S
+                    const eventos = dia.eventos.filter(e => e.tipo === 'E' || e.tipo === 'S'); 
+                    let duracionDiaMs = 0;
+                    
+                    for (let i = 0; i < eventos.length; i++) {
+                        const actual = eventos[i];
+                        
+                        if (actual.tipo === 'E') {
+                            const salida = eventos.slice(i + 1).find(e => e.tipo === 'S');
+                            
+                            if (salida) {
+                                duracionDiaMs += calcularDuracion(actual.timestamp, salida.timestamp);
+                                i = eventos.indexOf(salida); 
+                            }
+                        }
+                    }
+                    
+                    // CORRECCIÓN CLAVE: Si el día no tiene eventos E/S válidos después del borrado, ELIMÍNALO
+                    if (eventos.length === 0) {
+                        delete registrosDiarios[id]; 
+                        continue; 
+                    }
+
+                    dia.duracionMs = duracionDiaMs;
+                    totalHorasMesMs += duracionDiaMs;
+                }
+                
+                return {
+                    diarios: registrosDiarios, 
+                    totalMensualMs: totalHorasMesMs
+                };
+            };
+
+
+            const mostrarRegistros = () => {
+                // 1. Limpieza y preparación
+                tbody.innerHTML = '';
+                noRegistrosMsg.style.display = 'none';
+                diferenciaHorasDisplay.classList.remove('total-positivo', 'total-negativo');
+
+                const filtroValue = filtroMesInput.value;
+                if (!filtroValue) return;
+
+                const registros = JSON.parse(localStorage.getItem('registrosJornada') || '[]');
+                // Llama a procesarRegistros, que ahora filtra y elimina días vacíos
+                const { diarios, totalMensualMs } = procesarRegistros(registros, filtroValue);
+                const idsOrdenadas = Object.keys(diarios).sort(); 
+
+                // 2. Renderizar filas de la tabla
+                if (idsOrdenadas.length > 0) {
+                    idsOrdenadas.forEach(id => {
+                        const dia = diarios[id];
+                        const row = tbody.insertRow();
+                        
+                        const idsDia = dia.eventos.map(e => e.id); 
+
+                        row.insertCell().textContent = dia.dia;
+                        
+                        const tipoCell = row.insertCell();
+                        tipoCell.textContent = dia.tipo === 'DNT' ? 'DNT' : 'Jornada';
+                        tipoCell.className = dia.tipo === 'DNT' ? 'registro-dnt' : 'registro-jornada';
+                        
+                        if (dia.tipo === 'DNT') {
+                            row.insertCell().textContent = '-'; 
+                            row.insertCell().textContent = '-'; 
+                            row.insertCell().textContent = '00:00'; 
+                        } else {
+                            const eventos = dia.eventos;
+                            const primeraEntrada = eventos.find(e => e.tipo === 'E');
+                            const ultimaSalida = [...eventos].reverse().find(e => e.tipo === 'S');
+                            
+                            row.insertCell().textContent = primeraEntrada ? primeraEntrada.hora : 'N/A';
+                            row.insertCell().textContent = ultimaSalida ? ultimaSalida.hora : 'N/A';
+                            
+                            row.insertCell().textContent = msToHoraMinutos(dia.duracionMs);
+                        }
+                        
+                        // Celda de Acción (Botón de Borrado)
+                        const accionCell = row.insertCell();
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = '❌';
+                        deleteButton.className = 'btn-borrar-registro';
+                        deleteButton.title = 'Borrar todos los registros de este día';
+                        
+                        deleteButton.setAttribute('data-ids', JSON.stringify(idsDia)); 
+                        
+                        deleteButton.addEventListener('click', (e) => {
+                            if (confirm(`¿Estás seguro de que quieres borrar el registro del día ${dia.dia}?`)) {
+                                
+                                const idsParaBorrar = JSON.parse(e.currentTarget.getAttribute('data-ids'));
+                                
+                                let registros = JSON.parse(localStorage.getItem('registrosJornada') || '[]');
+                                
+                                const registrosActualizados = registros.filter(r => !idsParaBorrar.includes(r.id));
+                                
+                                localStorage.setItem('registrosJornada', JSON.stringify(registrosActualizados));
+                                
+                                // Recargar toda la visualización (tabla y resumen)
+                                mostrarRegistros();
+                                mensajeDisplay.textContent = `🗑️ Se ha borrado el registro del día ${dia.dia}.`;
+                            }
+                        });
+                        accionCell.appendChild(deleteButton);
+                    });
+                } else {
+                    noRegistrosMsg.style.display = 'block';
+                }
+                
+                // 3. Renderizar Resumen Mensual
+                totalHorasMesDisplay.textContent = msToHoraMinutos(totalMensualMs);
+                
+                const objetivoMensualMs = OBJETIVO_HORAS_MENSUAL * 3600 * 1000;
+                const diferenciaMs = totalMensualMs - objetivoMensualMs;
+                
+                diferenciaHorasDisplay.textContent = msToHoraMinutos(diferenciaMs);
+                
+                if (diferenciaMs >= 0) {
+                    diferenciaHorasDisplay.classList.add('total-positivo');
+                    diferenciaHorasDisplay.classList.remove('total-negativo');
+                } else {
+                    diferenciaHorasDisplay.classList.add('total-negativo');
+                    diferenciaHorasDisplay.classList.remove('total-positivo');
+                }
+            };
+
+            const inicializarFiltro = () => {
+                const hoy = new Date();
+                const mesActual = String(hoy.getMonth() + 1).padStart(2, '0');
+                const anioActual = hoy.getFullYear();
+                filtroMesInput.value = `${anioActual}-${mesActual}`;
+            };
+            
+            
+            // --- INICIALIZACIÓN Y EVENT LISTENERS ---
+
+            document.getElementById('btn-entrada').addEventListener('click', () => guardarRegistro('E'));
+            document.getElementById('btn-salida').addEventListener('click', () => guardarRegistro('S'));
+            document.getElementById('btn-dnt').addEventListener('click', () => guardarRegistro('DNT'));
+            btnGuardarManual.addEventListener('click', guardarRegistroManual);
+
+            actualizarReloj();
+            setInterval(actualizarReloj, 1000); 
+            
+            inicializarFiltro();
+            mostrarRegistros(); 
+            
+            filtroMesInput.addEventListener('change', mostrarRegistros);
+        });
+    </script>
+</body>
+</html>
