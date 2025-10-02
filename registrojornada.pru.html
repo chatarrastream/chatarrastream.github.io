@@ -322,7 +322,7 @@
             <div id="resumen-mensual">
                 <p>Total Horas Trabajadas: <span id="total-horas-mes">00:00</span></p>
                 <p>Objetivo Mensual: 154:00 horas</p>
-                <p><span id="diferencia-label">Diferencia:</span> <span id="diferencia-horas">00:00</span></p>
+                <p><span id="diferencia-label">Faltan:</span> <span id="diferencia-horas">00:00</span></p>
             </div>
             <table id="tabla-registros">
                 <thead>
@@ -684,7 +684,7 @@
                 } else {
                     diferenciaHorasDisplay.classList.remove('total-positivo');
                     diferenciaHorasDisplay.classList.add('total-negativo');
-                    diferenciaLabel.textContent = 'Diferencia:'; // Etiqueta por defecto o negativa
+                    diferenciaLabel.textContent = 'Faltan:'; // Etiqueta por defecto o negativa
                 }
             };
 
