@@ -22,7 +22,7 @@
         }
 
         header {
-            margin-bottom: 20px;
+            margin-bottom: 8px;
         }
 
         /* Contenedor principal para el diseño moderno */
@@ -111,7 +111,7 @@
             background-color: #28a745;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 20px 20px;
             border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.3s;
@@ -127,7 +127,7 @@
             background-color: #ffc107;
             color: #333;
             border: none;
-            padding: 10px 20px;
+            padding: 10px 10px;
             border-radius: 6px;
             cursor: pointer;
             transition: background-color 0.3s;
@@ -270,7 +270,7 @@
 
 <body>
     <header>
-        <h1>Registro de Jornada Flexible (Manual)</h1>
+        <h1>Registro de Jornada</h1>
     </header>
     <main class="contenedor">
         <p id="fecha-actual"></p>
@@ -305,8 +305,8 @@
             </div>
             
             <div id="btn-group-actions">
-                <button id="btn-guardar-manual">Guardar Jornada</button>
-                <button id="btn-dnt-manual">Guardar Día No Trabajado (DNT)</button>
+                <button id="btn-guardar-manual">GUARDAR JORNADA</BUTTON>
+                <button id="btn-dnt-manual">💾 Día No Trabajado (DNT)</button>
             </div>
             
             <p id="mensaje-manual" style="color: #007bff;"></p>
@@ -315,9 +315,9 @@
         <section id="historial-container">
             <h2>Historial y Resumen Mensual</h2>
             <div class="filtro-mes">
+                <button id="btn-reset-todo">🔴 Resetear Todo</button>
                 <label for="filtroMes">Selecciona Mes:</label>
                 <input type="month" id="filtroMes">
-                <button id="btn-reset-todo">🔴 Resetear Todo</button>
             </div>
             <div id="resumen-mensual">
                 <p>Total Horas Trabajadas: <span id="total-horas-mes">00:00</span></p>
