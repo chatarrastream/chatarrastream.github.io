@@ -463,6 +463,7 @@
                 }
             };
 
+            // FUNCIÓN PARA EL RELOJ PRINCIPAL (Entrada, Salida, DNT en tiempo real)
             const guardarRegistro = (tipo, timestamp = null) => {
                 const ahora = timestamp ? new Date(timestamp) : new Date();
                 const {
@@ -492,7 +493,17 @@
                     }
                 }
 
+                // LÓGICA DE EXCLUSIVIDAD DE REGISTROS (MÁS SEGURA)
+                // Solo un tipo de registro (DNT o E/S) puede existir en un día.
 
+                if (tipo === 'DNT') {
+                    // Si se registra DNT, elimina *cualquier* Entrada/Salida de ese día
+                    registros = registros.filter(r => r.fechaId !== fechaId);
+                } else if (tipo === 'E' || tipo === 'S') {
+                    // Si se registra Entrada/Salida, elimina *solo* el posible DNT de ese día
+                    registros = registros.filter(r => !(r.fechaId === fechaId && r.tipo === 'DNT'));
+                }
+                
                 const nuevoRegistro = {
                     id: Date.now() + Math.random(),
                     tipo: tipo,
@@ -502,18 +513,8 @@
                     fechaId: fechaId
                 };
 
-
-                // Lógica para manejar la exclusividad del DNT
-                if (tipo === 'DNT') {
-                    // Si se registra DNT, elimina cualquier Entrada/Salida de ese día
-                    registros = registros.filter(r => r.fechaId !== fechaId);
-                } else if (tipo === 'E' || tipo === 'S') {
-                    // Si se registra Entrada/Salida, elimina el posible DNT de ese día
-                    registros = registros.filter(r => !(r.fechaId === fechaId && r.tipo === 'DNT'));
-                }
-
                 registros.push(nuevoRegistro);
-
+                
                 try {
                     localStorage.setItem('registrosJornada', JSON.stringify(registros));
                     let mensajeTipo;
@@ -532,12 +533,13 @@
                 }
             };
 
-                        const guardarRegistroManual = () => {
+            // FUNCIÓN PARA LA ENTRADA MANUAL (Con corrección de jornada nocturna y DNT)
+            const guardarRegistroManual = () => {
                 const fecha = manualFechaInput.value;
                 const horaEntrada = manualEntradaInput.value;
                 const horaSalida = manualSalidaInput.value;
                 
-                // 🚩 LIMPIAR MENSAJES antes de intentar procesar
+                // LIMPIAR MENSAJES antes de intentar procesar
                 mensajeManualDisplay.textContent = '';
                 mensajeDisplay.textContent = ''; 
 
@@ -562,27 +564,27 @@
                     return;
                 }
 
-                // CORRECCIÓN PARA JORNADA NOCTURNA MANUAL: 
-                // Si la hora de salida es igual o menor a la hora de entrada,
-                // significa que la salida es al día siguiente.
+                // JORNADA NOCTURNA: Si la hora de salida es igual o menor a la hora de entrada, es al día siguiente.
                 if (tsSalida <= tsEntrada) {
-                    // Añadir 24 horas (86,400,000 milisegundos) al timestamp de salida
                     tsSalida += 24 * 60 * 60 * 1000;
                 }
                 
-                // LÓGICA DE GUARDADO ATÓMICO: Crear los registros directamente
+                // LÓGICA DE GUARDADO ATÓMICO Y LIMPIEZA
                 
-                const fechaId = getFechaId(tsEntrada);
-                const fechaSalidaId = getFechaId(tsSalida);
+                const fechaIdEntrada = getFechaId(tsEntrada);
+                const fechaIdSalida = getFechaId(tsSalida);
 
                 let registros = JSON.parse(localStorage.getItem('registrosJornada') || '[]');
                 
-                // Eliminar cualquier registro existente (E, S o DNT) para esa fechaId de Entrada
-                registros = registros.filter(r => r.fechaId !== fechaId);
+                // 1. Eliminar cualquier registro (E, S o DNT) del DÍA DE LA ENTRADA
+                registros = registros.filter(r => r.fechaId !== fechaIdEntrada);
                 
-                // Si la Salida cae en un día diferente, también eliminamos el DNT de ese día
-                if(fechaId !== fechaSalidaId) {
-                    registros = registros.filter(r => r.fechaId !== fechaSalidaId || r.tipo !== 'DNT');
+                // 2. Si la Salida cae en un día diferente:
+                if(fechaIdEntrada !== fechaIdSalida) {
+                    // Solo eliminar E/S de la fecha de Salida, PERO MANTENER el DNT si existe.
+                    // Esto permite que el día de salida (que es DNT) siga apareciendo como tal, 
+                    // mientras que la Salida se usa para el cálculo del día de entrada.
+                    registros = registros.filter(r => !(r.fechaId === fechaIdSalida && (r.tipo === 'E' || r.tipo === 'S')));
                 }
                 
                 // Añadir los nuevos registros
@@ -592,7 +594,7 @@
                     timestamp: tsEntrada,
                     fecha: obtenerFechaHora(new Date(tsEntrada)).fechaCompleta,
                     hora: obtenerFechaHora(new Date(tsEntrada)).horaCompleta,
-                    fechaId: fechaId
+                    fechaId: fechaIdEntrada
                 };
                 
                 const nuevoRegistroSalida = {
@@ -601,7 +603,7 @@
                     timestamp: tsSalida,
                     fecha: obtenerFechaHora(new Date(tsSalida)).fechaCompleta,
                     hora: obtenerFechaHora(new Date(tsSalida)).horaCompleta,
-                    fechaId: fechaSalidaId
+                    fechaId: fechaIdSalida 
                 };
 
                 registros.push(nuevoRegistroEntrada, nuevoRegistroSalida);
@@ -610,13 +612,13 @@
                     localStorage.setItem('registrosJornada', JSON.stringify(registros));
                     
                     let mensaje = `✅ Registros manuales guardados para el ${fecha}.`;
-                    if (fechaId !== fechaSalidaId) {
-                        mensaje = `✅ Registros manuales guardados (Jornada Nocturna: ${fecha} a ${fechaSalidaId}).`;
+                    if (fechaIdEntrada !== fechaIdSalida) {
+                        mensaje = `✅ Registros manuales guardados (Jornada Nocturna: ${fecha} a ${fechaIdSalida}).`;
                     }
                     mensajeManualDisplay.textContent = mensaje;
                     
                     // Actualizar la vista del historial
-                    if (fechaId.substring(0, 7) === filtroMesInput.value) {
+                    if (fechaIdEntrada.substring(0, 7) === filtroMesInput.value || fechaIdSalida.substring(0, 7) === filtroMesInput.value) {
                         mostrarRegistros();
                     }
                 } catch (error) {
@@ -625,8 +627,7 @@
                 }
             };
 
-
-            //Día no trabajado
+            //Día no trabajado manual
             const guardarDNTManual = () => {
                 const fecha = manualFechaInput.value;
                 mensajeManualDisplay.textContent = '';
@@ -656,24 +657,25 @@
                 return salidaTs - entradaTs;
             };
 
+            // FUNCIÓN CENTRAL DE CÁLCULO (Con lógica de jornada nocturna)
             const procesarRegistros = (registros, filtroValue) => {
                 let totalHorasMesMs = 0;
                 const registrosDiarios = {};
                 const registrosPorFechaId = {}; // Nuevo objeto para acceso rápido por fechaId
 
-                // 1. Filtrar y ordenar y agrupar por fechaId para un acceso rápido
+                // 1. Filtrar, ordenar y agrupar por fechaId
                 const registrosFiltrados = registros
                     .filter(registro => {
-                        // Se filtra si el registro es del mes actual o del último día del mes anterior (por si hay jornadas nocturnas largas)
+                        // Incluye el mes actual y el último día del mes anterior (para jornadas nocturnas)
                         const fechaRegistro = new Date(registro.timestamp);
                         const anioMesRegistro = `${fechaRegistro.getFullYear()}-${String(fechaRegistro.getMonth() + 1).padStart(2, '0')}`;
                         const anioMesFiltro = filtroValue;
 
                         if (anioMesRegistro === anioMesFiltro) return true;
 
-                        // También incluimos el último día del mes anterior por si hay una Entrada nocturna sin cerrar
+                        // Incluir el día anterior al inicio del mes filtrado
                         const fechaFiltro = new Date(`${anioMesFiltro}-01T00:00:00`);
-                        const fechaAnterior = new Date(fechaFiltro.getTime() - 24 * 60 * 60 * 1000); // 1 día antes
+                        const fechaAnterior = new Date(fechaFiltro.getTime() - 24 * 60 * 60 * 1000); 
 
                         if (getFechaId(fechaRegistro.getTime()) === getFechaId(fechaAnterior.getTime())) return true;
                         
@@ -681,7 +683,6 @@
                     })
                     .sort((a, b) => a.timestamp - b.timestamp);
                 
-                // Agrupación inicial de todos los registros filtrados (incluye el día anterior si es relevante)
                 registrosFiltrados.forEach(registro => {
                     const id = registro.fechaId;
                     if (!registrosPorFechaId[id]) {
@@ -714,19 +715,16 @@
                                 .sort((a, b) => a.timestamp - b.timestamp)[0];
 
                             if (primeraSalidaDiaSiguiente) {
-                                // Si encontramos una Salida el día siguiente, la añadimos a los eventos del día de la Entrada 
-                                // para que el cálculo de duración la incluya.
+                                // Añadir la Salida del día siguiente a los eventos del día de la Entrada 
                                 eventosDia.push(primeraSalidaDiaSiguiente);
                                 eventosDia.sort((a, b) => a.timestamp - b.timestamp); // Reordenar
                                 
-                                // Eliminar la Salida del día siguiente para que no se procese como una Entrada sin cerrar
-                                // en el loop principal del día siguiente (si el día siguiente está en el mes del filtro)
-                                registrosPorFechaId[fechaIdSiguiente] = registrosPorFechaId[fechaIdSiguiente].filter(r => r.id !== primeraSalidaDiaSiguiente.id);
+                                // Nota: No eliminamos la Salida del array del día siguiente para que el DNT de ese día pueda prevalecer 
+                                // en la visualización si existe. La lógica de filtrado de más adelante lo manejará.
                             }
                         }
                     }
                 }
-
 
                 // 3. Reagrupación y Cómputo Final (Aplicamos el filtro del mes actual)
                 for (const id of Object.keys(registrosPorFechaId)) {
@@ -745,11 +743,12 @@
                         };
                     }
                     
-                    // Lógica DNT (si el primer evento es DNT, el día es DNT)
-                    if (eventos.length > 0 && eventos[0].tipo === 'DNT') {
+                    // Lógica DNT: Si el día tiene el registro DNT, siempre se marca como DNT para la VISUALIZACIÓN
+                    const eventosDNT = eventos.filter(e => e.tipo === 'DNT');
+                    if (eventosDNT.length > 0) {
                         registrosDiarios[id].tipo = 'DNT';
-                        registrosDiarios[id].eventos = [eventos[0]]; // Solo el registro DNT original
-                        continue;
+                        registrosDiarios[id].eventos = eventosDNT;
+                        continue; // Saltar el cálculo de horas para un DNT
                     }
 
 
@@ -771,7 +770,7 @@
                         }
                     } 
 
-                    // Eliminar días sin registros válidos
+                    // Eliminar días sin registros válidos (aunque debería estar protegido por la lógica DNT)
                     if (eventosJornada.length === 0) {
                         delete registrosDiarios[id];
                         continue;
@@ -807,7 +806,8 @@
                     idsOrdenadas.forEach(id => {
                         const dia = diarios[id];
                         const row = tbody.insertRow();
-                        const idsDia = dia.eventos.map(e => e.id);
+                        // Almacenar todos los IDs de eventos que pertenecen al cálculo de este día (incluyendo la Salida linkeada)
+                        const idsDia = dia.eventos.map(e => e.id); 
 
                         row.insertCell().textContent = dia.dia;
                         const tipoCell = row.insertCell();
@@ -819,7 +819,7 @@
                             row.insertCell().textContent = '-';
                             row.insertCell().textContent = '00:00';
                         } else {
-                            const eventos = dia.eventos.filter(e => e.tipo === 'E' || e.tipo === 'S'); // Filtramos de nuevo por si se añadió la Salida nocturna
+                            const eventos = dia.eventos.filter(e => e.tipo === 'E' || e.tipo === 'S');
                             const primeraEntrada = eventos.find(e => e.tipo === 'E');
                             const ultimaSalida = [...eventos].reverse().find(e => e.tipo === 'S');
 
@@ -834,16 +834,27 @@
                         deleteButton.textContent = '❌';
                         deleteButton.className = 'btn-borrar-registro';
                         deleteButton.title = 'Borrar todos los registros de este día';
-                        deleteButton.setAttribute('data-ids', JSON.stringify(idsDia));
-                        deleteButton.addEventListener('click', (e) => {
-                            if (confirm(`¿Estás seguro de que quieres borrar el registro del día ${dia.dia}?`)) {
-                                const idsParaBorrar = JSON.parse(e.currentTarget.getAttribute('data-ids'));
+                        
+                        // En la lógica de borrado, necesitamos borrar todos los registros con la fechaId del día.
+                        // Los IDs de los eventos solo se usan como referencia visual, pero el borrado es por fechaId
+                        deleteButton.addEventListener('click', () => {
+                            if (confirm(`¿Estás seguro de que quieres borrar todos los registros del día ${dia.dia}?`)) {
+                                
                                 let registros = JSON.parse(localStorage.getItem('registrosJornada') || '[]');
-                                const registrosActualizados = registros.filter(r => {
-                                    // Conservar el registro de Salida si fue "linkeado" desde el día anterior
-                                    // Nota: Esto es complejo sin más metadatos, simplificamos borrando por ID.
-                                    return !idsParaBorrar.includes(r.id);
-                                });
+                                
+                                // ⚠️ Borrado por FechaID (seguro para DNT y E/S)
+                                const registrosActualizados = registros.filter(r => r.fechaId !== id); 
+                                
+                                // Lógica de borrado nocturno: Si se borra una ENTRADA, también hay que borrar la SALIDA del día siguiente
+                                if (dia.tipo !== 'DNT' && dia.eventos.length > 0) {
+                                    const ultimaSalida = [...dia.eventos].reverse().find(e => e.tipo === 'S');
+                                    
+                                    if (ultimaSalida && ultimaSalida.fechaId !== id) {
+                                        // Borrar la salida del día siguiente (que ahora aparecería huérfana)
+                                        registrosActualizados = registrosActualizados.filter(r => r.id !== ultimaSalida.id);
+                                    }
+                                }
+
                                 localStorage.setItem('registrosJornada', JSON.stringify(registrosActualizados));
                                 mostrarRegistros();
                                 mensajeDisplay.textContent = `🗑️ Se ha borrado el registro del día ${dia.dia}.`;
