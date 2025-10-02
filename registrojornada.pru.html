@@ -109,12 +109,19 @@
         }
         
         /* Esto hace que los campos de fecha/hora y el botón se estiren */
-        .manual-form-group > * {
+        .manual-form-group > *not(label){
             flex: 1 1 auto; 
             min-width: 100px; 
         }
 
-        .manual-form-group label, .manual-form-group input {
+.manual-form-group label {
+    flex: 0 0 auto;
+    min-width: auto;
+    font-weight: bold;
+    padding: 0 5px;
+}
+        
+         .manual-form-group input {
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
