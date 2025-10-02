@@ -437,16 +437,12 @@
                 // Calcular la duración diaria y el total mensual
                 for (const id in registrosDiarios) {
                     const dia = registrosDiarios[id];
-                    
-                    if (dia.tipo === 'DNT') continue;
-
                     // Dentro del bucle for (const id in registrosDiarios)
 if (eventos.length === 0) {
     delete registrosDiarios[id]; // <-- ¡Esta es la corrección clave!
     continue; 
 }
-
-                    
+                    if (dia.tipo === 'DNT') continue;      
                     const eventos = dia.eventos.filter(e => e.tipo === 'E' || e.tipo === 'S'); 
                     let duracionDiaMs = 0;
                     
