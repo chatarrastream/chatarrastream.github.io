@@ -231,7 +231,7 @@
             align-items: center;
             gap: 10px;
             margin-bottom: 20px;
-            justify-content: flex-end; /* Alineado a la derecha */
+           /* justify-content: flex-end;  Alineado a la derecha */
         }
 
         #filtroMes {
@@ -335,10 +335,10 @@
         <div class="menu-acciones">
             <h3>Gestión de Datos</h3>
             <div class="btn-group-csv">
+                <button id="btn-reset-todo-menu">🚨 Resetear TODO</button>
                 <button id="btn-descargar-csv">⬇️ Descargar CSV</button>
                 <input type="file" id="file-input-csv" accept=".csv">
-                <label for="file-input-csv" id="label-cargar-csv">⬆️ Cargar CSV</label>
-                <button id="btn-reset-todo-menu">🚨 Resetear TODO</button>
+                <label for="file-input-csv" id="label-cargar-csv">⬆️ Cargar CSV</label>            
             </div>
         </div>
         <div id="entrada-manual-container">
