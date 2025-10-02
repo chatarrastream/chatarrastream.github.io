@@ -368,6 +368,10 @@
             const btnDNTManual = document.getElementById('btn-dnt-manual');
             const btnResetTodo = document.getElementById('btn-reset-todo');
 
+            // Línea 14
+            // NUEVO: Referencia para la etiqueta de la diferencia
+            const diferenciaLabel = document.getElementById('diferencia-label');
+
             const OBJETIVO_HORAS_MENSUAL = 154;
             const LOCAL_STORAGE_KEY = 'jornadasCompletas'; 
 
@@ -677,15 +681,35 @@
                 totalHorasMesDisplay.textContent = msToHoraMinutos(totalMensualMs);
                 const objetivoMensualMs = OBJETIVO_HORAS_MENSUAL * 3600 * 1000;
                 const diferenciaMs = totalMensualMs - objetivoMensualMs;
-                diferenciaHorasDisplay.textContent = msToHoraMinutos(diferenciaMs);
+              //  diferenciaHorasDisplay.textContent = msToHoraMinutos(diferenciaMs);
 
-                if (diferenciaMs >= 0) {
+                // Línea 258
+                diferenciaHorasDisplay.classList.remove('total-positivo', 'total-negativo');
+                // Restablecer etiqueta por defecto
+                diferenciaLabel.textContent = 'Diferencia:'; 
+
+
+                // Línea 341
+                // Lógica de cambio de etiqueta (Horas extras)
+                if (diferenciaMs > 0) {
                     diferenciaHorasDisplay.classList.add('total-positivo');
                     diferenciaHorasDisplay.classList.remove('total-negativo');
+                    diferenciaLabel.textContent = 'Horas extras:'; // Cambio solicitado
                 } else {
-                    diferenciaHorasDisplay.classList.add('total-negativo');
                     diferenciaHorasDisplay.classList.remove('total-positivo');
+                    diferenciaHorasDisplay.classList.add('total-negativo');
+                    diferenciaLabel.textContent = 'Diferencia:'; // Etiqueta por defecto o negativa
                 }
+
+
+                
+               // if (diferenciaMs >= 0) {
+                //    diferenciaHorasDisplay.classList.add('total-positivo');
+                 //   diferenciaHorasDisplay.classList.remove('total-negativo');
+              //  } else {
+                 //   diferenciaHorasDisplay.classList.add('total-negativo');
+                //    diferenciaHorasDisplay.classList.remove('total-positivo');
+             // }
             };
 
             const inicializarFiltro = () => {
