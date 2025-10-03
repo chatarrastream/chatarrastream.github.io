@@ -837,41 +837,59 @@
                 return registrosValidos;
             };
 
-            // --- FUNCIÓN PDF (NUEVO) ---
+                        // --- FUNCIÓN PDF (MODIFICADA PARA MULTIPÁGINA) ---
             const descargarPDF = async () => {
                 const mesSeleccionado = filtroMesInput.value;
                 if (!mesSeleccionado) {
                     mensajeManualDisplay.textContent = '⚠️ Selecciona un mes para generar el PDF.';
                     return;
                 }
-                
+
                 // Ocultar elementos que no deben ir en el PDF (p.ej., el botón de borrar de cada fila)
                 document.querySelectorAll('.btn-borrar-registro').forEach(btn => btn.style.display = 'none');
-                
-                mensajeManualDisplay.textContent = '⏳ Generando PDF... Por favor, espera.';
+
+                mensajeManualDisplay.textContent = '⏳ Generando PDF (Multi-Página)... Por favor, espera.';
 
                 try {
-                    // Usamos window.jspdf ya que se carga desde el CDN
-                    const { jsPDF } = window.jspdf; 
-                    const doc = new jsPDF('p', 'mm', 'a4'); 
-                    
+                    // Usamos window.jsPDF ya que se carga desde el CDN
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF('p', 'mm', 'a4');
+
                     // 1. Convertir el contenedor de historial a Canvas (Imagen)
                     const canvas = await html2canvas(historialContainer, {
                         scale: 2, // Mayor escala para mejor calidad
                         useCORS: true,
-                        logging: false 
+                        logging: false
                     });
-                    
+
                     const imgData = canvas.toDataURL('image/png');
+
+                    // --- Lógica Multi-Página ---
                     const imgProps = doc.getImageProperties(imgData);
-                    const pdfWidth = doc.internal.pageSize.getWidth();
-                    // Calcular la altura proporcional para que no se corte
-                    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width; 
+                    const pdfWidth = doc.internal.pageSize.getWidth(); // Ancho del PDF (A4)
+                    const pdfPageHeight = doc.internal.pageSize.getHeight(); // Altura de una página (A4)
+                    
+                    // Altura total de la imagen proporcional al ancho del PDF
+                    const imgHeight = (imgProps.height * pdfWidth) / imgProps.width; 
+                    
+                    let heightLeft = imgHeight;
+                    let position = 0; // Posición Y para recortar el lienzo
 
-                    // 2. Agregar la imagen al PDF
-                    doc.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                    // 2. Agregar la primera página
+                    // doc.addImage(imagen, formato, x, y, ancho, alto)
+                    doc.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+                    heightLeft -= pdfPageHeight; // Restamos la altura de la primera página
 
-                    // 3. Descargar el archivo
+                    // 3. Iterar y agregar páginas adicionales si queda contenido
+                    while (heightLeft > 0) {
+                        // La posición 'y' debe ser negativa para simular el desplazamiento hacia arriba
+                        position = heightLeft - imgHeight; 
+                        doc.addPage();
+                        doc.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeight);
+                        heightLeft -= pdfPageHeight;
+                    }
+                    
+                    // 4. Descargar el archivo
                     doc.save(`Registro_Jornada_${mesSeleccionado}.pdf`);
                     mensajeManualDisplay.textContent = '✅ PDF generado y descargado con éxito.';
 
@@ -879,10 +897,11 @@
                     mensajeManualDisplay.textContent = '❌ Error al generar el PDF. Revisa la consola para más detalles.';
                     console.error('Error al generar PDF:', error);
                 } finally {
-                    // 4. Restaurar elementos ocultos
+                    // 5. Restaurar elementos ocultos
                     document.querySelectorAll('.btn-borrar-registro').forEach(btn => btn.style.display = '');
                 }
             };
+
             
             // --- FUNCIONES DE HISTORIAL Y CÁLCULOS ---
 
