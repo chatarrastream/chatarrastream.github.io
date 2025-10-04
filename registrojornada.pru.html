@@ -117,7 +117,7 @@
 /* Estilo para todos los botones dentro del desplegable */
 .dropdown-content button,
 .dropdown-content label {
-    padding: 10px 15px;
+    padding: 20px 15px;
     border-radius: 6px;
     cursor: pointer;
     transition: background-color 0.3s, opacity 0.3s;
@@ -151,6 +151,7 @@
 }
 
 #btn-reset-todo-menu {
+    padding: 10px 15px;
     background-color: #dc3545;
     color: white;
     border: none;
@@ -387,9 +388,9 @@
             
             <div id="dropdown-acciones" class="dropdown-content">
                 <button id="btn-reset-todo-menu">🚨 Resetear TODO</button>
-                <button id="btn-descargar-csv">⬇️ Descargar CSV</button>
-                <input type="file" id="file-input-csv" accept=".csv">
                 <label for="file-input-csv" id="label-cargar-csv">⬆️ Cargar CSV</label>
+                <input type="file" id="file-input-csv" accept=".csv">
+                <button id="btn-descargar-csv">⬇️ Descargar CSV</button>
                 <button id="btn-descargar-pdf">📄 Descargar PDF (Mes)</button>
             </div>
         </div>
