@@ -53,92 +53,123 @@
             color: #555;
         }
 
-        /* --- Estilos del Nuevo Menú de Acciones (CSV/PDF) --- */
-        .menu-acciones {
-            margin-bottom: 25px;
-            padding: 15px;
-            border: 1px solid #007bff;
-            border-radius: 8px;
-            background-color: #e9f7ff;
-        }
-
-        .menu-acciones h3 {
-            margin-top: 0;
-            margin-bottom: 15px;
-            color: #007bff;
-            font-size: 1.2em;
-        }
-
-        .btn-group-csv {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        .btn-group-csv button,
-        .btn-group-csv label {
-            padding: 10px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.3s, opacity 0.3s;
-            font-weight: bold;
-            flex: 1 1 120px;
-            text-align: center;
-            border: none;
-        }
-
-        #btn-descargar-csv {
-            background-color: #007bff;
-            color: white;
-        }
-
-        #btn-descargar-csv:hover {
-            background-color: #0056b3;
-        }
-
-        /* Estilo para el botón/label de Cargar CSV */
-        #label-cargar-csv {
-            background-color: #17a2b8;
-            color: white;
-            border: none;
-            display: inline-block;
-            line-height: 1.2;
-        }
-
-        #label-cargar-csv:hover {
-            background-color: #138496;
-        }
-
-        #file-input-csv {
-            display: none;
-            /* Oculta el input de archivo real */
-        }
-
-        #btn-reset-todo-menu {
-            background-color: #dc3545;
-            /* Rojo más llamativo para reset */
-            color: white;
-            border: none;
-            font-size: 1em;
-        }
-
-        #btn-reset-todo-menu:hover {
-            background-color: #c82333;
-        }
         
-        /* ESTILO NUEVO PARA EL BOTÓN PDF */
-        #btn-descargar-pdf {
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            font-size: 1em;
-        }
+/* --- Estilos del Nuevo Menú de Acciones (CSV/PDF) --- */
+.menu-acciones {
+    margin-bottom: 25px;
+    padding: 15px;
+    border: 1px solid #007bff;
+    border-radius: 8px;
+    background-color: #e9f7ff;
+    position: relative; /* Clave para el posicionamiento del desplegable */
+}
 
-        #btn-descargar-pdf:hover {
-            background-color: #5a6268;
-        }
-        /* FIN ESTILO NUEVO */
+.menu-acciones h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #007bff;
+    font-size: 1.2em;
+}
+
+/* Estilo del botón principal del desplegable */
+#btn-menu-acciones {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: none;
+    transition: background-color 0.3s;
+    width: 100%; /* Opcional: para que ocupe todo el ancho */
+}
+
+#btn-menu-acciones:hover {
+    background-color: #0056b3;
+}
+
+/* Contenedor del contenido desplegable */
+.dropdown-content {
+    display: none; /* Empieza oculto */
+    position: absolute;
+    /* Ajusta para que se coloque debajo del botón ocupe el ancho */
+    top: 100%; /* Debajo del botón */
+    left: 0; 
+    right: 0;
+    /* width: 100%;  Asegura el ancho completo */
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    background-color: white; /* Fondo blanco para los botones */
+    padding: 10px;
+    border-radius: 0 0 8px 8px; /* Redondear solo abajo */
+    border: 1px solid #007bff;
+    border-top: none; /* Eliminar la doble línea */
+}
+
+/* Muestra el contenido cuando el botón tiene la clase 'open' */
+.dropdown-content.show {
+    display: flex; /* Usamos flex para la distribución interna */
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Estilo para todos los botones dentro del desplegable */
+.dropdown-content button,
+.dropdown-content label {
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s, opacity 0.3s;
+    font-weight: bold;
+    text-align: center;
+    border: none;
+    width: 100%;
+    box-sizing: border-box; /* Asegura que el padding no exceda el ancho */
+}
+
+/* Estilos específicos de los botones del menú, mantenidos */
+#btn-descargar-csv {
+    background-color: #007bff;
+    color: white;
+}
+
+#btn-descargar-csv:hover {
+    background-color: #0056b3;
+}
+
+#label-cargar-csv {
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    display: inline-block;
+    line-height: 1.2;
+}
+
+#label-cargar-csv:hover {
+    background-color: #138496;
+}
+
+#btn-reset-todo-menu {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+}
+
+#btn-reset-todo-menu:hover {
+    background-color: #c82333;
+}
+
+#btn-descargar-pdf {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    font-size: 1em;
+}
+
+#btn-descargar-pdf:hover {
+    background-color: #5a6268;
+}
 
         /* Estilos de Entrada Manual (PRIORIDAD) */
 
@@ -350,8 +381,11 @@
         <p class="hora-display" id="hora-actual">00:00:00</p>
 
         <div class="menu-acciones">
-            <h3>Gestión de Datos</h3>
-            <div class="btn-group-csv">
+            <button id="btn-menu-acciones">
+                ⚙️ Gestión de Datos (CSV / PDF)
+            </button>
+            
+            <div id="dropdown-acciones" class="dropdown-content">
                 <button id="btn-reset-todo-menu">🚨 Resetear TODO</button>
                 <button id="btn-descargar-csv">⬇️ Descargar CSV</button>
                 <input type="file" id="file-input-csv" accept=".csv">
@@ -359,6 +393,8 @@
                 <button id="btn-descargar-pdf">📄 Descargar PDF (Mes)</button>
             </div>
         </div>
+
+        
         <div id="entrada-manual-container">
             <h3>Registro Manual de Jornada</h3>
             <div class="manual-form-group">
@@ -461,6 +497,10 @@
             const OBJETIVO_HORAS_MENSUAL = 135.7667;
             const LOCAL_STORAGE_KEY = 'jornadasCompletas';
 
+           // Nuevas Referencias para el Desplegable
+            const btnMenuAcciones = document.getElementById('btn-menu-acciones');
+            const dropdownAcciones = document.getElementById('dropdown-acciones');
+            
             // --- FUNCIONES DE UTILIDAD ---
             const msToHoraMinutos = (ms) => {
                 if (ms === 0) return '00:00';
@@ -522,6 +562,23 @@
                 }
             };
 
+      // --- FUNCIÓN DEL DESPLEGABLE ---
+            const toggleDropdown = () => {
+                dropdownAcciones.classList.toggle('show');
+            };
+
+            // Event Listener para el botón principal
+            btnMenuAcciones.addEventListener('click', toggleDropdown);
+
+            // Cerrar el menú si se hace clic fuera de él
+            window.addEventListener('click', (event) => {
+                if (!event.target.matches('#btn-menu-acciones') && !event.target.closest('#dropdown-acciones')) {
+                    if (dropdownAcciones.classList.contains('show')) {
+                        dropdownAcciones.classList.remove('show');
+                    }
+                }
+            });
+            
             // FUNCIÓN PRINCIPAL PARA GUARDAR JORNADA CONTINUA O PARTIDA
             const guardarRegistroManual = () => {
                 const fecha = manualFechaInput.value;
